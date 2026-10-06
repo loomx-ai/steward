@@ -7,6 +7,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -56,8 +57,10 @@ func (c *client) workbookIndex(ctx context.Context, kind string, known []string,
 			}
 			seedIDs[id] = true
 		}
-		for _, id := range slices.Sorted(maps.Keys(seedIDs)) {
-			current, err := c.workbookRead(ctx, kind, id)
+		ids := slices.Sorted(maps.Keys(seedIDs))
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.workbookRead(ctx, kind, ids[i]) })
+		for i, id := range ids {
+			current, err := reads[i], errs[i]
 			if isNotFound(err) {
 				if seen[id] {
 					return nil, nil, "", serviceDenied("workbook_arm_index_changed")
@@ -80,18 +83,29 @@ func (c *client) workbookIndex(ctx context.Context, kind string, known []string,
 		if requestID != "" {
 			provenance = requestID
 		}
+		// Rows are checked in order before any read; rows past the first
+		// invalid one are not read, and its error follows the earlier reads'.
 		seen := map[string]bool{}
+		var listed []map[string]any
+		var ids []string
+		var invalid error
 		for _, value := range rows {
 			raw := object(value)
 			id, typ, err := parseID(text(raw["id"]))
 			if err != nil || insightsWorkbookKind(typ) != kind || !strings.HasPrefix(id, c.root()+"/") || seen[id] || group != "" && strings.Join(strings.Split(id, "/")[:5], "/") != group || insightsWorkbookIdentity(raw, id, kind, false) != nil {
-				return serviceDenied("invalid_workbook_list_identity")
+				invalid = serviceDenied("invalid_workbook_list_identity")
+				break
 			}
 			seen[id] = true
 			if category != "" && insightsWorkbookCategory(text(object(raw["properties"])["category"])) != category {
-				return serviceDenied("workbook_category_changed")
+				invalid = serviceDenied("workbook_category_changed")
+				break
 			}
-			current, err := c.workbookRead(ctx, kind, id)
+			listed, ids = append(listed, raw), append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.workbookRead(ctx, kind, ids[i]) })
+		for i, id := range ids {
+			raw, current, err := listed[i], reads[i], errs[i]
 			if err != nil {
 				return err
 			}
@@ -103,18 +117,27 @@ func (c *client) workbookIndex(ctx context.Context, kind string, known []string,
 			}
 			values[id] = current.data
 		}
-		return nil
+		return invalid
 	}
 	if kind == insightsWorkbookTemplateType {
-		for _, id := range slices.Sorted(maps.Keys(groups)) {
-			params := map[string]any{"subscriptionId": c.subscription, "resourceGroupName": strings.Split(id, "/")[4]}
-			// Most groups hold no template. An empty listing yields no item, so
-			// only a group with templates is read before and after its listing.
-			if rows, _, err := c.workbookList(ctx, "WorkbookTemplates_ListByResourceGroup", kind, params); err != nil {
-				return nil, nil, "", err
-			} else if len(rows) == 0 {
+		// Most groups hold no template. The probe lists run concurrently and
+		// are checked in group order; an empty listing yields no item, so only
+		// a group with templates is read before and after its listing.
+		ids := slices.Sorted(maps.Keys(groups))
+		groupParams := func(id string) map[string]any {
+			return map[string]any{"subscriptionId": c.subscription, "resourceGroupName": strings.Split(id, "/")[4]}
+		}
+		probes, errs := readConcurrently(len(ids), func(i int) (int, error) {
+			rows, _, err := c.workbookList(ctx, "WorkbookTemplates_ListByResourceGroup", kind, groupParams(ids[i]))
+			return len(rows), err
+		})
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, nil, "", errs[i]
+			} else if probes[i] == 0 {
 				continue
 			}
+			params := groupParams(id)
 			before, err := c.insightsGroup(ctx, id, groups[id])
 			if err != nil {
 				return nil, nil, "", err
@@ -165,39 +188,42 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 	for id, raw := range groups {
 		owners[id] = text(raw["managedBy"])
 	}
-	var items []contracts.InventoryItem
-	verified := map[string]map[string]any{}
 	ids := []string{}
 	for _, id := range slices.Sorted(maps.Keys(values)) {
 		if groupID := strings.Join(strings.Split(id, "/")[:5], "/"); groups[groupID] != nil {
 			ids = append(ids, groupID)
 		}
 	}
+	// Workbooks are read concurrently and merged in order, so the first
+	// failure is the one a serial walk would return. The group lookup is for
+	// one walk at a time; each workbook still re-reads its group live after.
 	groupsAhead := c.insightsGroupsAhead(ctx, ids)
-	for _, id := range slices.Sorted(maps.Keys(values)) {
+	var groupsMu sync.Mutex
+	workbooks := slices.Sorted(maps.Keys(values))
+	reads, errs := readConcurrently(len(workbooks), func(i int) (*contracts.InventoryItem, error) {
+		id := workbooks[i]
 		groupID := strings.Join(strings.Split(id, "/")[:5], "/")
 		if groups[groupID] == nil {
-			return nil, nil, "", serviceDenied("workbook_resource_group_missing_from_index")
+			return nil, serviceDenied("workbook_resource_group_missing_from_index")
 		}
-		group := verified[groupID]
-		if group == nil {
-			if group, err = groupsAhead(groupID, groups[groupID]); err != nil {
-				return nil, nil, "", err
-			}
-			verified[groupID] = group
+		groupsMu.Lock()
+		group, err := groupsAhead(groupID, groups[groupID])
+		groupsMu.Unlock()
+		if err != nil {
+			return nil, err
 		}
 		raw := maps.Clone(values[id])
 		raw["type"] = kind // The template API also publishes its singular type alias.
 		item, err := r.inventoryItem(ctx, c, raw, owners, locks)
 		if err != nil {
-			return nil, nil, "", err
+			return nil, err
 		}
 		if _, err := c.insightsGroup(ctx, groupID, group); err != nil {
-			return nil, nil, "", err
+			return nil, err
 		}
 		item.Normalized["_inventory_source"] = insightsInventorySource(kind)
 		if item.Normalized["_insights_workbook_group"] != c.privateConfiguration(insightsWorkspaceResourceSnapshot(group)) {
-			return nil, nil, "", serviceDenied("workbook_group_changed")
+			return nil, serviceDenied("workbook_group_changed")
 		}
 		if kind != insightsWorkbookTemplateType {
 			item.Name = text(object(raw["properties"])["displayName"])
@@ -206,8 +232,18 @@ func (r *Runtime) workbookInventorySnapshot(ctx context.Context, c *client, requ
 		if protectedAzureTags(object(group["tags"])) {
 			item.Normalized["cleanup_protected"], item.Normalized["cleanup_protection_reason"] = true, "azure_protected_tag"
 		}
-		if productScopeMatches(request, item) {
-			items = append(items, item)
+		if !productScopeMatches(request, item) {
+			return nil, nil
+		}
+		return &item, nil
+	})
+	var items []contracts.InventoryItem
+	for i, item := range reads {
+		if errs[i] != nil {
+			return nil, nil, "", errs[i]
+		}
+		if item != nil {
+			items = append(items, *item)
 		}
 	}
 	return items, absent, requestID, nil

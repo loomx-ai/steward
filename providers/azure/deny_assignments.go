@@ -171,8 +171,10 @@ func (c *client) denyAssignmentIndex(ctx context.Context, scope string, known []
 	}
 	current := map[string]map[string]any{}
 	absent := []string{}
-	for _, id := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.denyAssignmentRead(ctx, ids[id])
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.denyAssignmentRead(ctx, ids[ordered[i]]) })
+	for i, id := range ordered {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && !listed[id] {
 			absent = append(absent, id)
 			continue

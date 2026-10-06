@@ -164,30 +164,47 @@ func (c *client) monitorReceiverIndex(ctx context.Context, kind string) (values 
 			if result.data["code"] != nil || operationLocation(result.header) != "" || monitorRuleFields(result.data, "value", "nextLink") != nil {
 				return nil, serviceDenied("invalid_monitor_receiver_index_response")
 			}
+			// Rows are checked in order before any read; rows past the first
+			// invalid one are not read, and its error follows the earlier reads'.
+			var raws, listings []map[string]any
+			var ids, endpoints []string
+			var invalid error
+			page := map[string]bool{}
 			for _, row := range rows {
 				raw := object(row)
 				id, typ, err := parseID(text(raw["id"]))
-				if err != nil || !strings.EqualFold(typ, kind) || !strings.HasPrefix(id, c.root()+"/") || values[id] != nil {
-					return nil, serviceDenied("invalid_monitor_receiver_index_resource")
+				if err != nil || !strings.EqualFold(typ, kind) || !strings.HasPrefix(id, c.root()+"/") || values[id] != nil || page[id] {
+					invalid = serviceDenied("invalid_monitor_receiver_index_resource")
+					break
 				}
+				page[id] = true
 				listed, err := monitorReceiverIndexIdentity(raw, id, kind, false)
 				if err != nil {
-					return nil, err
+					invalid = err
+					break
 				}
 				mapping, _ := findType(kind)
 				endpoint, err := c.resourceURL(mapping, id)
 				if err != nil {
-					return nil, err
+					invalid = err
+					break
 				}
-				current, err := c.request(ctx, "GET", endpoint)
-				if err != nil {
-					return nil, err
+				raws, listings, ids, endpoints = append(raws, raw), append(listings, listed), append(ids, id), append(endpoints, endpoint)
+			}
+			reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+			for i, id := range ids {
+				raw, listed, current := raws[i], listings[i], reads[i]
+				if errs[i] != nil {
+					return nil, errs[i]
 				}
 				live, identityErr := monitorReceiverIndexIdentity(current.data, id, kind, true)
 				if !insightsARMReadValid(current, id, kind) || current.data["nextLink"] != nil || monitorRuleFields(current.data, "nextLink") != nil || identityErr != nil || serviceListedIncarnation(raw, current.data) != nil || listed["location"] != live["location"] || listed["customerId"] != nil && listed["customerId"] != "" && listed["customerId"] != live["customerId"] {
 					return nil, serviceDenied("monitor_receiver_index_disagrees")
 				}
 				values[id] = live
+			}
+			if invalid != nil {
+				return nil, invalid
 			}
 			endpoint = next
 		}

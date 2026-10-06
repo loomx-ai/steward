@@ -108,20 +108,33 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 			for _, raw := range rows {
 				principals = principals || object(raw["properties"])["principalType"] == "ServicePrincipal"
 			}
+			// Targets are checked in order before any read; targets at or after
+			// the first invalid proof are not read, and its error follows
+			// earlier read results.
+			var invalid error
+			var reads []asset.Asset
 			for _, target := range targets {
 				if !rbacIdentityTarget(target) {
 					continue
 				}
 				if target.Normalized[rbacIdentityMetadata] != nil || target.Normalized[rbacIdentityProof] != nil {
 					if _, err := c.rbacRecordedIdentity(target); err != nil {
-						return nil, err
+						invalid = err
+						break
 					}
 				}
 				if principals || text(object(target.Normalized[rbacIdentityMetadata])["principal"]) != "" {
-					if err := c.rbacIdentityRead(ctx, target); err != nil {
-						return nil, err
-					}
+					reads = append(reads, target)
 				}
+			}
+			_, errs := readConcurrently(len(reads), func(i int) (struct{}, error) { return struct{}{}, c.rbacIdentityRead(ctx, reads[i]) })
+			for _, err := range errs {
+				if err != nil {
+					return nil, err
+				}
+			}
+			if invalid != nil {
+				return nil, invalid
 			}
 		}
 		// Match every row's list fields in order, up to the first that fails;

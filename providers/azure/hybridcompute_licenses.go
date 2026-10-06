@@ -70,23 +70,44 @@ func (c *client) hybridComputeLicenseAssignments(ctx context.Context, id string,
 		if err != nil {
 			return nil, err
 		}
+		// Rows are checked in order before any read; rows past the first
+		// invalid one are not read, and its error follows the earlier reads'.
 		seen := map[string]bool{}
+		var raws []map[string]any
+		var ids []string
+		var invalid error
 		for _, value := range machines {
 			raw := object(value)
 			machine, err := c.hybridComputeIdentity(text(raw["id"]), hybridMachineType)
 			if err != nil || seen[machine] {
-				return nil, serviceDenied("invalid_hybrid_compute_license_machine_index")
+				invalid = serviceDenied("invalid_hybrid_compute_license_machine_index")
+				break
 			}
 			seen[machine] = true
-			res, err := c.hybridComputeRead(ctx, machine, hybridMachineType)
+			raws, ids = append(raws, raw), append(ids, machine)
+		}
+		type machineRead struct {
+			res      response
+			rows     []any
+			indexErr error
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (machineRead, error) {
+			res, err := c.hybridComputeRead(ctx, ids[i], hybridMachineType)
 			if err != nil {
-				return nil, err
+				return machineRead{}, err
+			}
+			rows, err := c.hybridComputeIndex(ctx, hybridProfileType, ids[i])
+			return machineRead{res, rows, err}, nil
+		})
+		for i, machine := range ids {
+			raw, res, rows := raws[i], reads[i].res, reads[i].rows
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
 			if !strings.EqualFold(text(raw["type"]), hybridMachineType) || serviceListedIncarnation(raw, res.data) != nil {
 				return nil, serviceDenied("hybrid_compute_license_machine_changed")
 			}
-			rows, err := c.hybridComputeIndex(ctx, hybridProfileType, machine)
-			if err != nil {
+			if err := reads[i].indexErr; err != nil {
 				return nil, err
 			}
 			for _, value := range rows {
@@ -98,10 +119,15 @@ func (c *client) hybridComputeLicenseAssignments(ctx context.Context, id string,
 				profiles[profile], listed[profile] = true, raw
 			}
 		}
+		if invalid != nil {
+			return nil, invalid
+		}
 	}
 	result := map[string]map[string]any{}
-	for _, profile := range slices.Sorted(maps.Keys(profiles)) {
-		res, err := c.hybridComputeRead(ctx, profile, hybridProfileType)
+	ordered := slices.Sorted(maps.Keys(profiles))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.hybridComputeRead(ctx, ordered[i], hybridProfileType) })
+	for i, profile := range ordered {
+		res, err := reads[i], errs[i]
 		if isNotFound(err) && listed[profile] == nil {
 			continue
 		}

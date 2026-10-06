@@ -44,8 +44,12 @@ func (c *client) protectionRetainedInstances(ctx context.Context, id string, kno
 		ids[key] = true
 	}
 	result := map[string]any{}
-	for _, key := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.dataProtectionRead(ctx, key, dataProtectionDeletedInstance)
+	keys := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(keys), func(i int) (response, error) {
+		return c.dataProtectionRead(ctx, keys[i], dataProtectionDeletedInstance)
+	})
+	for i, key := range keys {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && rows[key] == nil {
 			continue
 		}

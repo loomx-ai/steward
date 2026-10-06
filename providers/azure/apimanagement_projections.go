@@ -69,41 +69,65 @@ func (c *client) apimWorkspaceLinks(ctx context.Context, root string, connection
 	seen := map[string]bool{}
 	pairs := map[string]bool{}
 	snapshots := map[string]any{}
+	// Rows are checked in order before any read. Rows past the first invalid
+	// one are not read, and its error follows the earlier rows' reads.
+	type listedLink struct {
+		row       map[string]any
+		workspace string
+		gateways  []string
+	}
+	var links []listedLink
+	var invalid error
 	for _, value := range rows {
 		row := object(value)
 		workspace, gateways, err := apimWorkspaceLink(root, row)
 		if err != nil {
-			return "", err
+			invalid = err
+			break
 		}
 		if seen[workspace] {
-			return "", serviceDenied("duplicate_apim_workspace_link")
+			invalid = serviceDenied("duplicate_apim_workspace_link")
+			break
 		}
 		seen[workspace] = true
+		links = append(links, listedLink{row, workspace, gateways})
+	}
+	sources, errs := readConcurrently(len(links), func(i int) (map[string]any, error) {
+		row, workspace, gateways := links[i].row, links[i].workspace, links[i].gateways
 		source, err := c.apimResource(ctx, workspace)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		if err := apimReady(apimWorkspaceType, source); err != nil {
-			return "", err
+			return nil, err
 		}
 		parameters := maps.Clone(params)
 		parameters["workspaceId"] = last(workspace)
 		bound, err := bindAzureREST(read, parameters)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		live, err := c.request(ctx, "GET", bound.URL)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		current, currentGateways, err := apimWorkspaceLink(root, live.data)
 		if err != nil || live.status != 200 || current != workspace || !slices.Equal(gateways, currentGateways) || apimListedIncarnation(apimServiceType+"/workspaceLinks", row, live.data) != nil || text(row["etag"]) != "" && row["etag"] != live.data["etag"] {
-			return "", serviceDenied("apim_workspace_link_changed")
+			return nil, serviceDenied("apim_workspace_link_changed")
 		}
-		snapshots[workspace] = map[string]any{"link": live.data, "workspace": apimSnapshot(apimWorkspaceType, source), "workspace_etag": apimETag(apimWorkspaceType, source)}
-		for _, gateway := range gateways {
-			pairs[workspace+"|"+gateway] = true
+		return map[string]any{"link": live.data, "workspace": apimSnapshot(apimWorkspaceType, source), "workspace_etag": apimETag(apimWorkspaceType, source)}, nil
+	})
+	for i, link := range links {
+		if errs[i] != nil {
+			return "", errs[i]
 		}
+		snapshots[link.workspace] = sources[i]
+		for _, gateway := range link.gateways {
+			pairs[link.workspace+"|"+gateway] = true
+		}
+	}
+	if invalid != nil {
+		return "", invalid
 	}
 	expected := map[string]bool{}
 	for _, connection := range connections {
@@ -168,16 +192,27 @@ func (c *client) apimIssues(ctx context.Context, root string) (map[string]servic
 		}
 		result := map[string]serviceChild{}
 		seen := map[string]bool{}
+		// Rows are checked in order before any read. Rows past the first
+		// invalid one are not read, and its error follows the earlier reads.
+		var listed []map[string]any
+		var invalid error
 		for _, value := range rows {
 			row, err := apimProjectedIssue(root, object(value))
 			if err != nil {
-				return nil, err
+				invalid = err
+				break
 			}
 			id := text(row["id"])
 			if seen[last(id)] {
-				return nil, serviceDenied("duplicate_apim_issue_projection")
+				invalid = serviceDenied("duplicate_apim_issue_projection")
+				break
 			}
 			seen[last(id)] = true // issueId is unique across the entire service.
+			listed = append(listed, row)
+		}
+		lives, errs := readConcurrently(len(listed), func(i int) (map[string]any, error) {
+			row := listed[i]
+			id := text(row["id"])
 			parameters := maps.Clone(params)
 			parameters["issueId"] = last(id)
 			bound, err := bindAzureREST(read, parameters)
@@ -199,7 +234,17 @@ func (c *client) apimIssues(ctx context.Context, root string) (map[string]servic
 			if apimListedIncarnation(apimIssueType, current, live) != nil || apimETag(apimIssueType, current) != "" && apimETag(apimIssueType, current) != apimETag(apimIssueType, live) {
 				return nil, serviceDenied("apim_issue_projection_target_changed")
 			}
-			result[id] = serviceChild{id: id, kind: apimIssueType, data: live}
+			return live, nil
+		})
+		for i, row := range listed {
+			if errs[i] != nil {
+				return nil, errs[i]
+			}
+			id := text(row["id"])
+			result[id] = serviceChild{id: id, kind: apimIssueType, data: lives[i]}
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		return result, nil
 	}

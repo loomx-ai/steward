@@ -386,32 +386,51 @@ func batchTaskNode(account batchAccountContext, info map[string]any) (string, st
 	return endpoint, account.id + "/pools/" + strings.ToLower(pool), nil
 }
 
+// batchListed is one parent's listed children and the list's request ID.
+type batchListed struct {
+	values    []map[string]any
+	requestID string
+}
+
 func (c *client) batchListedData(ctx context.Context, account batchAccountContext, kind, operation string, params map[string]any) ([]map[string]any, string, error) {
 	values, requestID, err := c.batchDataList(ctx, account, operation, params)
 	if err != nil {
 		return nil, requestID, err
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
 	seen := map[string]bool{}
-	for i, raw := range values {
+	var ids []string
+	var invalid error
+	for _, raw := range values {
 		id, typ, origin, parameters, err := batchDataIdentity(text(raw["url"]))
 		if err != nil || typ != kind || origin != account.endpoint || seen[id] || !strings.EqualFold(text(raw["id"]), last(id)) {
-			return nil, requestID, serviceDenied("invalid_batch_list_identity")
+			invalid = serviceDenied("invalid_batch_list_identity")
+			break
 		}
 		if job := text(params["jobId"]); job != "" && !strings.EqualFold(job, text(parameters["jobId"])) {
-			return nil, requestID, serviceDenied("batch_task_changed_job")
+			invalid = serviceDenied("batch_task_changed_job")
+			break
 		}
 		if pool := text(params["poolId"]); pool != "" && !strings.EqualFold(pool, text(parameters["poolId"])) {
-			return nil, requestID, serviceDenied("batch_node_changed_pool")
+			invalid = serviceDenied("batch_node_changed_pool")
+			break
 		}
 		seen[id] = true
-		current, err := c.batchRead(ctx, account, id, kind)
-		if err != nil {
-			return nil, requestID, err
+		ids = append(ids, id)
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.batchRead(ctx, account, ids[i], kind) })
+	for i := range ids {
+		if errs[i] != nil {
+			return nil, requestID, errs[i]
 		}
-		if !nativeConfigurationContains(batchSnapshot(kind, raw), batchSnapshot(kind, current.data)) {
+		if !nativeConfigurationContains(batchSnapshot(kind, values[i]), batchSnapshot(kind, reads[i].data)) {
 			return nil, requestID, serviceDenied("batch_listed_configuration_changed")
 		}
-		values[i] = current.data
+		values[i] = reads[i].data
+	}
+	if invalid != nil {
+		return nil, requestID, invalid
 	}
 	slices.SortFunc(values, func(a, b map[string]any) int {
 		return strings.Compare(strings.ToLower(text(a["url"])), strings.ToLower(text(b["url"])))
@@ -552,46 +571,55 @@ func (r *Runtime) listBatchData(ctx context.Context, c *client, request contract
 			var jobs []map[string]any
 			jobs, provenance, err = c.batchListedData(ctx, account, batchJobType, "Jobs_ListJobs", nil)
 			if err == nil {
-				for _, job := range jobs {
-					var tasks []map[string]any
-					tasks, provenance, err = c.batchListedData(ctx, account, kind, "Tasks_ListTasks", map[string]any{"jobId": text(job["id"])})
+				// Jobs are walked concurrently; each job is still re-read after
+				// its own task list, and results merge in job order.
+				reads, errs := readConcurrently(len(jobs), func(i int) (batchListed, error) {
+					tasks, requestID, err := c.batchListedData(ctx, account, kind, "Tasks_ListTasks", map[string]any{"jobId": text(jobs[i]["id"])})
 					if err != nil {
+						return batchListed{}, err
+					}
+					current, err := c.batchRead(ctx, account, text(jobs[i]["url"]), batchJobType)
+					if err != nil {
+						return batchListed{}, err
+					}
+					if c.privateConfiguration(batchSnapshot(batchJobType, current.data)) != c.privateConfiguration(batchSnapshot(batchJobType, jobs[i])) {
+						return batchListed{}, serviceDenied("batch_job_changed_during_scan")
+					}
+					return batchListed{tasks, requestID}, nil
+				})
+				for i, job := range jobs {
+					if err = errs[i]; err != nil {
 						break
 					}
-					values = append(values, tasks...)
+					values, provenance = append(values, reads[i].values...), reads[i].requestID
 					bindings[text(job["url"])] = c.privateConfiguration(batchSnapshot(batchJobType, job))
-					var current response
-					current, err = c.batchRead(ctx, account, text(job["url"]), batchJobType)
-					if err != nil {
-						break
-					}
-					if c.privateConfiguration(batchSnapshot(batchJobType, current.data)) != bindings[text(job["url"])] {
-						err = serviceDenied("batch_job_changed_during_scan")
-						break
-					}
 				}
 			}
 		case batchNodeType:
 			var pools []serviceChild
 			pools, provenance, err = c.batchPools(ctx, account)
 			if err == nil {
-				for _, pool := range pools {
-					var nodes []map[string]any
-					nodes, provenance, err = c.batchListedData(ctx, account, kind, "Nodes_ListNodes", map[string]any{"poolId": last(pool.id)})
+				// As for jobs: each pool is re-read after its own node list.
+				reads, errs := readConcurrently(len(pools), func(i int) (batchListed, error) {
+					nodes, requestID, err := c.batchListedData(ctx, account, kind, "Nodes_ListNodes", map[string]any{"poolId": last(pools[i].id)})
 					if err != nil {
+						return batchListed{}, err
+					}
+					current, err := c.batchRead(ctx, account, pools[i].id, batchPoolType)
+					if err != nil {
+						return batchListed{}, err
+					}
+					if c.privateConfiguration(batchSnapshot(batchPoolType, current.data)) != c.privateConfiguration(batchSnapshot(batchPoolType, pools[i].data)) {
+						return batchListed{}, serviceDenied("batch_pool_changed_during_scan")
+					}
+					return batchListed{nodes, requestID}, nil
+				})
+				for i, pool := range pools {
+					if err = errs[i]; err != nil {
 						break
 					}
-					values = append(values, nodes...)
+					values, provenance = append(values, reads[i].values...), reads[i].requestID
 					bindings[pool.id] = c.privateConfiguration(batchSnapshot(batchPoolType, pool.data))
-					var current response
-					current, err = c.batchRead(ctx, account, pool.id, batchPoolType)
-					if err != nil {
-						break
-					}
-					if c.privateConfiguration(batchSnapshot(batchPoolType, current.data)) != bindings[pool.id] {
-						err = serviceDenied("batch_pool_changed_during_scan")
-						break
-					}
 				}
 			}
 		default:
@@ -600,12 +628,14 @@ func (r *Runtime) listBatchData(ctx context.Context, c *client, request contract
 		if err != nil {
 			return contracts.InventoryBatch{}, contracts.DependencyReadError(err)
 		}
-		for _, raw := range values {
-			item, err := r.batchDataItem(ctx, c, account, kind, raw, owners, locks)
-			if err != nil {
-				return contracts.InventoryBatch{}, contracts.DependencyReadError(err)
+		read, errs := readConcurrently(len(values), func(i int) (contracts.InventoryItem, error) {
+			return r.batchDataItem(ctx, c, account, kind, values[i], owners, locks)
+		})
+		for i := range values {
+			if errs[i] != nil {
+				return contracts.InventoryBatch{}, contracts.DependencyReadError(errs[i])
 			}
-			items = append(items, item)
+			items = append(items, read[i])
 		}
 		current, err := c.batchAccount(ctx, account.id)
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -13,7 +14,10 @@ func TestDeploymentStackInventoryReconcilesOwnReads(t *testing.T) {
 			scope := "/subscriptions/" + testSubscription + suffix
 			path := scope + "/providers/Microsoft.Resources/deploymentStacks"
 			calls := []string{}
+			var fixtureMu sync.Mutex
 			c := &client{subscription: testSubscription, http: &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				calls = append(calls, r.URL.Path)
 				if r.Method != "GET" || r.URL.Query().Get("api-version") != deploymentStackVersion {
 					t.Fatal("unexpected operation", r.Method, r.URL)

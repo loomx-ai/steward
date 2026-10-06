@@ -79,8 +79,10 @@ func (c *client) dataProtectionVaultChildren(ctx context.Context, vault string, 
 		}
 	}
 	children := map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.dataProtectionRead(ctx, id, ids[id])
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.dataProtectionRead(ctx, ordered[i], ids[ordered[i]]) })
+	for i, id := range ordered {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && listed[id] == nil {
 			continue
 		}
@@ -183,8 +185,12 @@ func (c *client) dataProtectionRetainedVaults(ctx context.Context, vault, region
 		ids[id] = true
 	}
 	result := map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.dataProtectionRead(ctx, id, dataProtectionDeletedVault)
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) {
+		return c.dataProtectionRead(ctx, ordered[i], dataProtectionDeletedVault)
+	})
+	for i, id := range ordered {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && rows[id] == nil {
 			continue
 		}

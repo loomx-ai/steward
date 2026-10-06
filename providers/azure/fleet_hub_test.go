@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/execution"
@@ -120,7 +121,12 @@ func TestFleetHubRegisteredInventoryAnchors(t *testing.T) {
 				delete(h.groups, h.nodes)
 			}
 			var logs []execution.JobLogEntry
-			ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+			var logsMu sync.Mutex
+			ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+				logsMu.Lock()
+				logs = append(logs, entry)
+				logsMu.Unlock()
+			}))
 			batch, err := h.runtime.List(ctx, h.request(fleetType))
 			if err != nil || !batch.Complete || len(batch.Items) != 1 {
 				t.Fatal("native hub scan failed", batch, err)

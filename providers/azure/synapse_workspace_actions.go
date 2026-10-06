@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -103,13 +104,19 @@ func (a *synapseWorkspaceAction) Readback(ctx context.Context, req contracts.Act
 	if req.ExecutionResult == nil || req.ExecutionResult.Data["operation_done"] != true {
 		endpoint := "https://" + last(id) + ".dev.azuresynapse.net"
 		w := synapseWorkspace{id: id, endpoint: endpoint, raw: map[string]any{"id": id, "name": last(id), "type": synapseType, "location": a.planned.Location, "properties": map[string]any{"connectivityEndpoints": map[string]any{"dev": endpoint}}}}
-		for _, value := range object(a.boundary["members"]) {
-			entry := object(value)
-			d := synapseDataKind(text(entry["kind"]))
-			if d.kind == "" {
-				continue
+		// Member GETs run concurrently and are checked in member id order.
+		members := object(a.boundary["members"])
+		var ids []string
+		for _, member := range slices.Sorted(maps.Keys(members)) {
+			if synapseDataKind(text(object(members[member])["kind"])).kind != "" {
+				ids = append(ids, member)
 			}
-			_, err := a.client.synapseReadData(ctx, synapseDataTarget{workspace: w}, d, object(entry["parameters"]))
+		}
+		_, errs := readConcurrently(len(ids), func(i int) (response, error) {
+			entry := object(members[ids[i]])
+			return a.client.synapseReadData(ctx, synapseDataTarget{workspace: w}, synapseDataKind(text(entry["kind"])), object(entry["parameters"]))
+		})
+		for _, err := range errs {
 			if isNotFound(err) {
 				continue
 			}

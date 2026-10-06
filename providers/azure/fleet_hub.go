@@ -72,8 +72,11 @@ func (c *client) fleetRootChildren(ctx context.Context, id string, previous map[
 		if err != nil {
 			return nil, err
 		}
-		for _, child := range slices.Sorted(maps.Keys(rows)) {
-			live, err := c.fleetRead(ctx, kind, child)
+		// Re-reads run concurrently; results and the first error are taken in order.
+		ids := slices.Sorted(maps.Keys(rows))
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.fleetRead(ctx, kind, ids[i]) })
+		for i, child := range ids {
+			live, err := reads[i], errs[i]
 			if err != nil {
 				return nil, err
 			}
@@ -357,25 +360,36 @@ func (c *client) readFleetHub(ctx context.Context, id string, raw map[string]any
 		return nil, nil, err
 	}
 	// Recheck every known member, including the anchors, and then the Fleet.
+	// Endpoints are checked in order before any read; the GETs run concurrently
+	// and are checked in order, then the invalid member's error.
+	var ids, endpoints []string
+	var invalid error
 	for _, memberID := range slices.Sorted(maps.Keys(object(state["members"]))) {
-		member := object(object(state["members"])[memberID])
-		kind := text(member["kind"])
-		rule, ok := findType(kind)
+		rule, ok := findType(text(object(object(state["members"])[memberID])["kind"]))
 		if !ok {
 			continue // Unknown contained kinds are bound by the unfiltered indexes.
 		}
 		endpoint, err := c.resourceURL(rule, memberID)
 		if err != nil {
-			return nil, nil, err
+			invalid = err
+			break
 		}
-		current, err := c.request(ctx, "GET", endpoint)
+		ids, endpoints = append(ids, memberID), append(endpoints, endpoint)
+	}
+	reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, memberID := range ids {
+		member := object(object(state["members"])[memberID])
+		current, err := reads[i], errs[i]
 		if err != nil {
 			return nil, nil, err
 		}
-		if !insightsARMReadValid(current, memberID, kind) || text(member["configuration"]) != c.privateConfiguration(insightsWorkspaceResourceSnapshot(current.data)) {
+		if !insightsARMReadValid(current, memberID, text(member["kind"])) || text(member["configuration"]) != c.privateConfiguration(insightsWorkspaceResourceSnapshot(current.data)) {
 			return nil, nil, serviceDenied("fleet_hub_anchor_changed_during_scan")
 		}
 		resources[memberID] = current.data
+	}
+	if invalid != nil {
+		return nil, nil, invalid
 	}
 	state["children"], err = c.fleetRootChildren(ctx, id, previous)
 	if err != nil {

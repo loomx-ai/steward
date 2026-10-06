@@ -107,8 +107,11 @@ func (c *client) readFleetMesh(ctx context.Context, id string, raw map[string]an
 			selected[member] = value
 		}
 	}
-	for _, member := range slices.Sorted(maps.Keys(selected)) {
-		current, err := c.fleetRead(ctx, fleetMemberType, member)
+	// Re-reads run concurrently; results and the first error are taken in order.
+	ids := slices.Sorted(maps.Keys(selected))
+	reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.fleetRead(ctx, fleetMemberType, ids[i]) })
+	for i, member := range ids {
+		current, err := reads[i], errs[i]
 		if err != nil {
 			return nil, nil, err
 		}

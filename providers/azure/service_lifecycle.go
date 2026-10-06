@@ -486,18 +486,54 @@ func serviceDenied(reason string) error {
 
 // parentRead holds one Contribute parent's independent live reads.
 type parentRead struct {
-	contribution governance.Contribution // RBAC and diagnostic parents
+	contribution governance.Contribution // recovery item, RBAC, diagnostic, monitor, workbook and insights parents
 	children     []serviceChild          // verified cascade parents
 }
 
-// readParent performs the live reads Contribute needs from one parent alone.
+// monitorParent reports whether Contribute reads parent's monitor references.
+func monitorParent(parent asset.Asset) bool {
+	_, registered := findType(parent.Identity.NativeType)
+	return monitorResourceKind(parent.Identity.NativeType) != "" && (registered || parent.Normalized[monitorConfigurationProof] != nil)
+}
+
+// readParent performs the live reads Contribute needs from one parent alone,
+// choosing the branch in the order the Contribute walk tests them.
 func (s *serviceCascades) readParent(ctx context.Context, parent asset.Asset, assets []asset.Asset) (parentRead, error) {
+	if parent.Identity.NativeType == recoveryServicesItem {
+		contribution, err := s.client.contributeRecoverySources(ctx, s.connectionID, parent, assets)
+		if err != nil {
+			return parentRead{}, err
+		}
+		prerequisites, err := s.client.contributeRecoveryItemPrerequisites(ctx, s.connectionID, parent, assets)
+		contribution.Relationships = append(contribution.Relationships, prerequisites.Relationships...)
+		contribution.Unresolved = append(contribution.Unresolved, prerequisites.Unresolved...)
+		return parentRead{contribution: contribution}, err
+	}
 	if rbacResourceKind(parent.Identity.NativeType) != "" {
 		contribution, err := s.client.contributeRBACReferences(ctx, parent, assets)
 		return parentRead{contribution: contribution}, err
 	}
 	if parent.Identity.NativeType == diagnosticSettingsType {
 		contribution, err := s.client.contributeDiagnosticReferences(ctx, parent, assets)
+		return parentRead{contribution: contribution}, err
+	}
+	if monitorParent(parent) {
+		contribution, err := s.client.contributeMonitorReferences(ctx, parent, assets, contributeIndex(ctx, assets))
+		return parentRead{contribution: contribution}, err
+	}
+	if insightsWorkbookKind(parent.Identity.NativeType) != "" {
+		contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets, contributeIndex(ctx, assets))
+		return parentRead{contribution: contribution}, err
+	}
+	if parent.Identity.NativeType == applicationInsightsType {
+		contribution, err := s.client.contributeInsightsChildren(ctx, parent, assets)
+		if err != nil {
+			return parentRead{}, err
+		}
+		workspace, err := s.client.contributeInsightsWorkspace(ctx, parent, assets)
+		contribution.Bindings = append(contribution.Bindings, workspace.Bindings...)
+		contribution.Relationships = append(contribution.Relationships, workspace.Relationships...)
+		contribution.Unresolved = append(contribution.Unresolved, workspace.Unresolved...)
 		return parentRead{contribution: contribution}, err
 	}
 	endpoint, err := s.client.plannedResourceURL(parent)
@@ -526,8 +562,8 @@ func (s *serviceCascades) readParent(ctx context.Context, parent asset.Asset, as
 	return parentRead{children: children}, err
 }
 
-// prefetchParents reads RBAC, diagnostic and plain cascade parents with
-// bounded concurrency. The serial walk consumes each read at its own position,
+// prefetchParents reads recovery item, RBAC, diagnostic, monitor, workbook,
+// insights and plain cascade parents with bounded concurrency. The serial walk consumes each read at its own position,
 // so the result and the first reported error match a serial walk; a read that
 // was not prefetched or not started runs inline there.
 func (s *serviceCascades) prefetchParents(ctx context.Context, parents, assets []asset.Asset, eligible func(asset.Asset) bool) func(int) (parentRead, error) {
@@ -535,7 +571,8 @@ func (s *serviceCascades) prefetchParents(ctx context.Context, parents, assets [
 	for i, parent := range parents {
 		kind := parent.Identity.NativeType
 		cascade := HasServiceCascade(kind) && !isWAFType(kind) && fleetKind(kind).kind == "" && !strings.EqualFold(kind, monitorWorkspaceType)
-		if parent.Identity.Provider == asset.ProviderAzure && eligible(parent) && (rbacResourceKind(kind) != "" || kind == diagnosticSettingsType || cascade) {
+		contribution := kind == recoveryServicesItem || rbacResourceKind(kind) != "" || kind == diagnosticSettingsType || monitorParent(parent) || insightsWorkbookKind(kind) != "" || kind == applicationInsightsType
+		if parent.Identity.Provider == asset.ProviderAzure && eligible(parent) && (contribution || cascade) {
 			positions = append(positions, i)
 		}
 	}
@@ -649,7 +686,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		return batchOwners[parent.ID].ID == "" && !aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)]
 	})
 	for i, parent := range parents {
-		if parent.Identity.Provider == asset.ProviderAzure && (parent.Identity.NativeType == recoveryServicesItem || parent.Identity.NativeType == recoveryServicesContainer) {
+		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == recoveryServicesContainer {
 			contribution, err := s.client.contributeRecoverySources(ctx, s.connectionID, parent, assets)
 			if err != nil {
 				return result, err
@@ -658,7 +695,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == recoveryServicesItem {
-			contribution, err := s.client.contributeRecoveryItemPrerequisites(ctx, s.connectionID, parent, assets)
+			// Its sources, then its prerequisites (readParent).
+			read, err := prefetched(i)
+			contribution := read.contribution
 			if err != nil {
 				return result, err
 			}
@@ -836,20 +875,19 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
-		if parent.Identity.Provider == asset.ProviderAzure && monitorResourceKind(parent.Identity.NativeType) != "" {
-			_, registered := findType(parent.Identity.NativeType)
-			if registered || parent.Normalized[monitorConfigurationProof] != nil {
-				contribution, err := s.client.contributeMonitorReferences(ctx, parent, assets, index)
-				if err != nil {
-					return result, err
-				}
-				result.Relationships = append(result.Relationships, contribution.Relationships...)
-				result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
-				continue
+		if parent.Identity.Provider == asset.ProviderAzure && monitorParent(parent) {
+			read, err := prefetched(i)
+			contribution := read.contribution
+			if err != nil {
+				return result, err
 			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && insightsWorkbookKind(parent.Identity.NativeType) != "" {
-			contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets, index)
+			read, err := prefetched(i)
+			contribution := read.contribution
 			if err != nil {
 				return result, err
 			}
@@ -864,14 +902,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			continue // Already contributed through the native reverse indexes.
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == applicationInsightsType {
-			contribution, err := s.client.contributeInsightsChildren(ctx, parent, assets)
-			if err != nil {
-				return result, err
-			}
-			result.Bindings = append(result.Bindings, contribution.Bindings...)
-			result.Relationships = append(result.Relationships, contribution.Relationships...)
-			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
-			contribution, err = s.client.contributeInsightsWorkspace(ctx, parent, assets)
+			// Its children, then its workspace (readParent).
+			read, err := prefetched(i)
+			contribution := read.contribution
 			if err != nil {
 				return result, err
 			}
@@ -1207,19 +1240,31 @@ func (a *action) serviceCascadePreflightWithManagedGroup(ctx context.Context, re
 	}
 	visited := map[string]bool{}
 	verifiedGroups := map[string]map[string]any{}
-	var verify func(asset.Asset, map[string]any) error
-	verify = func(parent asset.Asset, raw map[string]any) error {
+	list := func(parent asset.Asset, raw map[string]any) ([]serviceChild, error) {
 		var known []asset.Asset
 		if fleetKind(parent.Identity.NativeType).kind != "" {
 			for _, impact := range impacts {
 				known = append(known, impact.Asset)
 			}
 		}
-		children, err := a.client.plannedServiceChildren(ctx, parent, raw, known...)
-		if err != nil {
-			return err
-		}
+		return a.client.plannedServiceChildren(ctx, parent, raw, known...)
+	}
+	var verify func(asset.Asset, []serviceChild) error
+	verify = func(parent asset.Asset, children []serviceChild) error {
+		// The children's own children are listed concurrently up front, for the
+		// prefix which passes the walk's local checks. The walk still checks
+		// each child in order before using its list; a list not started after
+		// a failure is read in turn.
+		var planned []asset.Asset
 		for _, child := range children {
+			impact, ok := impacts[child.id]
+			if child.direct && !slices.Contains(pending[parent.ID], impact.Asset.ID) || !ok || impact.ControllerID != parent.ID || !strings.EqualFold(impact.Asset.Identity.NativeType, child.kind) || a.client.servicePrivateIncarnation(impact.Asset, child.data) != nil || serviceIncarnation(impact.Asset, child.data) != nil || locked(child.id, locks) {
+				break
+			}
+			planned = append(planned, impact.Asset)
+		}
+		lists, listErrs := readConcurrently(len(planned), func(i int) ([]serviceChild, error) { return list(planned[i], children[i].data) })
+		for i, child := range children {
 			impact, ok := impacts[child.id]
 			if child.direct && !slices.Contains(pending[parent.ID], impact.Asset.ID) {
 				return serviceDenied("service_child_requires_prior_deletion")
@@ -1279,13 +1324,24 @@ func (a *action) serviceCascadePreflightWithManagedGroup(ctx context.Context, re
 					}
 				}
 			}
-			if err := verify(impact.Asset, child.data); err != nil {
+			grandchildren, err := lists[i], listErrs[i]
+			if errors.Is(err, errReadNotStarted) {
+				grandchildren, err = list(impact.Asset, child.data)
+			}
+			if err != nil {
+				return err
+			}
+			if err := verify(impact.Asset, grandchildren); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	if err := verify(request.Asset, live); err != nil {
+	children, err := list(request.Asset, live)
+	if err != nil {
+		return err
+	}
+	if err := verify(request.Asset, children); err != nil {
 		return err
 	}
 	for id, impact := range impacts {

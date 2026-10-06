@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -92,7 +93,10 @@ func TestDenyAssignmentSnapshotReconcilesOwnReads(t *testing.T) {
 	hidden := denyTestBody(scope, "hidden")
 	gone := scope + "/providers/" + denyAssignmentType + "/gone"
 	calls := 0
+	var fixtureMu sync.Mutex
 	c := directClient(func(q *http.Request) (*http.Response, error) {
+		fixtureMu.Lock() // Reads may run concurrently.
+		defer fixtureMu.Unlock()
 		calls++
 		if q.Method != "GET" || q.URL.Query().Get("$filter") != "" {
 			t.Fatal("mutation or filtered index")

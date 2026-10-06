@@ -438,22 +438,36 @@ func (c *client) monitorRuleIndex(ctx context.Context, kind string) (items map[s
 		if err := monitorRuleFields(result.data, "value", "nextLink"); err != nil {
 			return nil, "", err
 		}
+		// Rows are checked in order before any read; rows past the first
+		// invalid one are not read, and its error follows the earlier reads'.
+		var raws []map[string]any
+		var ids []string
+		var invalid error
+		page := map[string]bool{}
 		for _, value := range items {
 			raw := object(value)
 			id, typ, err := parseID(text(raw["id"]))
-			if err != nil || monitorRuleKind(typ).kind != kind || !strings.HasPrefix(id, c.root()+"/") || values[id] != nil || monitorRuleIdentity(raw, id, kind) != nil {
-				return nil, "", serviceDenied("invalid_monitor_rule_list_identity")
+			if err != nil || monitorRuleKind(typ).kind != kind || !strings.HasPrefix(id, c.root()+"/") || values[id] != nil || page[id] || monitorRuleIdentity(raw, id, kind) != nil {
+				invalid = serviceDenied("invalid_monitor_rule_list_identity")
+				break
 			}
-			current, err := c.monitorRuleRead(ctx, kind, id)
-			if err != nil {
-				return nil, "", err
+			page[id] = true
+			raws, ids = append(raws, raw), append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.monitorRuleRead(ctx, kind, ids[i]) })
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, "", errs[i]
 			}
 			// These native lists return the same resource schema as GET, not
 			// metadata-only summaries. Newly added configuration matters too.
-			if c.privateConfiguration(monitorRuleSnapshot(kind, raw)) != c.privateConfiguration(monitorRuleSnapshot(kind, current.data)) {
+			if c.privateConfiguration(monitorRuleSnapshot(kind, raws[i])) != c.privateConfiguration(monitorRuleSnapshot(kind, reads[i].data)) {
 				return nil, "", serviceDenied("monitor_rule_list_configuration_changed")
 			}
-			values[id] = current.data
+			values[id] = reads[i].data
+		}
+		if invalid != nil {
+			return nil, "", invalid
 		}
 		if result.requestID != "" {
 			provenance = result.requestID

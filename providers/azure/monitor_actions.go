@@ -62,7 +62,11 @@ func (a *monitorAction) identity(request contracts.ActionRequest) error {
 }
 
 func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
+	// Prerequisites are checked in order before any read; those past the first
+	// invalid one are not read, and its error follows the earlier reads'.
 	seenIDs, seenAssets := map[string]bool{a.id: true}, map[asset.AssetID]bool{a.assetID: true}
+	var reads []func() error
+	var invalid error
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		value := prerequisite.Asset
 		id, _, kind, err := monitorResourceID(value.Identity.NativeID)
@@ -73,7 +77,8 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 			id, _, kind, err = rbacResourceID(value.Identity.NativeID)
 		}
 		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || value.ID == "" || seenIDs[id] || seenAssets[value.ID] || !prerequisite.Delete || prerequisite.ControllerID != a.assetID || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.connection || value.Identity.Partition != a.partition {
-			return serviceDenied("invalid_monitor_prerequisite_identity")
+			invalid = serviceDenied("invalid_monitor_prerequisite_identity")
+			break
 		}
 		seenIDs[id], seenAssets[value.ID] = true, true
 		var refs map[string]any
@@ -85,28 +90,44 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 			refs, err = a.client.monitorRecordedReferences(value)
 		}
 		if err != nil {
-			return err
+			invalid = err
+			break
 		}
 		linked := false
 		for typ, ids := range refs {
 			for _, reference := range stringValues(ids) {
 				matches, err := a.client.monitorReferenceMatches(request.Asset, typ, reference)
 				if err != nil {
-					return err
+					invalid = err
+					break
 				}
 				linked = linked || matches
 			}
+			if invalid != nil {
+				break
+			}
+		}
+		if invalid != nil {
+			break
 		}
 		if !linked {
-			return serviceDenied("monitor_prerequisite_reference_changed")
+			invalid = serviceDenied("monitor_prerequisite_reference_changed")
+			break
 		}
-		if rbacResourceKind(kind) != "" {
-			_, err = a.client.rbacRead(ctx, kind, text(value.Normalized[rbacWireSelector]))
-		} else if kind == diagnosticSettingsType {
-			_, err = a.client.diagnosticRead(ctx, text(value.Normalized[diagnosticWireSelector]), kind)
-		} else {
-			_, err = a.client.monitorResourceRead(ctx, kind, id)
-		}
+		reads = append(reads, func() error {
+			var err error
+			if rbacResourceKind(kind) != "" {
+				_, err = a.client.rbacRead(ctx, kind, text(value.Normalized[rbacWireSelector]))
+			} else if kind == diagnosticSettingsType {
+				_, err = a.client.diagnosticRead(ctx, text(value.Normalized[diagnosticWireSelector]), kind)
+			} else {
+				_, err = a.client.monitorResourceRead(ctx, kind, id)
+			}
+			return err
+		})
+	}
+	_, errs := readConcurrently(len(reads), func(i int) (struct{}, error) { return struct{}{}, reads[i]() })
+	for _, err := range errs {
 		if !isNotFound(err) {
 			if err != nil {
 				return err
@@ -114,7 +135,7 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 			return serviceDenied("monitor_prerequisite_requires_prior_deletion")
 		}
 	}
-	return nil
+	return invalid
 }
 
 func (a *monitorAction) dependenciesAbsent(ctx context.Context, request contracts.ActionRequest) error {

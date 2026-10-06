@@ -61,11 +61,18 @@ func (r *Runtime) deploymentStackGuardActiveScope(ctx context.Context, req contr
 	}
 	ordered := slices.Clone(req.LifecycleImpacts)
 	slices.SortFunc(ordered, func(a, b contracts.ActionImpact) int { return strings.Compare(string(a.Asset.ID), string(b.Asset.ID)) })
-	for _, impact := range ordered {
+	// Locks are checked in order before any read. Members past the first
+	// locked one are not read, and its error follows the earlier members' checks.
+	var invalid error
+	for i, impact := range ordered {
 		if impact.Delete && locked(impact.Asset.Identity.NativeID, locks) {
-			return serviceDenied("azure_management_lock")
+			ordered, invalid = ordered[:i], serviceDenied("azure_management_lock")
+			break
 		}
-		live, err := c.deploymentStackMemberRead(ctx, impact.Asset)
+	}
+	lives, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.deploymentStackMemberRead(ctx, ordered[i].Asset) })
+	for i, impact := range ordered {
+		live, err := lives[i], errs[i]
 		if isNotFound(err) && impact.Delete && (active[impact.Asset.ID] || completed[impact.Asset.ID]) {
 			continue
 		}
@@ -85,6 +92,9 @@ func (r *Runtime) deploymentStackGuardActiveScope(ctx context.Context, req contr
 				return serviceDenied("azure_protected_tag")
 			}
 		}
+	}
+	if invalid != nil {
+		return invalid
 	}
 	_, err = c.deploymentStackProtectedRead(ctx, req)
 	return err

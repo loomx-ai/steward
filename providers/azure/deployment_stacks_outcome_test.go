@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -35,7 +36,10 @@ func TestDeploymentStackOutcomeOwnReads(t *testing.T) {
 				t.Fatal(err)
 			}
 			calls, roots := 0, 0
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				calls++
 				if q.Method != "GET" {
 					t.Fatalf("unexpected mutation: %s", q.Method)
@@ -101,7 +105,10 @@ func TestDeploymentStackOutcomeDoesNotHideLostRetainedMember(t *testing.T) {
 		contracts.ActionImpact{Asset: group, ControllerID: parent.ID, Delete: true},
 		contracts.ActionImpact{Asset: vm, ControllerID: parent.ID, Delete: false})
 	seenRetained := false
+	var fixtureMu sync.Mutex
 	c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+		fixtureMu.Lock() // Reads may run concurrently.
+		defer fixtureMu.Unlock()
 		if q.Method != "GET" {
 			t.Fatal(q.Method)
 		}
@@ -133,7 +140,10 @@ func TestDeploymentStackOutcomeReadsNestedMembers(t *testing.T) {
 			vmRaw := map[string]any{"id": vm.Identity.NativeID, "type": vmType, "properties": map[string]any{"vmId": "retained-vm"}}
 			req.LifecycleImpacts[1].Asset.Normalized = map[string]any{"_arm_creation_generation": creationGeneration(vmRaw)}
 			reads := map[string]int{}
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				if q.Method != "GET" {
 					t.Fatal(q.Method)
 				}
@@ -168,7 +178,10 @@ func TestDeploymentStackOutcomeRetainsGroupAndDeletesListedResource(t *testing.T
 	c, req := stackDeletePlanFixture(t, false, group, vm)
 	req.LifecycleImpacts[1].ControllerID = group.Asset.ID
 	seen := map[string]int{}
+	var fixtureMu sync.Mutex
 	c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+		fixtureMu.Lock() // Reads may run concurrently.
+		defer fixtureMu.Unlock()
 		if q.Method != "GET" {
 			t.Fatal(q.Method)
 		}

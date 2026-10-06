@@ -140,27 +140,63 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 		if err != nil {
 			return nil, err
 		}
+		// References are resolved in row order first; rows past the first
+		// failure are not walked, and its error follows the earlier rows' group
+		// reads. The groups those rows reach are then read ahead, concurrently.
+		type sourceRow struct {
+			id, scope string
+			refs      map[string][]string
+			linked    []int
+			err       error
+		}
+		var rows []sourceRow
+		var scopes []string
 		for _, id := range slices.Sorted(maps.Keys(values)) {
-			_, scope, _, err := monitorResourceID(id)
-			if err != nil {
-				return nil, serviceDenied("monitor_incoming_group_missing")
+			row := sourceRow{id: id}
+			if _, row.scope, _, row.err = monitorResourceID(id); row.err != nil {
+				row.err = serviceDenied("monitor_incoming_group_missing")
+			} else if row.refs, row.err = c.monitorReferencesWithIndexes(ctx, kind, id, values[id], indexes); row.err == nil {
+				linked, stop, matchErr := c.monitorLinked(targets, index, row.refs)
+				for _, i := range linked {
+					if i >= stop {
+						break
+					}
+					row.linked = append(row.linked, i)
+				}
+				row.err = matchErr
+				if row.scope != c.root() && len(row.linked) > 0 && !slices.Contains(scopes, row.scope) {
+					scopes = append(scopes, row.scope)
+				}
 			}
-			refs, err := c.monitorReferencesWithIndexes(ctx, kind, id, values[id], indexes)
-			if err != nil {
+			rows = append(rows, row)
+			if row.err != nil {
+				break
+			}
+		}
+		// The walk reads groups only after loading the index, and nothing
+		// before its first non-root link can fail, so its error comes first.
+		if len(scopes) > 0 {
+			if err := loadGroups(); err != nil {
 				return nil, err
 			}
-			linked, stop, matchErr := c.monitorLinked(targets, index, refs)
-			for _, i := range linked {
-				if i >= stop {
-					break
-				}
+		}
+		var unread []string
+		for _, scope := range scopes {
+			if groups[scope] != nil && !checkedGroups[scope] {
+				unread = append(unread, scope)
+			}
+		}
+		groupAhead := c.insightsGroupsAhead(ctx, unread)
+		for _, row := range rows {
+			id, scope, refs := row.id, row.scope, row.refs
+			for _, i := range row.linked {
 				target := targets[i]
 				if scope != c.root() {
 					if err := loadGroups(); err != nil {
 						return nil, err
 					}
 					if groups[scope] != nil && !checkedGroups[scope] {
-						group, err := c.insightsGroup(ctx, scope, groups[scope])
+						group, err := groupAhead(scope, groups[scope])
 						if err != nil && !isNotFound(err) {
 							return nil, err
 						}
@@ -176,8 +212,8 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 				}
 				incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: values[id]}, references: refs, group: group})
 			}
-			if matchErr != nil {
-				return nil, matchErr
+			if row.err != nil {
+				return nil, row.err
 			}
 		}
 	}

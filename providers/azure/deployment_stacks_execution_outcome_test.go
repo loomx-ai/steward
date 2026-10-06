@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -38,7 +39,10 @@ func TestDeploymentStackExecutionReconcilesResources(t *testing.T) {
 			}
 			calls, polls, roots, members, keeps := 0, 0, 0, 0, 0
 			retainedGone := false
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				calls++
 				if r.Method != "GET" {
 					t.Fatal("observation mutated resources", r.Method)

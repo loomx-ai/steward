@@ -174,9 +174,15 @@ func (a *dataFactoryAction) observe(ctx context.Context, request contracts.Actio
 		expected[value.Identity.NativeID] = map[string]any{"kind": value.Identity.NativeType, "nodeName": value.Normalized["_datafactory_node_name"], "configuration": value.Normalized[dataFactoryConfiguration]}
 	}
 	expected[a.id] = map[string]any{"kind": a.kind.NativeType, "nodeName": request.Asset.Normalized["_datafactory_node_name"], "configuration": request.Asset.Normalized[dataFactoryConfiguration]}
-	for _, id := range slices.Sorted(maps.Keys(expected)) {
+	ids := slices.Sorted(maps.Keys(expected))
+	// Members are read live and concurrently, then checked in order.
+	members, errs := readConcurrently(len(ids), func(i int) (dataFactoryMember, error) {
+		entry := object(expected[ids[i]])
+		return a.readMember(ctx, ids[i], text(entry["kind"]), text(entry["nodeName"]))
+	})
+	for i, id := range ids {
 		entry := object(expected[id])
-		member, err := a.readMember(ctx, id, text(entry["kind"]), text(entry["nodeName"]))
+		member, err := members[i], errs[i]
 		if isNotFound(err) {
 			if object(request.Asset.Normalized["_datafactory_ancestors"])[id] != nil {
 				out.missingParent = true
@@ -201,9 +207,12 @@ func (a *dataFactoryAction) prerequisites(ctx context.Context, request contracts
 			return serviceDenied("datafactory_direct_child_still_exists")
 		}
 	}
-	for _, prerequisite := range request.PrerequisiteDeletions {
-		value := prerequisite.Asset
-		_, err := a.client.dataFactoryRead(ctx, value.Identity.NativeID, value.Identity.NativeType, text(value.Normalized["_datafactory_node_name"]))
+	// Prerequisites are read live and concurrently, then checked in order.
+	_, errs := readConcurrently(len(request.PrerequisiteDeletions), func(i int) (map[string]any, error) {
+		value := request.PrerequisiteDeletions[i].Asset
+		return a.client.dataFactoryRead(ctx, value.Identity.NativeID, value.Identity.NativeType, text(value.Normalized["_datafactory_node_name"]))
+	})
+	for _, err := range errs {
 		if !isNotFound(err) {
 			if err == nil {
 				err = serviceDenied("datafactory_consumer_still_exists")

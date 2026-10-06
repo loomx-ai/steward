@@ -203,8 +203,10 @@ func (a *netappPolicyAction) Preflight(ctx context.Context, req contracts.Action
 			return contracts.PreflightResult{}, err
 		}
 	}
-	for id := range object(a.review["consumers"]) {
-		v, err := a.volume(ctx, id, absent)
+	ids := slices.Sorted(maps.Keys(object(a.review["consumers"])))
+	volumes, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return a.volume(ctx, ids[i], absent) })
+	for i := range ids {
+		v, err := volumes[i], errs[i]
 		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
@@ -237,8 +239,10 @@ func (a *netappPolicyAction) Readback(ctx context.Context, req contracts.ActionR
 		return contracts.ReadbackResult{}, err
 	}
 	if absent {
-		for id := range object(a.review["consumers"]) {
-			v, err := a.volume(ctx, id, true)
+		ids := slices.Sorted(maps.Keys(object(a.review["consumers"])))
+		volumes, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return a.volume(ctx, ids[i], true) })
+		for i := range ids {
+			v, err := volumes[i], errs[i]
 			if err != nil {
 				return contracts.ReadbackResult{}, err
 			}
@@ -374,8 +378,9 @@ func (a *netappPolicyAction) Wait(ctx context.Context, req contracts.ActionReque
 		if err != nil {
 			return out, err
 		}
-		for _, id := range ids {
-			own, err := a.volume(ctx, id, true)
+		volumes, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return a.volume(ctx, ids[i], true) })
+		for i := range ids {
+			own, err := volumes[i], errs[i]
 			if err != nil {
 				return out, err
 			}

@@ -47,23 +47,35 @@ func (a *rbacAction) identity(request contracts.ActionRequest) error {
 
 func (a *rbacAction) prerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
 	seen, assets := map[string]bool{a.id: true}, map[asset.AssetID]bool{a.planned.ID: true}
+	// Rows are checked in order before any read; rows at or after the first
+	// invalid one are not read, and its error follows earlier read results.
+	var invalid error
+	valid := []string{}
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		value := prerequisite.Asset
 		if a.kind != rbacRoleType || !prerequisite.Delete || prerequisite.ControllerID != a.planned.ID || value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.planned.Identity.ConnectionID || value.Identity.Partition != a.planned.Identity.Partition || value.Identity.NativeType != rbacAssignmentType || seen[value.Identity.NativeID] || assets[value.ID] {
-			return serviceDenied("invalid_rbac_prerequisite")
+			invalid = serviceDenied("invalid_rbac_prerequisite")
+			break
 		}
 		seen[value.Identity.NativeID], assets[value.ID] = true, true
 		refs, err := a.client.rbacRecordedReferences(value)
 		if err != nil || !slices.Contains(stringValues(refs[rbacRoleType]), a.id) {
-			return serviceDenied("rbac_prerequisite_reference_changed")
+			invalid = serviceDenied("rbac_prerequisite_reference_changed")
+			break
 		}
-		_, err = a.client.rbacRead(ctx, rbacAssignmentType, text(value.Normalized[rbacWireSelector]))
+		valid = append(valid, text(value.Normalized[rbacWireSelector]))
+	}
+	_, errs := readConcurrently(len(valid), func(i int) (response, error) { return a.client.rbacRead(ctx, rbacAssignmentType, valid[i]) })
+	for _, err := range errs {
 		if !isNotFound(err) {
 			if err != nil {
 				return err
 			}
 			return serviceDenied("rbac_assignment_requires_prior_deletion")
 		}
+	}
+	if invalid != nil {
+		return invalid
 	}
 	if a.kind == rbacRoleType {
 		// A listed assignment of this role blocks as listed; its GET could only

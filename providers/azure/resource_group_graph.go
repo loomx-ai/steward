@@ -218,20 +218,32 @@ func (c *client) resourceGroupGraphMembers(ctx context.Context, group asset.Asse
 	if err != nil {
 		return nil, err
 	}
+	// IDs are checked in order before any read; rows at or after the first
+	// invalid one are not read, and its error follows earlier read results.
+	var invalid error
+	var ids, kinds []string
 	for _, raw := range extra {
 		id := strings.ToLower(text(raw["id"]))
 		_, _, kind, err := monitorResourceID(id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		live, err := c.monitorResourceRead(ctx, kind, id)
+		ids, kinds = append(ids, id), append(kinds, kind)
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.monitorResourceRead(ctx, kinds[i], ids[i]) })
+	for i, id := range ids {
+		live, err := reads[i], errs[i]
 		if err != nil {
 			return nil, err
 		}
-		if c.privateConfiguration(monitorResourceSnapshot(kind, raw)) != c.privateConfiguration(monitorResourceSnapshot(kind, live.data)) {
+		if c.privateConfiguration(monitorResourceSnapshot(kinds[i], extra[i])) != c.privateConfiguration(monitorResourceSnapshot(kinds[i], live.data)) {
 			return nil, serviceDenied("resource_group_graph_monitor_changed")
 		}
 		values[id] = live.data
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	for id := range known {
 		if len(strings.Split(strings.Trim(id, "/"), "/")) == 8 && values[id] == nil {

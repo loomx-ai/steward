@@ -273,13 +273,18 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 				vaults[parent] = map[string]any{}
 			}
 		}
+		var ids []string
 		for _, id := range slices.Sorted(maps.Keys(vaults)) {
 			// A listed vault the list places in another region yields nothing
 			// here; a known child's unlisted vault is still read.
 			if listed := vaults[id]; req.Scope.Kind == asset.ScopeRegion && text(listed["location"]) != "" && !strings.EqualFold(resourceRegion(listed), req.Scope.NativeID) {
 				continue
 			}
-			own, err := c.dataProtectionRead(ctx, id, dataProtectionVault)
+			ids = append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.dataProtectionRead(ctx, ids[i], dataProtectionVault) })
+		for i, id := range ids {
+			own, err := reads[i], errs[i]
 			if err != nil {
 				return nil, nil, contracts.DependencyReadError(err)
 			}
@@ -296,8 +301,10 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 	}
 	rows := map[string]map[string]any{}
 	locations := map[string]string{}
-	for _, path := range slices.Sorted(maps.Keys(targets)) {
-		listed, err := c.dataProtectionCollection(ctx, path, kind)
+	paths := slices.Sorted(maps.Keys(targets))
+	collections, errs := readConcurrently(len(paths), func(i int) (map[string]map[string]any, error) { return c.dataProtectionCollection(ctx, paths[i], kind) })
+	for i, path := range paths {
+		listed, err := collections[i], errs[i]
 		if err != nil {
 			return nil, nil, err
 		}
@@ -327,8 +334,10 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 	}
 	items := []contracts.InventoryItem{}
 	absent := []string{}
-	for _, id := range slices.Sorted(maps.Keys(rows)) {
-		own, err := c.dataProtectionRead(ctx, id, kind)
+	ids := slices.Sorted(maps.Keys(rows))
+	reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.dataProtectionRead(ctx, ids[i], kind) })
+	for i, id := range ids {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && len(rows[id]) == 0 {
 			absent = append(absent, id)
 			continue
@@ -378,29 +387,24 @@ func (r *Runtime) dataProtectionSnapshot(ctx context.Context, c *client, req con
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(dataProtectionSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
 	}
-	if kind == dataProtectionVault {
-		for i := range items {
-			if err := r.dataProtectionVaultInventory(ctx, c, req, &items[i]); err != nil {
+	// Each item's review keeps its own before/after reads; items run
+	// concurrently, each writing only its own element, and fail in order.
+	review := map[string]func(context.Context, *client, contracts.InventoryRequest, *contracts.InventoryItem) error{
+		dataProtectionVault: r.dataProtectionVaultInventory, dataProtectionInstance: r.protectionInstanceInventory, dataProtectionPolicy: r.protectionPolicyInventory,
+	}[kind]
+	if review != nil {
+		_, errs := readConcurrently(len(items), func(i int) (struct{}, error) { return struct{}{}, review(ctx, c, req, &items[i]) })
+		for _, err := range errs {
+			if err != nil {
 				return nil, nil, err
 			}
 		}
 	}
-	if kind == dataProtectionInstance {
-		for i := range items {
-			if err := r.protectionInstanceInventory(ctx, c, req, &items[i]); err != nil {
-				return nil, nil, err
-			}
-		}
-	}
-	if kind == dataProtectionPolicy {
-		for i := range items {
-			if err := r.protectionPolicyInventory(ctx, c, req, &items[i]); err != nil {
-				return nil, nil, err
-			}
-		}
-	}
-	for id, raw := range parents {
-		own, err := c.dataProtectionRead(ctx, id, dataProtectionVault)
+	// The vault re-reads stay after every read they bracket.
+	vaultIDs := slices.Sorted(maps.Keys(parents))
+	after, afterErrs := readConcurrently(len(vaultIDs), func(i int) (response, error) { return c.dataProtectionRead(ctx, vaultIDs[i], dataProtectionVault) })
+	for i, id := range vaultIDs {
+		raw, own, err := parents[id], after[i], afterErrs[i]
 		if err != nil {
 			return nil, nil, contracts.DependencyReadError(err)
 		}

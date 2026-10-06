@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"encoding/json"
+	"maps"
 	"slices"
 	"strings"
 	"time"
@@ -179,9 +180,13 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 			return nil, "", err
 		}
 		observed := map[string]any{}
-		var walk func(string, string, map[string]any) error
-		walk = func(id, kind string, site map[string]any) error {
-			observed[id] = c.privateConfiguration(appServiceSnapshot(kind, site))
+		type siteResult struct {
+			observed map[string]any
+			children []serviceChild
+		}
+		var walk func(string, string, map[string]any, *siteResult) error
+		walk = func(id, kind string, site map[string]any, out *siteResult) error {
+			out.observed[id] = c.privateConfiguration(appServiceSnapshot(kind, site))
 			kinds := []string{appBindingType, appSlotType}
 			if kind == appSlotType {
 				kinds = []string{appSlotBindingType}
@@ -192,18 +197,18 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 			}
 			for _, entry := range entries {
 				if entry.kind == appSlotType {
-					if err := walk(entry.id, entry.kind, entry.data); err != nil {
+					if err := walk(entry.id, entry.kind, entry.data, out); err != nil {
 						return err
 					}
 					continue
 				}
-				observed[entry.id] = c.privateConfiguration(appServiceSnapshot(entry.kind, entry.data))
+				out.observed[entry.id] = c.privateConfiguration(appServiceSnapshot(entry.kind, entry.data))
 				linked, err := domainBindingReference(parent.NativeID, entry.data)
 				if err != nil {
 					return err
 				}
 				if linked {
-					children = append(children, entry)
+					out.children = append(out.children, entry)
 				}
 			}
 			return nil
@@ -212,23 +217,42 @@ func (c *client) domainChildren(ctx context.Context, parent asset.Identity, raw 
 		if err != nil {
 			return nil, "", err
 		}
+		// Sites are checked in order before any read. Each site's GET and binding
+		// walk run concurrently; results and the first error are taken in order.
+		siteKind, _ := findType(appSiteType)
+		var endpoints []string
+		var invalid error
 		for _, site := range sites {
 			id, _, _ := parseID(text(site["id"]))
-			kind, _ := findType(appSiteType)
-			endpoint, err := c.resourceURL(kind, id)
+			endpoint, err := c.resourceURL(siteKind, id)
 			if err != nil {
-				return nil, "", err
+				invalid = err
+				break
 			}
-			current, err := c.readResource(ctx, endpoint)
+			endpoints = append(endpoints, endpoint)
+		}
+		walked, errs := readConcurrently(len(endpoints), func(i int) (siteResult, error) {
+			id, _, _ := parseID(text(sites[i]["id"]))
+			current, err := c.readResource(ctx, endpoints[i])
 			if err != nil {
-				return nil, "", err
+				return siteResult{}, err
 			}
-			if !insightsARMReadValid(current, id, appSiteType) || !nativeConfigurationContains(appServiceSnapshot(appSiteType, site), appServiceSnapshot(appSiteType, current.data)) {
-				return nil, "", serviceDenied("domain_app_index_changed")
+			if !insightsARMReadValid(current, id, appSiteType) || !nativeConfigurationContains(appServiceSnapshot(appSiteType, sites[i]), appServiceSnapshot(appSiteType, current.data)) {
+				return siteResult{}, serviceDenied("domain_app_index_changed")
 			}
-			if err := walk(id, appSiteType, current.data); err != nil {
-				return nil, "", err
+			out := siteResult{observed: map[string]any{}}
+			err = walk(id, appSiteType, current.data, &out)
+			return out, err
+		})
+		for i := range endpoints {
+			if errs[i] != nil {
+				return nil, "", errs[i]
 			}
+			maps.Copy(observed, walked[i].observed)
+			children = append(children, walked[i].children...)
+		}
+		if invalid != nil {
+			return nil, "", invalid
 		}
 		for id, entry := range known {
 			if slices.ContainsFunc(children, func(child serviceChild) bool { return child.id == id }) {
@@ -407,14 +431,24 @@ func (c *client) domainZoneUnused(ctx context.Context, zoneID string) error {
 			return err
 		}
 		observed := map[string]any{}
+		// Rows are checked in order before any read; GETs run concurrently and
+		// are checked in list order, then the invalid row's error.
+		kind, _ := findType(domainType)
+		var endpoints []string
+		var invalid error
 		for _, listed := range domains {
 			id, _, _ := parseID(text(listed["id"]))
-			kind, _ := findType(domainType)
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
-				return err
+				invalid = err
+				break
 			}
-			current, err := c.readResource(ctx, endpoint)
+			endpoints = append(endpoints, endpoint)
+		}
+		reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.readResource(ctx, endpoints[i]) })
+		for i, listed := range domains[:len(endpoints)] {
+			id, _, _ := parseID(text(listed["id"]))
+			current, err := reads[i], errs[i]
 			if isNotFound(err) {
 				continue
 			}
@@ -431,6 +465,9 @@ func (c *client) domainZoneUnused(ctx context.Context, zoneID string) error {
 				return serviceDenied("dns_zone_has_registered_domain")
 			}
 			observed[id] = c.privateConfiguration(domainSnapshot(domainType, current.data))
+		}
+		if invalid != nil {
+			return invalid
 		}
 		after := c.privateConfiguration(observed)
 		if pass != 0 && before != after {

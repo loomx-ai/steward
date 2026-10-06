@@ -92,17 +92,27 @@ func insightsDetectionIdentity(raw map[string]any, name string) error {
 
 func (c *client) insightsConfigurations(ctx context.Context, parent string, raw map[string]any, observations bool) (map[string]any, string, error) {
 	values, authored := map[string]any{}, map[string]any{"component": parent}
-	for _, row := range []struct{ key, operation, path, version string }{
+	type configurationRow struct{ key, operation, path, version string }
+	var rows []configurationRow
+	for _, row := range []configurationRow{
 		{"billing_features", "ComponentCurrentBillingFeatures_Get", "currentbillingfeatures", insightsLegacyVersion},
 		{"pricing_plan", "ComponentCurrentPricingPlan_Get", "pricingPlans/current", "2017-10-01"},
 		{"feature_capabilities", "ComponentFeatureCapabilities_Get", "featurecapabilities", insightsLegacyVersion},
 		{"available_billing_features", "ComponentAvailableFeatures_Get", "getavailablebillingfeatures", insightsLegacyVersion},
 		{"quota_status", "ComponentQuotaStatus_Get", "quotastatus", insightsLegacyVersion},
 	} {
-		if !observations && row.key != "billing_features" && row.key != "pricing_plan" {
-			continue
+		if observations || row.key == "billing_features" || row.key == "pricing_plan" {
+			rows = append(rows, row)
 		}
-		value, err := c.insightsConfigurationRead(ctx, parent, row.operation, row.path, row.version, "")
+	}
+	// The fixed reads and the detection list run concurrently; each is checked
+	// in the serial order, so the first failure is the serial one.
+	rows = append(rows, configurationRow{"", "ProactiveDetectionConfigurations_List", "ProactiveDetectionConfigs", insightsLegacyVersion})
+	reads, errs := readConcurrently(len(rows), func(i int) (map[string]any, error) {
+		return c.insightsConfigurationRead(ctx, parent, rows[i].operation, rows[i].path, rows[i].version, "")
+	})
+	for i, row := range rows[:len(rows)-1] {
+		value, err := reads[i], errs[i]
 		if err != nil {
 			return nil, "", err
 		}
@@ -144,23 +154,34 @@ func (c *client) insightsConfigurations(ctx context.Context, parent string, raw 
 			}
 		}
 	}
-	list, err := c.insightsConfigurationRead(ctx, parent, "ProactiveDetectionConfigurations_List", "ProactiveDetectionConfigs", insightsLegacyVersion, "")
+	list, err := reads[len(rows)-1], errs[len(rows)-1]
 	if err != nil {
 		return nil, "", err
 	}
-	rows, ok := list["value"].([]any)
+	detectionRows, ok := list["value"].([]any)
 	if !ok || len(list) != 1 {
 		return nil, "", serviceDenied("invalid_insights_detection_list")
 	}
-	detections, settings, seen := map[string]any{}, map[string]any{}, map[string]bool{}
-	for _, row := range rows {
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
+	var listedRows []map[string]any
+	var names []string
+	seen := map[string]bool{}
+	for _, row := range detectionRows {
 		listed, ok := row.(map[string]any)
 		name := text(listed["name"])
 		if !ok || insightsDetectionIdentity(listed, name) != nil || seen[strings.ToLower(name)] {
-			return nil, "", serviceDenied("invalid_insights_detection_list_identity")
+			break
 		}
 		seen[strings.ToLower(name)] = true
-		current, err := c.insightsConfigurationRead(ctx, parent, "ProactiveDetectionConfigurations_Get", "ProactiveDetectionConfigs", insightsLegacyVersion, name)
+		listedRows, names = append(listedRows, listed), append(names, name)
+	}
+	detectionReads, detectionErrs := readConcurrently(len(names), func(i int) (map[string]any, error) {
+		return c.insightsConfigurationRead(ctx, parent, "ProactiveDetectionConfigurations_Get", "ProactiveDetectionConfigs", insightsLegacyVersion, names[i])
+	})
+	detections, settings := map[string]any{}, map[string]any{}
+	for i, name := range names {
+		listed, current, err := listedRows[i], detectionReads[i], detectionErrs[i]
 		if err != nil {
 			return nil, "", err
 		}
@@ -171,6 +192,9 @@ func (c *client) insightsConfigurations(ctx context.Context, parent string, raw 
 			return nil, "", serviceDenied("insights_detection_list_configuration_changed")
 		}
 		detections[name], settings[name] = current, insightsDetectionSnapshot(current)
+	}
+	if len(names) != len(detectionRows) {
+		return nil, "", serviceDenied("invalid_insights_detection_list_identity")
 	}
 	values["proactive_detection"], authored["proactive_detection"] = detections, settings
 	current, err := c.insightsComponent(ctx, parent)

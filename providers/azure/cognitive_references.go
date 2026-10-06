@@ -219,8 +219,9 @@ func (c *client) cognitiveIncoming(ctx context.Context, parent asset.Identity, p
 		if err != nil {
 			return nil, err
 		}
-		result := []serviceChild{}
-		for _, child := range children {
+		// Each child's reads run concurrently; results merge in child order.
+		found, errs := readConcurrently(len(children), func(i int) ([]serviceChild, error) {
+			child, result := children[i], []serviceChild{}
 			if slices.Contains(kinds, child.kind) && !strings.EqualFold(child.id, parent.NativeID) {
 				refs, err := c.cognitiveReferenceIDs(ctx, child.id, child.kind, child.data)
 				if err != nil {
@@ -242,6 +243,14 @@ func (c *client) cognitiveIncoming(ctx context.Context, parent asset.Identity, p
 				}
 				result = append(result, nested...)
 			}
+			return result, nil
+		})
+		result := []serviceChild{}
+		for i := range children {
+			if errs[i] != nil {
+				return nil, errs[i]
+			}
+			result = append(result, found[i]...)
 		}
 		return result, nil
 	}

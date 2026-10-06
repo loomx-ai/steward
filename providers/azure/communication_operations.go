@@ -22,18 +22,27 @@ func (c *client) communicationAccountForEndpoint(ctx context.Context, endpoint s
 	if err != nil {
 		return communicationAccountContext{}, err
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
 	seen := map[string]bool{}
-	var match communicationAccountContext
+	var ids []string
+	var invalid error
 	for _, value := range values {
 		raw := object(value)
 		id, typ, err := parseID(text(raw["id"]))
 		if err != nil || !strings.EqualFold(typ, communicationType) || !strings.HasPrefix(id, c.root()+"/") || seen[id] || !validResponseType(communicationType, text(raw["type"])) {
-			return communicationAccountContext{}, serviceDenied("invalid_communication_account_index")
+			invalid = serviceDenied("invalid_communication_account_index")
+			break
 		}
 		seen[id] = true
-		current, err := c.communicationAccount(ctx, id)
-		if err != nil {
-			return communicationAccountContext{}, err
+		ids = append(ids, id)
+	}
+	accounts, errs := readConcurrently(len(ids), func(i int) (communicationAccountContext, error) { return c.communicationAccount(ctx, ids[i]) })
+	var match communicationAccountContext
+	for i := range ids {
+		raw, current := object(values[i]), accounts[i]
+		if errs[i] != nil {
+			return communicationAccountContext{}, errs[i]
 		}
 		if !nativeConfigurationContains(communicationSnapshot(communicationType, raw), communicationSnapshot(communicationType, current.raw)) {
 			return communicationAccountContext{}, serviceDenied("communication_account_index_changed")
@@ -44,6 +53,9 @@ func (c *client) communicationAccountForEndpoint(ctx context.Context, endpoint s
 			}
 			match = current
 		}
+	}
+	if invalid != nil {
+		return communicationAccountContext{}, invalid
 	}
 	if match.id == "" {
 		return communicationAccountContext{}, serviceDenied("communication_account_outside_subscription")

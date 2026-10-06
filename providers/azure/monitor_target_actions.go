@@ -128,16 +128,24 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			}
 		}
 	}
-	filtered.PrerequisiteDeletions = nil
+	// Prerequisites are checked in order before any read; those past the first
+	// invalid one are not read, and its error follows the earlier reads'.
+	type prerequisiteRead struct {
+		prerequisite contracts.ActionImpact
+		read         func() error // nil: the native driver authenticates it.
+	}
+	var rows []prerequisiteRead
+	var invalid error
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		member := prerequisite.Asset
 		if member.ID == "" || seenAssets[member.ID] || seenIDs[member.Identity.NativeID] {
-			return filtered, nil, serviceDenied("ambiguous_monitor_target_prerequisite")
+			invalid = serviceDenied("ambiguous_monitor_target_prerequisite")
+			break
 		}
 		seenIDs[member.Identity.NativeID], seenAssets[member.ID] = true, true
 		migration := dataMigrationKind(member.Identity.NativeType) != "" && dataMigrationKind(value.Identity.NativeType) == ""
 		if !migration && monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" && fleetKind(member.Identity.NativeType).kind == "" {
-			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, prerequisite)
+			rows = append(rows, prerequisiteRead{prerequisite: prerequisite})
 			continue // The native driver authenticates its own prerequisite families.
 		}
 		id, _, kind, err := monitorResourceID(member.Identity.NativeID)
@@ -157,11 +165,13 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if fleetKind(member.Identity.NativeType).kind != "" {
 			id, kind, err = fleetIdentity(member.Identity.NativeID)
 			if kind == fleetGateType {
-				return filtered, nil, serviceDenied("fleet_gate_requires_owning_run")
+				invalid = serviceDenied("fleet_gate_requires_owning_run")
+				break
 			}
 		}
 		if err != nil || id != member.Identity.NativeID || kind != member.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || !prerequisite.Delete || prerequisite.ControllerID != value.ID || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
-			return filtered, nil, serviceDenied("invalid_monitor_target_prerequisite")
+			invalid = serviceDenied("invalid_monitor_target_prerequisite")
+			break
 		}
 		var refs map[string]any
 		if migration {
@@ -176,7 +186,8 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			refs, err = a.client.monitorRecordedReferences(member)
 		}
 		if err != nil {
-			return filtered, nil, err
+			invalid = err
+			break
 		}
 		linked := false
 		for _, target := range targets {
@@ -192,32 +203,63 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 				for _, id := range stringValues(ids) {
 					matches, err := a.client.monitorReferenceMatches(target, kind, id)
 					if err != nil {
-						return filtered, nil, err
+						invalid = err
+						break
 					}
 					linked = linked || matches
 				}
+				if invalid != nil {
+					break
+				}
+			}
+			if invalid != nil {
+				break
 			}
 		}
+		if invalid != nil {
+			break
+		}
 		if !linked {
-			return filtered, nil, serviceDenied("monitor_target_prerequisite_reference_changed")
+			invalid = serviceDenied("monitor_target_prerequisite_reference_changed")
+			break
 		}
-		if migration {
-			_, err = a.client.dataMigrationRead(ctx, id, kind)
-		} else if fleetKind(kind).kind != "" {
-			_, err = a.client.fleetRead(ctx, kind, id)
-		} else if rbacResourceKind(kind) != "" {
-			_, err = a.client.rbacRead(ctx, kind, text(member.Normalized[rbacWireSelector]))
-		} else if kind == diagnosticSettingsType {
-			_, err = a.client.diagnosticRead(ctx, text(member.Normalized[diagnosticWireSelector]), kind)
-		} else {
-			_, err = a.client.monitorResourceRead(ctx, kind, id)
+		rows = append(rows, prerequisiteRead{prerequisite, func() error {
+			var err error
+			if migration {
+				_, err = a.client.dataMigrationRead(ctx, id, kind)
+			} else if fleetKind(kind).kind != "" {
+				_, err = a.client.fleetRead(ctx, kind, id)
+			} else if rbacResourceKind(kind) != "" {
+				_, err = a.client.rbacRead(ctx, kind, text(member.Normalized[rbacWireSelector]))
+			} else if kind == diagnosticSettingsType {
+				_, err = a.client.diagnosticRead(ctx, text(member.Normalized[diagnosticWireSelector]), kind)
+			} else {
+				_, err = a.client.monitorResourceRead(ctx, kind, id)
+			}
+			return err
+		}})
+	}
+	_, errs := readConcurrently(len(rows), func(i int) (struct{}, error) {
+		if rows[i].read == nil {
+			return struct{}{}, nil
 		}
-		if !isNotFound(err) {
+		return struct{}{}, rows[i].read()
+	})
+	filtered.PrerequisiteDeletions = nil
+	for i, row := range rows {
+		if row.read == nil {
+			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, row.prerequisite)
+			continue
+		}
+		if err := errs[i]; !isNotFound(err) {
 			if err != nil {
 				return filtered, nil, err
 			}
 			return filtered, nil, serviceDenied("monitor_target_prerequisite_still_exists")
 		}
+	}
+	if invalid != nil {
+		return filtered, nil, invalid
 	}
 	return filtered, targets, nil
 }

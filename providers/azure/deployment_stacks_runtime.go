@@ -52,37 +52,48 @@ func (r *Runtime) deploymentStackSnapshot(ctx context.Context, c *client, req co
 	sort.Strings(ordered)
 	items := []contracts.InventoryItem{}
 	absent := []string{}
-	for _, scope := range ordered {
-		groupLocation := ""
+	// Scopes are read concurrently and merged in order.
+	type scopeRead struct {
+		location string
+		rows     []map[string]any
+		absent   []string
+	}
+	reads, errs := readConcurrently(len(ordered), func(i int) (scopeRead, error) {
+		scope, out := ordered[i], scopeRead{}
 		if !strings.EqualFold(scope, c.root()) {
 			res, err := c.request(ctx, "GET", apiURL(scope, resourcesVersion))
 			if err != nil {
 				if !isNotFound(err) || listed[scope] {
-					return nil, nil, err
+					return out, err
 				}
 				// A missing parent does not by itself prove that a known child is absent.
 				for _, id := range scopes[scope] {
 					_, ownErr := c.deploymentStackRead(ctx, id)
 					if !isNotFound(ownErr) {
 						if ownErr != nil {
-							return nil, nil, ownErr
+							return out, ownErr
 						}
-						return nil, nil, serviceDenied("deployment_stack_parent_changed")
+						return out, serviceDenied("deployment_stack_parent_changed")
 					}
-					absent = append(absent, strings.ToLower(id))
+					out.absent = append(out.absent, strings.ToLower(id))
 				}
-				continue
+				return out, nil
 			}
 			if res.status != 200 || !strings.EqualFold(text(res.data["id"]), scope) || !strings.EqualFold(text(res.data["type"]), groupType) || res.data["error"] != nil || operationLocation(res.header) != "" {
-				return nil, nil, serviceDenied("invalid_deployment_stack_group_read")
+				return out, serviceDenied("invalid_deployment_stack_group_read")
 			}
-			groupLocation = text(res.data["location"])
+			out.location = text(res.data["location"])
 		}
 		rows, gone, err := c.deploymentStackInventory(ctx, scope, scopes[scope])
-		if err != nil {
-			return nil, nil, err
+		out.rows, out.absent = rows, gone
+		return out, err
+	})
+	for i, scope := range ordered {
+		if errs[i] != nil {
+			return nil, nil, errs[i]
 		}
-		absent = append(absent, gone...)
+		groupLocation, rows := reads[i].location, reads[i].rows
+		absent = append(absent, reads[i].absent...)
 		for _, raw := range rows {
 			id := strings.ToLower(text(raw["id"]))
 			state := text(object(raw["properties"])["provisioningState"])

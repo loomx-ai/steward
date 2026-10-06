@@ -77,37 +77,43 @@ func (c *client) netappNetworkBoundary(ctx context.Context, id string, raw map[s
 	}
 	members := map[string]any{}
 	ready := first["provisioning_state"] == "Succeeded" && (first["features"] == "Basic" || first["features"] == "Standard")
+	// netappNetworkSet lists each peer once; read them all, then check in order.
+	var ips, peers []string
 	for _, ip := range slices.Sorted(maps.Keys(object(first["nics"]))) {
 		for _, peer := range object(first["nics"])[ip].([]string) {
-			own, err := c.netappRead(ctx, peer, netappVolumeType)
-			if err != nil {
-				return nil, false, contracts.DependencyReadError(err)
-			}
-			props := object(own.data["properties"])
-			uid, validType := props["fileSystemId"].(string)
-			if props["fileSystemId"] != nil && (!validType || uid != "" && !uuidPattern.MatchString(uid)) {
-				return nil, false, serviceDenied("invalid_netapp_network_volume_uuid")
-			}
-			if resourceRegion(own.data) != region || !strings.EqualFold(text(props["networkSiblingSetId"]), set) || !strings.EqualFold(text(props["subnetId"]), subnet) {
-				return nil, false, serviceDenied("netapp_network_volume_changed")
-			}
-			matched := false
-			for _, value := range array(props["mountTargets"]) {
-				target := object(value)
-				address, parseErr := netip.ParseAddr(text(target["ipAddress"]))
-				if parseErr == nil && address.Zone() == "" && address.Unmap().String() == ip && (target["fileSystemId"] == nil || target["fileSystemId"] == props["fileSystemId"]) {
-					matched = true
-				}
-			}
-			if props["mountTargets"] != nil && !matched {
-				return nil, false, serviceDenied("netapp_network_mount_changed")
-			}
-			if peer == id && c.privateConfiguration(own.data) != c.privateConfiguration(raw) {
-				return nil, false, serviceDenied("netapp_network_owner_changed")
-			}
-			members[peer] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": uid, "ip": ip}
-			ready = ready && props["provisioningState"] == "Succeeded" && uuidPattern.MatchString(text(props["fileSystemId"]))
+			ips, peers = append(ips, ip), append(peers, peer)
 		}
+	}
+	reads, errs := readConcurrently(len(peers), func(i int) (response, error) { return c.netappRead(ctx, peers[i], netappVolumeType) })
+	for i, peer := range peers {
+		ip, own, err := ips[i], reads[i], errs[i]
+		if err != nil {
+			return nil, false, contracts.DependencyReadError(err)
+		}
+		props := object(own.data["properties"])
+		uid, validType := props["fileSystemId"].(string)
+		if props["fileSystemId"] != nil && (!validType || uid != "" && !uuidPattern.MatchString(uid)) {
+			return nil, false, serviceDenied("invalid_netapp_network_volume_uuid")
+		}
+		if resourceRegion(own.data) != region || !strings.EqualFold(text(props["networkSiblingSetId"]), set) || !strings.EqualFold(text(props["subnetId"]), subnet) {
+			return nil, false, serviceDenied("netapp_network_volume_changed")
+		}
+		matched := false
+		for _, value := range array(props["mountTargets"]) {
+			target := object(value)
+			address, parseErr := netip.ParseAddr(text(target["ipAddress"]))
+			if parseErr == nil && address.Zone() == "" && address.Unmap().String() == ip && (target["fileSystemId"] == nil || target["fileSystemId"] == props["fileSystemId"]) {
+				matched = true
+			}
+		}
+		if props["mountTargets"] != nil && !matched {
+			return nil, false, serviceDenied("netapp_network_mount_changed")
+		}
+		if peer == id && c.privateConfiguration(own.data) != c.privateConfiguration(raw) {
+			return nil, false, serviceDenied("netapp_network_owner_changed")
+		}
+		members[peer] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": uid, "ip": ip}
+		ready = ready && props["provisioningState"] == "Succeeded" && uuidPattern.MatchString(text(props["fileSystemId"]))
 	}
 	if members[id] == nil {
 		return nil, false, serviceDenied("netapp_network_owner_omitted")
@@ -119,8 +125,11 @@ func (c *client) netappNetworkBoundary(ctx context.Context, id string, raw map[s
 	if c.privateConfiguration(first) != c.privateConfiguration(second) {
 		return nil, false, serviceDenied("netapp_network_set_changed")
 	}
-	for _, peer := range slices.Sorted(maps.Keys(members)) {
-		own, err := c.netappRead(ctx, peer, netappVolumeType)
+	// These rereads all follow the second sibling-set read above.
+	reread := slices.Sorted(maps.Keys(members))
+	rereads, rereadErrs := readConcurrently(len(reread), func(i int) (response, error) { return c.netappRead(ctx, reread[i], netappVolumeType) })
+	for i, peer := range reread {
+		own, err := rereads[i], rereadErrs[i]
 		if err != nil {
 			return nil, false, contracts.DependencyReadError(err)
 		}

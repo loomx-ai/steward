@@ -61,35 +61,54 @@ func (c *client) azureLocalStorageResources(ctx context.Context, known []string)
 		if err != nil {
 			return nil, err
 		}
+		// Rows are checked in order before any read. Rows past the first
+		// invalid one are not read, and its error follows the earlier reads.
+		var listed []map[string]any
+		var ids []string
+		var invalid error
+		queued := map[string]bool{}
 		for _, row := range rows {
 			raw := object(row)
 			id, err := c.azureLocalIdentity(text(raw["id"]), kind)
-			if err != nil || resources[id] != nil || !strings.EqualFold(text(raw["type"]), kind) {
-				return nil, serviceDenied("invalid_azure_local_storage_resource_index")
+			if err != nil || resources[id] != nil || queued[id] || !strings.EqualFold(text(raw["type"]), kind) {
+				invalid = serviceDenied("invalid_azure_local_storage_resource_index")
+				break
 			}
-			live, err := c.azureLocalRead(ctx, id, kind)
-			if err != nil {
-				return nil, err
+			queued[id] = true
+			listed, ids = append(listed, raw), append(ids, id)
+		}
+		lives, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.azureLocalRead(ctx, ids[i], kind) })
+		for i, raw := range listed {
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
-			if serviceListedIncarnation(raw, live.data) != nil || !nativeConfigurationContains(raw, live.data) {
+			if serviceListedIncarnation(raw, lives[i].data) != nil || !nativeConfigurationContains(raw, lives[i].data) {
 				return nil, serviceDenied("azure_local_storage_resource_index_changed")
 			}
-			resources[id] = live.data
+			resources[ids[i]] = lives[i].data
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 	}
+	var omitted []string
 	for _, id := range known {
-		if resources[id] != nil {
+		if resources[id] == nil {
+			omitted = append(omitted, id) // Known IDs are distinct (history check).
+		}
+	}
+	lives, errs := readConcurrently(len(omitted), func(i int) (response, error) {
+		_, typ, _ := parseID(omitted[i])
+		return c.azureLocalRead(ctx, omitted[i], azureLocalKind(typ))
+	})
+	for i, id := range omitted {
+		if isNotFound(errs[i]) {
 			continue
 		}
-		_, typ, _ := parseID(id)
-		live, err := c.azureLocalRead(ctx, id, azureLocalKind(typ))
-		if isNotFound(err) {
-			continue
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		if err != nil {
-			return nil, err
-		}
-		resources[id] = live.data
+		resources[id] = lives[i].data
 	}
 	for id, raw := range resources {
 		if _, err := azureLocalReferences(id, azureLocalKind(text(raw["type"])), raw); err != nil {

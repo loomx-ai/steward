@@ -187,10 +187,16 @@ func (a *communicationAction) observe(ctx context.Context, request contracts.Act
 
 func (a *communicationAction) residuals(ctx context.Context, request contracts.ActionRequest, observation communicationObservation, beforeDelete bool) (bool, error) {
 	exists := false
-	for _, id := range slices.Sorted(maps.Keys(object(request.Asset.Normalized[communicationMembers]))) {
-		entry := object(object(request.Asset.Normalized[communicationMembers])[id])
+	members := object(request.Asset.Normalized[communicationMembers])
+	ids := slices.Sorted(maps.Keys(members))
+	// Members are read live and concurrently, then checked in order.
+	reads, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) {
+		return a.read(ctx, observation.account, ids[i], text(object(members[ids[i]])["kind"]))
+	})
+	for i, id := range ids {
+		entry := object(members[id])
 		kind := text(entry["kind"])
-		raw, err := a.read(ctx, observation.account, id, kind)
+		raw, err := reads[i], errs[i]
 		if isNotFound(err) {
 			continue
 		}

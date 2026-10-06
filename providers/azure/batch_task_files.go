@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/url"
 	"slices"
 	"strings"
@@ -274,34 +275,47 @@ func (a *batchAction) taskFilesAbsent(ctx context.Context, request contracts.Act
 		return contracts.ReadbackResult{}, err
 	}
 	op, _ := metadata.catalog.Operation(batchDataPrefix + "Nodes_GetNodeFileProperties")
-	for _, file := range files {
+	// Files are checked concurrently and their outcomes taken in file order.
+	// A remaining directory is returned as errTaskDirectoryExists so that, like
+	// any failure, it stops further reads.
+	errTaskDirectoryExists := errors.New("batch task directory exists")
+	_, errs := readConcurrently(len(files), func(i int) (struct{}, error) {
+		file := files[i]
 		current, err := a.client.batchRead(ctx, account, file.NodeID, batchNodeType)
 		if err != nil && !isNotFound(err) {
-			return contracts.ReadbackResult{}, err
+			return struct{}{}, err
 		}
 		if err == nil && file.NodeBinding != a.client.privateConfiguration(batchSnapshot(batchNodeType, current.data)) {
-			return contracts.ReadbackResult{}, serviceDenied("batch_task_node_recreated")
+			return struct{}{}, serviceDenied("batch_task_node_recreated")
 		}
 		_, _, _, params, err := batchDataIdentity(file.NodeID)
 		if err != nil || batchFileDirectory(file.Directory) != nil {
-			return contracts.ReadbackResult{}, serviceDenied("invalid_batch_task_file_receipt")
+			return struct{}{}, serviceDenied("invalid_batch_task_file_receipt")
 		}
 		params["filePath"] = file.Directory
 		bound, err := bindAzureREST(op, params)
 		if err != nil {
-			return contracts.ReadbackResult{}, err
+			return struct{}{}, err
 		}
 		res, err := a.client.batchRequest(ctx, account, bound)
 		if isNotFound(err) {
-			continue
+			return struct{}{}, nil
+		}
+		if err != nil {
+			return struct{}{}, err
+		}
+		if res.status != 200 || len(res.data) != 0 || operationLocation(res.header) != "" || !strings.EqualFold(res.header.Get("ocp-batch-file-isdirectory"), "true") {
+			return struct{}{}, serviceDenied("invalid_batch_task_directory_response")
+		}
+		return struct{}{}, errTaskDirectoryExists
+	})
+	for _, err := range errs {
+		if err == errTaskDirectoryExists {
+			return contracts.ReadbackResult{Exists: true, State: "batch_subtask_files_deleting"}, nil
 		}
 		if err != nil {
 			return contracts.ReadbackResult{}, err
 		}
-		if res.status != 200 || len(res.data) != 0 || operationLocation(res.header) != "" || !strings.EqualFold(res.header.Get("ocp-batch-file-isdirectory"), "true") {
-			return contracts.ReadbackResult{}, serviceDenied("invalid_batch_task_directory_response")
-		}
-		return contracts.ReadbackResult{Exists: true, State: "batch_subtask_files_deleting"}, nil
 	}
 	return contracts.ReadbackResult{}, nil
 }

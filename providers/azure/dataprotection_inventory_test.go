@@ -10,6 +10,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -101,7 +102,12 @@ func protectionRequest(f *protectionFixture, kind string) contracts.InventoryReq
 func TestDataProtectionRegisteredInventoryAndRetainedIdentity(t *testing.T) {
 	f := newProtectionFixture(t)
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
+	var logsMu sync.Mutex
+	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) {
+		logsMu.Lock()
+		logs = append(logs, e)
+		logsMu.Unlock()
+	}))
 	for kind, id := range map[string]string{dataProtectionVault: f.vault, dataProtectionPolicy: f.policy, dataProtectionInstance: f.instance, dataProtectionDeletedInstance: f.deletedInstance, dataProtectionDeletedVault: f.deletedVault} {
 		t.Run(kind, func(t *testing.T) {
 			req := protectionRequest(f, kind)

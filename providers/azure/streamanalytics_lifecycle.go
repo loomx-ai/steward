@@ -53,14 +53,24 @@ func (c *client) streamAnalyticsClusterJobs(ctx context.Context, parent asset.Id
 		if page.status != 200 || page.data["error"] != nil || !ok {
 			return nil, serviceDenied("incomplete_stream_analytics_cluster_jobs")
 		}
+		// Rows are checked in order before any read. Rows past the first invalid
+		// one are not read, and its error follows the earlier rows' checks.
+		var records []map[string]any
+		var ids []string
+		var invalid error
 		for _, value := range values {
 			record := object(value)
 			id, typ, err := parseID(text(record["id"]))
 			if err != nil || !strings.HasPrefix(id, c.root()+"/") || streamAnalyticsKind(typ) != streamAnalyticsJobType || seenJobs[id] || !validResponseType(streamAnalyticsJobType, text(record["type"])) {
-				return nil, serviceDenied("invalid_stream_analytics_cluster_job")
+				invalid = serviceDenied("invalid_stream_analytics_cluster_job")
+				break
 			}
 			seenJobs[id] = true
-			job, err := c.streamAnalyticsResource(ctx, id)
+			records, ids = append(records, record), append(ids, id)
+		}
+		jobs, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.streamAnalyticsResource(ctx, ids[i]) })
+		for i, id := range ids {
+			record, job, err := records[i], jobs[i], errs[i]
 			if err != nil {
 				return nil, err
 			}
@@ -69,6 +79,9 @@ func (c *client) streamAnalyticsClusterJobs(ctx context.Context, parent asset.Id
 				return nil, serviceDenied("stream_analytics_cluster_job_membership_changed")
 			}
 			children = append(children, serviceChild{kind: streamAnalyticsJobType, id: id, data: job})
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		next = ""
 		if value := page.data["nextLink"]; value != nil {

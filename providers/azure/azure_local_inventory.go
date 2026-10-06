@@ -262,6 +262,24 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		}
 	}
 	items, bindings := []contracts.InventoryItem{}, map[string]any{}
+	recordedVM := func(prior map[string]any) bool {
+		return strings.HasPrefix(text(prior["_azure_local_configuration"]), azureLocalVMPrefix) || prior[azureLocalCleanup] != nil || prior[azureLocalCleanupProof] != nil
+	}
+	// VM children are read ahead concurrently with the arguments the loop
+	// passes; the loop still makes each VM's checks first, in ID order.
+	vmChildren := func(string) (map[string]map[string]any, error) { return nil, nil }
+	if kind == azureLocalVMType {
+		vmChildren = readAhead(slices.Sorted(maps.Keys(values)), func(id string) (map[string]map[string]any, error) {
+			location, hints := resourceRegion(values[id]), map[string]any{}
+			if machine := azureLocalMachine(id); machine != "" {
+				location = resourceRegion(machines[machine])
+			}
+			if prior := request.KnownNativeMetadata[id]; recordedVM(prior) {
+				hints = object(object(prior[azureLocalCleanup])["members"])
+			}
+			return c.azureLocalVMChildren(ctx, id, hints, true, location, azureLocalOSDisk(values[id]))
+		})
+	}
 	for _, id := range slices.Sorted(maps.Keys(values)) {
 		raw := values[id]
 		location := resourceRegion(raw)
@@ -361,14 +379,12 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 					return nil, nil, "", serviceDenied("azure_local_os_disk_also_data_disk")
 				}
 			}
-			hints := map[string]any{}
-			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_azure_local_configuration"]), azureLocalVMPrefix) || prior[azureLocalCleanup] != nil || prior[azureLocalCleanupProof] != nil {
+			if prior := request.KnownNativeMetadata[id]; recordedVM(prior) {
 				if err := c.azureLocalVMRecorded(id, request.ConnectionID, prior); err != nil {
 					return nil, nil, "", err
 				}
-				hints = object(object(prior[azureLocalCleanup])["members"])
 			}
-			children, err := c.azureLocalVMChildren(ctx, id, hints, true, location, azureLocalOSDisk(raw))
+			children, err := vmChildren(id) // With this VM's hints and location.
 			if err != nil {
 				return nil, nil, "", err
 			}

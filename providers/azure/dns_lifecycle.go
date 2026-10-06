@@ -227,14 +227,23 @@ func (c *client) privateDNSRegistrationChildren(ctx context.Context, parent asse
 	}
 	prefixes := map[string][]netip.Prefix{}
 	if len(registrations) > 1 {
+		// Endpoints are checked in order before any read; VNets are read
+		// concurrently and checked in link order, then the invalid link's error.
+		vnetKind, _ := findType(vnetType)
+		var endpoints []string
+		var invalid error
 		for _, link := range registrations {
-			networkID := text(object(object(link.data["properties"])["virtualNetwork"])["id"])
-			vnetKind, _ := findType(vnetType)
-			endpoint, err := c.resourceURL(vnetKind, networkID)
+			endpoint, err := c.resourceURL(vnetKind, text(object(object(link.data["properties"])["virtualNetwork"])["id"]))
 			if err != nil {
-				return nil, err
+				invalid = err
+				break
 			}
-			network, err := c.request(ctx, "GET", endpoint)
+			endpoints = append(endpoints, endpoint)
+		}
+		networks, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+		for i, link := range registrations[:len(endpoints)] {
+			networkID := text(object(object(link.data["properties"])["virtualNetwork"])["id"])
+			network, err := networks[i], errs[i]
 			if err != nil {
 				return nil, err
 			}
@@ -252,6 +261,9 @@ func (c *client) privateDNSRegistrationChildren(ctx context.Context, parent asse
 				}
 				prefixes[link.id] = append(prefixes[link.id], prefix)
 			}
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 	}
 	result := []serviceChild{}

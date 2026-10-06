@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -51,7 +52,10 @@ func TestDeploymentStackMemberPreparationResume(t *testing.T) {
 			writes, reads := []string{}, 0
 			activeFault := false
 			operation := apiURL("/subscriptions/"+testSubscription+"/providers/Microsoft.Network/locations/eastus/operations/retain", "2024-05-01")
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				if r.Method == "DELETE" {
 					t.Fatal("preparation independently deleted a member")
 				}

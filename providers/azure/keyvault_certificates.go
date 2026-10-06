@@ -300,39 +300,61 @@ func (r *Runtime) listKeyVaultCertificates(ctx context.Context, c *client, reque
 	}
 	batch = contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: true}
 	ids := slices.Sorted(maps.Keys(vaults))
-	vaultRead := readAhead(ids, func(id string) (keyVaultContext, error) { return c.keyVaultRead(ctx, id) })
-	for _, id := range ids {
-		vault, err := vaultRead(id)
-		if isNotFound(err) && known[id] != nil && keyVaultOwnAbsence(err) {
+	// Each vault's own read, certificate list and certificate reads run
+	// together; results are applied in vault order as the serial walk did.
+	type vaultRead struct {
+		vault       keyVaultContext
+		elsewhere   bool
+		names       map[string]bool
+		ordered     []string
+		reads       []response
+		errs        []error
+		certificate error
+	}
+	vaultReads, vaultErrs := readConcurrently(len(ids), func(i int) (vaultRead, error) {
+		vault, err := c.keyVaultRead(ctx, ids[i])
+		if err != nil {
+			return vaultRead{}, err
+		}
+		if request.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(vault.location, request.Scope.NativeID) {
+			return vaultRead{vault: vault, elsewhere: true}, nil
+		}
+		names, err := c.keyVaultCertificates(ctx, vault)
+		if err != nil {
+			return vaultRead{vault: vault, certificate: err}, nil
+		}
+		for name := range known[ids[i]] {
+			names[name] = names[name] || false
+		}
+		ordered := slices.Sorted(maps.Keys(names))
+		reads, errs := readConcurrently(len(ordered), func(j int) (response, error) { return c.keyVaultCertificateRead(ctx, vault, ordered[j]) })
+		return vaultRead{vault, false, names, ordered, reads, errs, nil}, nil
+	})
+	for i, id := range ids {
+		if err := vaultErrs[i]; isNotFound(err) && known[id] != nil && keyVaultOwnAbsence(err) {
 			// Deleting a vault removes its objects from the live data plane.
 			for _, name := range slices.Sorted(maps.Keys(known[id])) {
 				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id+"/certificates/"+name)
 			}
 			continue
-		}
-		if err != nil {
+		} else if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
-		if request.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(vault.location, request.Scope.NativeID) {
+		read := vaultReads[i]
+		if read.elsewhere {
 			continue
 		}
-		names, err := c.keyVaultCertificates(ctx, vault)
-		if err != nil {
-			return contracts.InventoryBatch{}, err
+		if read.certificate != nil {
+			return contracts.InventoryBatch{}, read.certificate
 		}
-		for name := range known[id] {
-			names[name] = names[name] || false
-		}
-		ordered := slices.Sorted(maps.Keys(names))
-		reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.keyVaultCertificateRead(ctx, vault, ordered[i]) })
-		for i, name := range ordered {
-			if err := errs[i]; isNotFound(err) && known[id][name] && !names[name] {
+		for j, name := range read.ordered {
+			if err := read.errs[j]; isNotFound(err) && known[id][name] && !read.names[name] {
 				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id+"/certificates/"+name)
 				continue
 			} else if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			batch.Items = append(batch.Items, r.keyVaultCertificateItem(c, vault, name, reads[i].data))
+			batch.Items = append(batch.Items, r.keyVaultCertificateItem(c, read.vault, name, read.reads[j].data))
 		}
 	}
 	return batch, nil

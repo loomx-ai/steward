@@ -97,29 +97,46 @@ func (c *client) insightsAnnotationParents(ctx context.Context, components []ser
 	for _, component := range components {
 		parents[component.id] = true
 	}
+	// Saved IDs are checked in order before any read. IDs past the first
+	// invalid one are not read, and its error follows the earlier reads.
+	type orphan struct{ id, parent string }
+	var orphans []orphan
+	var invalid error
 	for _, value := range known {
 		id, parent, kind, _, err := insightsLegacyIdentity(value)
 		if err != nil || id != value || kind != insightsAnnotationType || !strings.HasPrefix(parent, c.root()+"/") || seen[id] {
-			return nil, serviceDenied("invalid_insights_known_annotation")
+			invalid = serviceDenied("invalid_insights_known_annotation")
+			break
 		}
 		seen[id] = true
-		if parents[parent] {
-			continue
+		if !parents[parent] {
+			orphans = append(orphans, orphan{id, parent})
 		}
-		if _, err := c.insightsComponent(ctx, parent); !isNotFound(err) {
+	}
+	_, errs := readConcurrently(len(orphans), func(i int) (struct{}, error) {
+		if _, err := c.insightsComponent(ctx, orphans[i].parent); !isNotFound(err) {
 			if err != nil {
-				return nil, err
+				return struct{}{}, err
 			}
-			return nil, serviceDenied("insights_annotation_parent_missing_from_index")
+			return struct{}{}, serviceDenied("insights_annotation_parent_missing_from_index")
 		}
 		mapping, _ := findType(insightsAnnotationType)
-		if _, err := c.insightsChildRead(ctx, mapping, id); !isNotFound(err) {
+		if _, err := c.insightsChildRead(ctx, mapping, orphans[i].id); !isNotFound(err) {
 			if err != nil {
-				return nil, err
+				return struct{}{}, err
 			}
-			return nil, serviceDenied("insights_annotation_survived_parent")
+			return struct{}{}, serviceDenied("insights_annotation_survived_parent")
 		}
-		absent = append(absent, id)
+		return struct{}{}, nil
+	})
+	for i, value := range orphans {
+		if errs[i] != nil {
+			return nil, errs[i]
+		}
+		absent = append(absent, value.id)
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	return absent, nil
 }
@@ -135,20 +152,23 @@ func (c *client) insightsAnnotationInventoryChildren(ctx context.Context, parent
 		windowIDs[child.id] = true
 	}
 	mapping, _ := findType(insightsAnnotationType)
+	var older []string
 	for _, id := range known {
 		_, owner, _, _, _ := insightsLegacyIdentity(id) // Already validated against this subscription.
-		if owner != parent || windowIDs[id] {
-			continue
+		if owner == parent && !windowIDs[id] {
+			older = append(older, id)
 		}
-		current, err := c.insightsChildRead(ctx, mapping, id)
-		if isNotFound(err) {
+	}
+	reads, errs := readConcurrently(len(older), func(i int) (response, error) { return c.insightsChildRead(ctx, mapping, older[i]) })
+	for i, id := range older {
+		if isNotFound(errs[i]) {
 			absent = append(absent, id)
 			continue // This does not authorize closing any other missing observation.
 		}
-		if err != nil {
-			return nil, nil, nil, err
+		if errs[i] != nil {
+			return nil, nil, nil, errs[i]
 		}
-		children = append(children, serviceChild{id: id, kind: insightsAnnotationType, data: current.data})
+		children = append(children, serviceChild{id: id, kind: insightsAnnotationType, data: reads[i].data})
 	}
 	return children, windowIDs, absent, nil
 }

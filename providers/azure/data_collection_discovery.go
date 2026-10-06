@@ -117,6 +117,26 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 	}
 	byParent := dataCollectionTargetIndex(targets)
 	reads, readErrs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	// Each row's canonical parent is its first reference with a target; their
+	// association indexes are read ahead, up to the first failed or invalid row.
+	parents := []string{}
+	for i := range endpoints {
+		if isNotFound(readErrs[i]) {
+			continue
+		}
+		if readErrs[i] != nil || !validResourceResponse(reads[i], strings.ToLower(text(object(rows[i])["id"])), dataCollectionAssociationType) {
+			break
+		}
+		for _, ref := range dataCollectionReferences(reads[i].data) {
+			if _, ok := byParent[ref]; ok {
+				parents = append(parents, ref)
+				break
+			}
+		}
+	}
+	associations := readAhead(parents, func(parent string) ([]serviceChild, error) {
+		return c.dataCollectionAssociations(ctx, asset.Identity{NativeID: parent, NativeType: byParent[parent].ParentType})
+	})
 	for i, value := range rows {
 		if i == len(endpoints) {
 			return nil, invalid
@@ -138,7 +158,7 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 			return nil, err
 		}
 		if canonical.ParentID != "" {
-			indexed, err := c.dataCollectionAssociations(ctx, asset.Identity{NativeID: canonical.ParentID, NativeType: canonical.ParentType})
+			indexed, err := associations(canonical.ParentID)
 			if err != nil {
 				return nil, err
 			}
@@ -169,10 +189,13 @@ func (c *client) dataCollectionOrphanTargets(ctx context.Context, targets []prod
 		keys = append(keys, key)
 	}
 	slices.Sort(keys)
-	for _, key := range keys {
+	lists, listErrs := readConcurrently(len(keys), func(i int) ([]any, error) {
+		u, _ := url.Parse(orphans[keys[i]].Endpoint)
+		return c.listAllURL(ctx, orphans[keys[i]].Endpoint, u.Path)
+	})
+	for i, key := range keys {
 		target := orphans[key]
-		u, _ := url.Parse(target.Endpoint)
-		listed, err := c.listAllURL(ctx, target.Endpoint, u.Path)
+		listed, err := lists[i], listErrs[i]
 		if err != nil {
 			return nil, err
 		}

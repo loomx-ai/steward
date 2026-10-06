@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -70,7 +71,10 @@ func TestDeploymentStackRetainedGroupNativeContract(t *testing.T) {
 				req.IdempotencyKey = "other-job"
 			}
 			calls, groups, vms, roots := 0, 0, 0, 0
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				calls++
 				if r.Method != "GET" {
 					t.Fatal("readback mutated a resource")

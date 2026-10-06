@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -84,9 +85,12 @@ func (a *netappVolumeAction) Readback(ctx context.Context, req contracts.ActionR
 	if !isNotFound(err) {
 		return contracts.ReadbackResult{}, err
 	}
-	for child, value := range object(a.boundary["members"]) {
-		kind := text(object(value)["kind"])
-		_, err := a.client.netappRead(ctx, child, kind)
+	members := object(a.boundary["members"])
+	children := slices.Sorted(maps.Keys(members))
+	_, errs := readConcurrently(len(children), func(i int) (response, error) {
+		return a.client.netappRead(ctx, children[i], text(object(members[children[i]])["kind"]))
+	})
+	for _, err := range errs {
 		if isNotFound(err) {
 			continue
 		}

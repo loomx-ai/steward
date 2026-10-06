@@ -10,6 +10,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -32,7 +33,10 @@ func TestApplicationInsightsLegacyCompleteCollections(t *testing.T) {
 			parents, lists, gets := 0, 0, 0
 			filtersSeen := map[string]bool{}
 			resources := map[string]map[string]any{}
+			var fixtureMu sync.Mutex
 			c := directClient(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				if r.Method != "GET" {
 					t.Fatal("inventory mutated cloud")
 				}
@@ -163,7 +167,10 @@ func TestApplicationInsightsLegacyListFailureBoundaries(t *testing.T) {
 			parent := nativeResource(applicationInsightsType, "App", "eastus", map[string]any{"AppId": "one"})
 			parentID, _, _ := parseID(text(parent["id"]))
 			parents := 0
+			var fixtureMu sync.Mutex
 			c := directClient(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				if strings.EqualFold(r.URL.Path, parentID) {
 					parents++
 					if scenario == "missing-parent" {
@@ -273,7 +280,10 @@ func TestApplicationInsightsLegacyRecordedReads(t *testing.T) {
 			if err != nil {
 				continue
 			} // Native LIST records are exercised separately.
+			var fixtureMu sync.Mutex
 			c := directClient(func(r *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				// Canonical ARM casing and equivalent URI escaping may differ.
 				// The decoded opaque ID and every query parameter must agree.
 				original, _ := url.Parse(record.URI)

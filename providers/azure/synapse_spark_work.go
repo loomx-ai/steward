@@ -160,9 +160,15 @@ func (c *synapseDataClient) synapseWork(ctx context.Context, target synapseDataT
 		if index != after {
 			return out, serviceDenied("synapse_work_index_changed")
 		}
-		for _, id := range slices.Sorted(maps.Keys(seen)) {
+		// Fresh detail reads all follow the second index; they run concurrently
+		// and are checked in id order.
+		ids := slices.Sorted(maps.Keys(seen))
+		reads, readErrs := readConcurrently(len(ids), func(i int) (response, error) {
+			return c.synapseReadData(ctx, target, d, object(object(out.manifest[ids[i]])["parameters"]))
+		})
+		for i, id := range ids {
 			entry := object(out.manifest[id])
-			res, readErr := c.synapseReadData(ctx, target, d, object(entry["parameters"]))
+			res, readErr := reads[i], readErrs[i]
 			if readErr != nil {
 				return out, readErr
 			}

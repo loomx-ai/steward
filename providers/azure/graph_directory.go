@@ -277,23 +277,35 @@ func (r *Runtime) listGraphDirectory(ctx context.Context, c *client, request con
 		}
 	}
 	slices.Sort(missing)
-	for _, objectID := range missing {
-		res, err := c.graphRequest(ctx, kind.get, map[string]any{kind.idParameter: objectID, "$select": strings.Join(kind.fields, ",")})
+	// Each object's GET and item read run concurrently; results and the first
+	// error are taken in order. Only the object's own 404 marks it absent.
+	type knownRead struct {
+		item   contracts.InventoryItem
+		absent bool
+	}
+	reads, errs := readConcurrently(len(missing), func(i int) (knownRead, error) {
+		res, err := c.graphRequest(ctx, kind.get, map[string]any{kind.idParameter: missing[i], "$select": strings.Join(kind.fields, ",")})
 		if isNotFound(err) {
+			return knownRead{absent: true}, nil
+		}
+		if err != nil {
+			return knownRead{}, err
+		}
+		if !strings.EqualFold(text(res.data["id"]), missing[i]) {
+			return knownRead{}, serviceDenied("graph_object_identity_changed")
+		}
+		item, err := r.graphItem(ctx, c, nativeType, res.data)
+		return knownRead{item: item}, err
+	})
+	for i, objectID := range missing {
+		if errs[i] != nil {
+			return contracts.InventoryBatch{}, errs[i]
+		}
+		if reads[i].absent {
 			batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, rbacPrincipalSelector(c.tenant, objectID))
 			continue
 		}
-		if err != nil {
-			return contracts.InventoryBatch{}, err
-		}
-		if !strings.EqualFold(text(res.data["id"]), objectID) {
-			return contracts.InventoryBatch{}, serviceDenied("graph_object_identity_changed")
-		}
-		item, err := r.graphItem(ctx, c, nativeType, res.data)
-		if err != nil {
-			return contracts.InventoryBatch{}, err
-		}
-		batch.Items = append(batch.Items, item)
+		batch.Items = append(batch.Items, reads[i].item)
 	}
 	return batch, nil
 }

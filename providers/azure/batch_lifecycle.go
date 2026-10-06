@@ -54,38 +54,54 @@ func (c *client) batchTopology(ctx context.Context, account batchAccountContext)
 			return result, err
 		}
 		children = append(children, pools...)
-		for _, child := range children {
+		// Each child's reads (an application's packages; a pool's nodes and
+		// their VM trees) run concurrently. Members are added in serial order,
+		// and each read's error is checked where the serial walk read it.
+		type childRead struct {
+			packages []serviceChild
+			nodes    []map[string]any
+			vms      [][]batchMember
+			vmErrs   []error
+		}
+		childReads, childErrs := readConcurrently(len(children), func(i int) (childRead, error) {
+			child, read := children[i], childRead{}
+			var err error
+			switch child.kind {
+			case batchApplicationType:
+				read.packages, err = c.nativeServiceChildren(ctx, asset.Identity{NativeID: child.id, NativeType: child.kind}, child.data, []string{batchPackageType})
+			case batchPoolType:
+				read.nodes, _, err = c.batchListedData(ctx, account, batchNodeType, "Nodes_ListNodes", map[string]any{"poolId": last(child.id)})
+				if err == nil {
+					read.vms, read.vmErrs = readConcurrently(len(read.nodes), func(j int) ([]batchMember, error) { return c.batchVMTree(ctx, account, read.nodes[j]) })
+				}
+			}
+			return read, err
+		})
+		for i, child := range children {
 			if err := add(child.id, child.kind, account.id, child.data, child.kind != batchPerimeterType); err != nil {
 				return result, err
 			}
-			if child.kind == batchApplicationType {
-				packages, err := c.nativeServiceChildren(ctx, asset.Identity{NativeID: child.id, NativeType: child.kind}, child.data, []string{batchPackageType})
-				if err != nil {
+			if child.kind != batchApplicationType && child.kind != batchPoolType {
+				continue
+			}
+			if childErrs[i] != nil {
+				return result, childErrs[i]
+			}
+			for _, pkg := range childReads[i].packages {
+				if err := add(pkg.id, pkg.kind, child.id, pkg.data, true); err != nil {
 					return result, err
-				}
-				for _, pkg := range packages {
-					if err := add(pkg.id, pkg.kind, child.id, pkg.data, true); err != nil {
-						return result, err
-					}
 				}
 			}
-			if child.kind == batchPoolType {
-				nodes, _, err := c.batchListedData(ctx, account, batchNodeType, "Nodes_ListNodes", map[string]any{"poolId": last(child.id)})
-				if err != nil {
+			for j, node := range childReads[i].nodes {
+				if err := add(text(node["url"]), batchNodeType, child.id, node, false); err != nil {
 					return result, err
 				}
-				for _, node := range nodes {
-					if err := add(text(node["url"]), batchNodeType, child.id, node, false); err != nil {
+				if err := childReads[i].vmErrs[j]; err != nil {
+					return result, err
+				}
+				for _, member := range childReads[i].vms[j] {
+					if err := add(member.id, member.kind, member.parent, member.raw, false); err != nil {
 						return result, err
-					}
-					members, err := c.batchVMTree(ctx, account, node)
-					if err != nil {
-						return result, err
-					}
-					for _, member := range members {
-						if err := add(member.id, member.kind, member.parent, member.raw, false); err != nil {
-							return result, err
-						}
 					}
 				}
 			}
@@ -103,27 +119,33 @@ func (c *client) batchTopology(ctx context.Context, account batchAccountContext)
 		if err != nil {
 			return result, err
 		}
-		for _, raw := range jobs {
+		taskLists, taskErrs := readConcurrently(len(jobs), func(i int) ([]map[string]any, error) {
+			tasks, _, err := c.batchListedData(ctx, account, batchTaskType, "Tasks_ListTasks", map[string]any{"jobId": text(jobs[i]["id"])})
+			return tasks, err
+		})
+		for i, raw := range jobs {
 			id := strings.ToLower(text(raw["url"]))
 			if err := add(id, batchJobType, account.id, raw, true); err != nil {
 				return result, err
 			}
-			tasks, _, err := c.batchListedData(ctx, account, batchTaskType, "Tasks_ListTasks", map[string]any{"jobId": text(raw["id"])})
-			if err != nil {
-				return result, err
+			if taskErrs[i] != nil {
+				return result, taskErrs[i]
 			}
-			for _, task := range tasks {
+			for _, task := range taskLists[i] {
 				if err := add(text(task["url"]), batchTaskType, id, task, false); err != nil {
 					return result, err
 				}
 			}
 		}
-		for _, schedule := range schedules {
-			owned, _, err := c.batchListedData(ctx, account, batchJobType, "Jobs_ListJobsFromSchedule", map[string]any{"jobScheduleId": text(schedule["id"])})
-			if err != nil {
-				return result, err
+		ownedLists, ownedErrs := readConcurrently(len(schedules), func(i int) ([]map[string]any, error) {
+			owned, _, err := c.batchListedData(ctx, account, batchJobType, "Jobs_ListJobsFromSchedule", map[string]any{"jobScheduleId": text(schedules[i]["id"])})
+			return owned, err
+		})
+		for i, schedule := range schedules {
+			if ownedErrs[i] != nil {
+				return result, ownedErrs[i]
 			}
-			for _, raw := range owned {
+			for _, raw := range ownedLists[i] {
 				id := strings.ToLower(text(raw["url"]))
 				job, exists := result.members[id]
 				if !exists || job.kind != batchJobType || job.parent != account.id || c.privateConfiguration(batchSnapshot(batchJobType, raw)) != c.privateConfiguration(batchSnapshot(batchJobType, job.raw)) {
@@ -340,12 +362,16 @@ func (s *serviceCascades) contributeBatchReferences(ctx context.Context, topolog
 		ids = append(ids, id)
 	}
 	sort.Strings(ids)
-	for _, id := range ids {
+	allRefs, errs := readConcurrently(len(ids), func(i int) (map[string][]string, error) {
+		member := topology.members[ids[i]]
+		return s.client.batchReferences(ctx, topology.account, ids[i], member.kind, member.raw)
+	})
+	for i, id := range ids {
 		member := topology.members[id]
-		refs, err := s.client.batchReferences(ctx, topology.account, id, member.kind, member.raw)
-		if err != nil {
-			return err
+		if errs[i] != nil {
+			return errs[i]
 		}
+		refs := allRefs[i]
 		for _, kind := range []string{batchPoolType, batchApplicationType, batchPackageType, batchTaskType} {
 			for _, targetID := range refs[kind] {
 				target, found := selected[targetID]

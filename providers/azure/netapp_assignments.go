@@ -209,8 +209,26 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 		}
 	}
 	consumers := map[string]any{}
-	for _, volume := range slices.Sorted(maps.Keys(volumes)) {
-		own, err := c.netappRead(ctx, volume, netappVolumeType)
+	// A vault consumer's policy is read with its volume; the walk below still
+	// checks the volume first, in volume order.
+	type volumeRead struct {
+		own, policy response
+		policyErr   error
+	}
+	ordered := slices.Sorted(maps.Keys(volumes))
+	reads, errs := readConcurrently(len(ordered), func(i int) (volumeRead, error) {
+		own, err := c.netappRead(ctx, ordered[i], netappVolumeType)
+		out := volumeRead{own: own}
+		if err != nil || kind != netappVaultType {
+			return out, err
+		}
+		if assignments, err := netappAssignments(own.data); err == nil && assignments[kind] == id && assignments[netappBackupPolicyType] != "" {
+			out.policy, out.policyErr = c.netappRead(ctx, assignments[netappBackupPolicyType], netappBackupPolicyType)
+		}
+		return out, nil
+	})
+	for i, volume := range ordered {
+		own, err := reads[i].own, errs[i]
 		if isNotFound(err) && !volumes[volume] {
 			continue
 		}
@@ -252,7 +270,7 @@ func (c *client) netappAssignmentConsumers(ctx context.Context, id, kind, region
 			policy := assignments[netappBackupPolicyType]
 			entry["policy"], entry["policy_configuration"], entry["policy_ready"] = policy, "", true
 			if policy != "" {
-				ownPolicy, err := c.netappRead(ctx, policy, netappBackupPolicyType)
+				ownPolicy, err := reads[i].policy, reads[i].policyErr
 				if err != nil {
 					return nil, false, contracts.DependencyReadError(err)
 				}

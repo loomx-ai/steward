@@ -179,8 +179,10 @@ func (c *client) netappVolumeBoundary(ctx context.Context, id string, known map[
 			}
 			ids[target] = true
 		}
-		for _, target := range slices.Sorted(maps.Keys(ids)) {
-			own, err := c.netappRead(ctx, target, child.kind)
+		targets := slices.Sorted(maps.Keys(ids))
+		reads, errs := readConcurrently(len(targets), func(i int) (response, error) { return c.netappRead(ctx, targets[i], child.kind) })
+		for i, target := range targets {
+			own, err := reads[i], errs[i]
 			if isNotFound(err) {
 				if old := object(known[target]); old != nil {
 					entry := maps.Clone(old)
@@ -200,21 +202,25 @@ func (c *client) netappVolumeBoundary(ctx context.Context, id string, known map[
 			raws[target] = own.data
 		}
 	}
-	for target, raw := range raws {
+	// The recheck starts only after every first read above has finished.
+	rechecked := slices.Sorted(maps.Keys(raws))
+	reads, errs := readConcurrently(len(rechecked), func(i int) (response, error) {
+		target := rechecked[i]
 		_, kind, _ := parseID(target)
-		var res response
 		if kind == strings.ToLower(groupType) {
-			res, err = c.request(ctx, "GET", apiURL(target, resourcesVersion))
-			if err == nil && (!validResourceResponse(res, target, groupType) || operationLocation(res.header) != "") {
-				return nil, serviceDenied("invalid_netapp_resource_group_recheck")
-			}
-		} else {
-			res, err = c.netappRead(ctx, target, kind)
+			return c.request(ctx, "GET", apiURL(target, resourcesVersion))
+		}
+		return c.netappRead(ctx, target, kind)
+	})
+	for i, target := range rechecked {
+		res, err := reads[i], errs[i]
+		if _, kind, _ := parseID(target); err == nil && kind == strings.ToLower(groupType) && (!validResourceResponse(res, target, groupType) || operationLocation(res.header) != "") {
+			return nil, serviceDenied("invalid_netapp_resource_group_recheck")
 		}
 		if err != nil {
 			return nil, contracts.DependencyReadError(err)
 		}
-		if c.privateConfiguration(raw) != c.privateConfiguration(res.data) {
+		if c.privateConfiguration(raws[target]) != c.privateConfiguration(res.data) {
 			return nil, serviceDenied("netapp_volume_boundary_changed")
 		}
 	}

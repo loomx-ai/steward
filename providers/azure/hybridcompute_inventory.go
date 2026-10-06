@@ -92,15 +92,24 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		}
 	}
 	items, bindings := []contracts.InventoryItem{}, map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(values)) {
+	// Each item's reads run concurrently; results and the first error are taken
+	// in ID order. The closure only reads shared state and writes its own result.
+	type builtItem struct {
+		item    contracts.InventoryItem
+		binding any
+		include bool
+	}
+	ids := slices.Sorted(maps.Keys(values))
+	results, errs := readConcurrently(len(ids), func(i int) (built builtItem, err error) {
+		id := ids[i]
 		raw := values[id]
 		parent := hybridComputeParent(id, kind)
 		if parent != "" && (parents[parent] == nil || resourceRegion(parents[parent]) != resourceRegion(raw)) {
-			return nil, nil, "", serviceDenied("hybrid_compute_child_location_changed")
+			return built, serviceDenied("hybrid_compute_child_location_changed")
 		}
 		refs, err := hybridComputeReferences(id, kind, raw)
 		if err != nil {
-			return nil, nil, "", err
+			return built, err
 		}
 		safe := safePayload(object(hybridComputeSafeValue(raw)))
 		normalized := maps.Clone(object(safe["properties"]))
@@ -115,7 +124,7 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		if kind == hybridLicenseType {
 			configuration = hybridComputeLicensePrefix + configuration
 		}
-		bindings[id] = configuration
+		built.binding = configuration
 		normalized["_hybrid_compute_configuration"] = configuration
 		recorded, network := map[string]any{}, []string{}
 		for typ, ids := range refs {
@@ -130,39 +139,39 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 			hints := map[string]any{}
 			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeLicensePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {
 				if err := c.hybridComputeLicenseRecorded(id, request.ConnectionID, prior); err != nil {
-					return nil, nil, "", err
+					return built, err
 				}
 				hints = object(object(prior[hybridComputeCleanup])["assignments"])
 			}
 			assignments, err := c.hybridComputeLicenseAssignments(ctx, id, hints, true)
 			if err != nil {
-				return nil, nil, "", err
+				return built, err
 			}
 			reason := c.hybridComputeLicenseProtection(raw)
 			state := map[string]any{"resource": c.privateConfiguration(hybridComputeLicenseSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != "", "inventory": configuration, "assignments": c.hybridComputeAssignmentRecords(assignments), "location": location}
 			normalized[hybridComputeCleanup], normalized[hybridComputeCleanupProof] = state, c.hybridComputeLicenseBinding(id, request.ConnectionID, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
-			bindings[id], actionable = c.privateConfiguration(state), reason == ""
+			built.binding, actionable = c.privateConfiguration(state), reason == ""
 		}
 		if kind == hybridMachineType {
 			hints := map[string]any{}
 			priorState := map[string]any{}
 			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeMachinePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {
 				if err := c.hybridComputeMachineRecorded(id, request.ConnectionID, prior); err != nil {
-					return nil, nil, "", err
+					return built, err
 				}
 				priorState = object(prior[hybridComputeCleanup])
 				hints = object(priorState["members"])
 			}
 			children, err := c.hybridComputeMachineChildren(ctx, id, hints, true)
 			if err != nil {
-				return nil, nil, "", err
+				return built, err
 			}
 			reason := hybridComputeMachineProtection(raw)
 			state := map[string]any{"resource": c.privateConfiguration(hybridComputeMachineSnapshot(raw)), "registration": c.privateConfiguration(hybridComputeParentStamp(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "members": c.hybridComputeMachineMembers(children), "protected": reason != "", "inventory": configuration, "location": location}
 			local, err := c.azureLocalRegistrationInventory(ctx, raw, priorState)
 			if err != nil {
-				return nil, nil, "", err
+				return built, err
 			}
 			if local != nil {
 				state["local_vm"] = local
@@ -171,7 +180,7 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 			state["protected"] = reason != ""
 			normalized[hybridComputeCleanup], normalized[hybridComputeCleanupProof] = state, c.hybridComputeMachineBinding(id, request.ConnectionID, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
-			bindings[id], actionable = c.privateConfiguration(state), reason == ""
+			built.binding, actionable = c.privateConfiguration(state), reason == ""
 		}
 		if hybridComputeChild(kind) {
 			reason := hybridComputeChildProtection(raw, parents[parent])
@@ -183,7 +192,17 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		}
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Raw: safe, Normalized: normalized, Actionable: &actionable, NativeAliases: []string{id, text(raw["id"])}, NetworkReferences: slices.Compact(network)}
 		if productScopeMatches(request, item) {
-			items = append(items, item)
+			built.item, built.include = item, true
+		}
+		return built, nil
+	})
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, nil, "", errs[i]
+		}
+		bindings[id] = results[i].binding
+		if results[i].include {
+			items = append(items, results[i].item)
 		}
 	}
 	// Include even empty parents so their replacement or appearance invalidates

@@ -237,25 +237,44 @@ func (c *client) workbookRecord(ctx context.Context, kind, id string) (insightsW
 		if !ok || op.Call == nil || op.Call.Method != "GET" || op.Call.Version != insightsWorkbookVersion(kind) {
 			return record, serviceDenied("invalid_workbook_revision_binding")
 		}
+		// Rows are checked and bound in order before any read. Rows past the
+		// first invalid one are not read; its error follows the earlier reads.
+		type listedRevision struct {
+			raw           map[string]any
+			revision, url string
+		}
+		var listed []listedRevision
+		var invalid error
+		seen := map[string]bool{}
 		for _, value := range rows {
 			raw := object(value)
 			revision := text(object(raw["properties"])["revision"])
-			if !insightsLegacySelector(revision, insightsLegacyResource{}) || record.revisions[revision] != nil || insightsWorkbookIdentity(raw, id, kind, false) != nil {
-				return record, serviceDenied("invalid_workbook_revision_identity")
+			if !insightsLegacySelector(revision, insightsLegacyResource{}) || seen[revision] || insightsWorkbookIdentity(raw, id, kind, false) != nil {
+				invalid = serviceDenied("invalid_workbook_revision_identity")
+				break
 			}
+			seen[revision] = true
 			params["revisionId"] = revision
 			request, err := bindAzureREST(op, params)
 			if err != nil {
-				return record, err
+				invalid = err
+				break
 			}
-			result, err := c.request(ctx, "GET", request.URL)
-			if err != nil {
-				return record, contracts.DependencyReadError(err)
+			listed = append(listed, listedRevision{raw, revision, request.URL})
+		}
+		results, errs := readConcurrently(len(listed), func(i int) (response, error) { return c.request(ctx, "GET", listed[i].url) })
+		for i, row := range listed {
+			raw, revision, result := row.raw, row.revision, results[i]
+			if errs[i] != nil {
+				return record, contracts.DependencyReadError(errs[i])
 			}
 			if !insightsARMReadValid(result, id, kind) || result.data["nextLink"] != nil || result.data["NextLink"] != nil || insightsWorkbookIdentity(result.data, id, kind, true) != nil || text(object(result.data["properties"])["revision"]) != revision || !nativeConfigurationContains(insightsWorkbookSnapshot(raw, true), insightsWorkbookSnapshot(result.data, false)) {
 				return record, serviceDenied("workbook_revision_changed")
 			}
 			record.revisions[revision] = insightsWorkbookSnapshot(result.data, false)
+		}
+		if invalid != nil {
+			return record, invalid
 		}
 	}
 	after, err := c.workbookRead(ctx, kind, id)

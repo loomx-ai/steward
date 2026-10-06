@@ -98,57 +98,19 @@ func (c *client) monitorPrivateLinkIncoming(ctx context.Context, target asset.Id
 	if err != nil {
 		return nil, err
 	}
-	read := func() ([]serviceChild, string, error) {
-		scopes, err := c.subscriptionReferenceIndex(ctx, monitorPrivateLinkType)
-		if err != nil {
-			return nil, "", err
-		}
-		configuration := map[string]any{}
-		incoming := []serviceChild{}
-		for _, listed := range scopes {
-			id := strings.ToLower(text(listed["id"]))
-			kind, _ := findType(monitorPrivateLinkType)
-			endpoint, err := c.resourceURL(kind, id)
-			if err != nil {
-				return nil, "", err
-			}
-			live, err := c.request(ctx, "GET", endpoint)
-			if err != nil {
-				return nil, "", err
-			}
-			if !validResourceResponse(live, id, monitorPrivateLinkType) || monitorPrivateLinkListed(monitorPrivateLinkType, listed, live.data) != nil {
-				return nil, "", serviceDenied("monitor_private_link_scope_index_changed")
-			}
-			configuration[id] = monitorPrivateLinkSnapshot(monitorPrivateLinkType, live.data)
-			children, err := c.nativeServiceChildren(ctx, asset.Identity{NativeType: monitorPrivateLinkType, NativeID: id}, live.data, []string{monitorScopedResourceType})
-			if err != nil {
-				return nil, "", err
-			}
-			for _, child := range children {
-				configuration[child.id] = monitorPrivateLinkSnapshot(child.kind, child.data)
-				linked, err := monitorPrivateLinkReference(child.data)
-				if err != nil {
-					return nil, "", err
-				}
-				if strings.EqualFold(linked, target.NativeID) {
-					child.direct = true
-					incoming = append(incoming, child)
-				}
-			}
-		}
-		slices.SortFunc(incoming, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
-		return incoming, c.privateConfiguration(configuration), nil
-	}
-	_, first, err := read()
+	// The scan is independent of the target: one memo scope reads it once for
+	// every target; a delete check (no memo) reads it live.
+	scanned, err := memoized(ctx, "ampls-incoming:"+c.root(), func() ([]monitorPrivateLinkAssociation, error) { return c.monitorPrivateLinkAssociations(ctx) })
 	if err != nil {
 		return nil, err
 	}
-	incoming, second, err := read()
-	if err != nil {
-		return nil, err
-	}
-	if first != second {
-		return nil, serviceDenied("monitor_private_link_incoming_index_changed")
+	incoming := []serviceChild{}
+	for _, association := range scanned {
+		if strings.EqualFold(association.linked, target.NativeID) {
+			child := association.child
+			child.direct = true
+			incoming = append(incoming, child)
+		}
 	}
 	if present {
 		for _, child := range incoming {
@@ -177,6 +139,80 @@ func (c *client) monitorPrivateLinkIncoming(ctx context.Context, target asset.Id
 	return incoming, nil
 }
 
+type monitorPrivateLinkAssociation struct {
+	child  serviceChild
+	linked string
+}
+
+// monitorPrivateLinkAssociations reads the subscription scope index and every
+// scope's association LIST/GET twice, and returns the second pass once both
+// agree. Scopes are read concurrently and checked in index order.
+func (c *client) monitorPrivateLinkAssociations(ctx context.Context) ([]monitorPrivateLinkAssociation, error) {
+	read := func() ([]monitorPrivateLinkAssociation, string, error) {
+		scopes, err := c.subscriptionReferenceIndex(ctx, monitorPrivateLinkType)
+		if err != nil {
+			return nil, "", err
+		}
+		kind, _ := findType(monitorPrivateLinkType)
+		type scopeRead struct {
+			configuration map[string]any
+			associations  []monitorPrivateLinkAssociation
+		}
+		reads, errs := readConcurrently(len(scopes), func(i int) (scopeRead, error) {
+			listed := scopes[i]
+			id := strings.ToLower(text(listed["id"]))
+			endpoint, err := c.resourceURL(kind, id)
+			if err != nil {
+				return scopeRead{}, err
+			}
+			live, err := c.request(ctx, "GET", endpoint)
+			if err != nil {
+				return scopeRead{}, err
+			}
+			if !validResourceResponse(live, id, monitorPrivateLinkType) || monitorPrivateLinkListed(monitorPrivateLinkType, listed, live.data) != nil {
+				return scopeRead{}, serviceDenied("monitor_private_link_scope_index_changed")
+			}
+			read := scopeRead{configuration: map[string]any{id: monitorPrivateLinkSnapshot(monitorPrivateLinkType, live.data)}}
+			children, err := c.nativeServiceChildren(ctx, asset.Identity{NativeType: monitorPrivateLinkType, NativeID: id}, live.data, []string{monitorScopedResourceType})
+			if err != nil {
+				return scopeRead{}, err
+			}
+			for _, child := range children {
+				read.configuration[child.id] = monitorPrivateLinkSnapshot(child.kind, child.data)
+				linked, err := monitorPrivateLinkReference(child.data)
+				if err != nil {
+					return scopeRead{}, err
+				}
+				read.associations = append(read.associations, monitorPrivateLinkAssociation{child, linked})
+			}
+			return read, nil
+		})
+		configuration := map[string]any{}
+		associations := []monitorPrivateLinkAssociation{}
+		for i, read := range reads {
+			if errs[i] != nil {
+				return nil, "", errs[i]
+			}
+			maps.Copy(configuration, read.configuration)
+			associations = append(associations, read.associations...)
+		}
+		slices.SortFunc(associations, func(a, b monitorPrivateLinkAssociation) int { return strings.Compare(a.child.id, b.child.id) })
+		return associations, c.privateConfiguration(configuration), nil
+	}
+	_, first, err := read()
+	if err != nil {
+		return nil, err
+	}
+	associations, second, err := read()
+	if err != nil {
+		return nil, err
+	}
+	if first != second {
+		return nil, serviceDenied("monitor_private_link_incoming_index_changed")
+	}
+	return associations, nil
+}
+
 func monitorPrivateLinkPrerequisite(target, association asset.Asset) bool {
 	if !monitorPrivateLinkTarget(target.Identity.NativeType) || association.Identity.NativeType != monitorScopedResourceType {
 		return false
@@ -189,11 +225,18 @@ func monitorPrivateLinkPrerequisite(target, association asset.Asset) bool {
 // These graph edges request association deletion, without owning its scope.
 // https://learn.microsoft.com/azure/azure-monitor/fundamentals/private-link-configure
 func (s *serviceCascades) contributeMonitorPrivateLinkReferences(ctx context.Context, assets []asset.Asset, result *governance.Contribution) error {
+	var targets []asset.Asset
 	for _, target := range assets {
-		if target.Identity.Provider != asset.ProviderAzure || !monitorPrivateLinkTarget(target.Identity.NativeType) {
-			continue
+		if target.Identity.Provider == asset.ProviderAzure && monitorPrivateLinkTarget(target.Identity.NativeType) {
+			targets = append(targets, target)
 		}
-		incoming, err := s.client.monitorPrivateLinkIncoming(ctx, target.Identity)
+	}
+	// Targets are read concurrently and checked in order.
+	reads, errs := readConcurrently(len(targets), func(i int) ([]serviceChild, error) {
+		return s.client.monitorPrivateLinkIncoming(ctx, targets[i].Identity)
+	})
+	for i, target := range targets {
+		incoming, err := reads[i], errs[i]
 		if err != nil {
 			return err
 		}

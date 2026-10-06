@@ -94,6 +94,12 @@ func (a *netappVaultAction) current(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
+// volumes reads every reviewed consumer volume concurrently, in sorted ID order.
+func (a *netappVaultAction) volumes(ctx context.Context, detached bool) ([]map[string]any, []error) {
+	ids := slices.Sorted(maps.Keys(object(a.review["consumers"])))
+	return readConcurrently(len(ids), func(i int) (map[string]any, error) { return a.volume(ctx, ids[i], detached) })
+}
+
 func (a *netappVaultAction) backup(ctx context.Context, req contracts.ActionRequest, id string, allowAssigned bool) (bool, error) {
 	own, err := a.client.netappRead(ctx, id, netappBackupType)
 	if isNotFound(err) {
@@ -155,17 +161,19 @@ func (a *netappVaultAction) Preflight(ctx context.Context, req contracts.ActionR
 		read, err := a.Readback(ctx, req)
 		return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists}, err
 	}
-	for id := range object(a.review["consumers"]) {
-		own, err := a.volume(ctx, id, false)
-		if err != nil {
-			return contracts.PreflightResult{}, err
+	volumes, errs := a.volumes(ctx, false)
+	for i, own := range volumes {
+		if errs[i] != nil {
+			return contracts.PreflightResult{}, errs[i]
 		}
 		if object(own["properties"])["provisioningState"] != "Succeeded" {
 			return contracts.PreflightResult{}, serviceDenied("netapp_vault_volume_not_ready")
 		}
 	}
-	for id := range a.members {
-		if _, err := a.backup(ctx, req, id, true); err != nil {
+	members := slices.Sorted(maps.Keys(a.members))
+	_, errs = readConcurrently(len(members), func(i int) (bool, error) { return a.backup(ctx, req, members[i], true) })
+	for _, err := range errs {
+		if err != nil {
 			return contracts.PreflightResult{}, err
 		}
 	}
@@ -198,18 +206,19 @@ func (a *netappVaultAction) Readback(ctx context.Context, req contracts.ActionRe
 	if !absent {
 		return contracts.ReadbackResult{Exists: true}, nil
 	}
-	for id := range object(a.review["consumers"]) {
-		own, err := a.volume(ctx, id, true)
-		if err != nil {
-			return contracts.ReadbackResult{}, err
+	volumes, errs := a.volumes(ctx, true)
+	for i, own := range volumes {
+		if errs[i] != nil {
+			return contracts.ReadbackResult{}, errs[i]
 		}
 		assignments, _ := netappAssignments(own)
 		if assignments[netappBackupPolicyType] != "" || object(own["properties"])["provisioningState"] != "Succeeded" {
 			return contracts.ReadbackResult{}, serviceDenied("netapp_vault_retained_volume_not_ready")
 		}
 	}
-	for id := range a.members {
-		_, err := a.client.netappRead(ctx, id, netappBackupType)
+	members := slices.Sorted(maps.Keys(a.members))
+	_, errs = readConcurrently(len(members), func(i int) (response, error) { return a.client.netappRead(ctx, members[i], netappBackupType) })
+	for _, err := range errs {
 		if !isNotFound(err) {
 			if err != nil {
 				return contracts.ReadbackResult{}, err
@@ -464,10 +473,10 @@ func (a *netappVaultAction) Wait(ctx context.Context, req contracts.ActionReques
 		if err != nil {
 			return out, err
 		}
-		for _, id := range ids {
-			own, err := a.volume(ctx, id, true)
-			if err != nil {
-				return out, err
+		volumes, errs := a.volumes(ctx, true)
+		for i, own := range volumes {
+			if errs[i] != nil {
+				return out, errs[i]
 			}
 			assignments, _ := netappAssignments(own)
 			if assignments[netappBackupPolicyType] != "" || object(own["properties"])["provisioningState"] != "Succeeded" {

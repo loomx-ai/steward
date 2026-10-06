@@ -100,8 +100,10 @@ func (c *client) hybridComputeMachineChildren(ctx context.Context, id string, kn
 		}
 	}
 	out := map[string]map[string]any{}
-	for _, child := range slices.Sorted(maps.Keys(ids)) {
-		res, err := c.hybridComputeRead(ctx, child, ids[child])
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.hybridComputeRead(ctx, ordered[i], ids[ordered[i]]) })
+	for i, child := range ordered {
+		res, err := reads[i], errs[i]
 		if isNotFound(err) && listed[child] == nil {
 			continue
 		}

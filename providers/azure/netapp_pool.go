@@ -58,8 +58,10 @@ func (c *client) netappPoolMembers(ctx context.Context, id string, region string
 		ids[child] = true
 	}
 	members := map[string]any{}
-	for _, child := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.netappRead(ctx, child, netappVolumeType)
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.netappRead(ctx, ordered[i], netappVolumeType) })
+	for i, child := range ordered {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) {
 			if ids[child] {
 				return nil, serviceDenied("netapp_pool_listed_volume_missing")

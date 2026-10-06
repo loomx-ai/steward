@@ -92,12 +92,21 @@ func (c *client) netappGroupNetwork(ctx context.Context, region string, members,
 	interfaces := map[string]any{}
 	found := map[string]string{}
 	identities := map[string]string{}
+	// Endpoints are bound in order before any read; NICs past the first failure
+	// are not read, and its error follows the earlier reads'.
+	var nics, endpoints []string
+	var invalid error
 	for _, id := range slices.Sorted(maps.Keys(ids)) {
 		endpoint, err := c.resourceURL(kind, id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		own, err := c.request(ctx, "GET", endpoint)
+		nics, endpoints = append(nics, id), append(endpoints, endpoint)
+	}
+	reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, id := range nics {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && !ids[id] {
 			continue
 		}
@@ -176,6 +185,9 @@ func (c *client) netappGroupNetwork(ctx context.Context, region string, members,
 		verified = verified && uuidPattern.MatchString(uid) && p["provisioningState"] == "Succeeded"
 		complete = complete && verified
 		interfaces[id] = map[string]any{"configuration": c.privateConfiguration(own.data), "uid": strings.ToLower(uid), "addresses": matched, "workloads": linked, "correlated": verified}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	for key := range addresses {
 		if found[key] == "" {

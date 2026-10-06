@@ -52,8 +52,10 @@ func (c *client) recoveryContainerConsumers(ctx context.Context, id string, know
 		}
 	}
 	consumers := map[string]any{}
-	for _, item := range slices.Sorted(maps.Keys(candidates)) {
-		own, err := c.recoveryServicesRead(ctx, item, recoveryServicesItem)
+	items := slices.Sorted(maps.Keys(candidates))
+	reads, errs := readConcurrently(len(items), func(i int) (response, error) { return c.recoveryServicesRead(ctx, items[i], recoveryServicesItem) })
+	for i, item := range items {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && listed[item] == nil {
 			continue
 		}

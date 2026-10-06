@@ -133,87 +133,104 @@ func (a *action) wafPreflight(planned asset.Asset, live map[string]any) error {
 // Classic Front Door endpoint/routing configurations have no standalone DELETE;
 // keep them unresolved until their own controller lifecycle is supported.
 func (s *serviceCascades) contributeWAFReferences(ctx context.Context, assets []asset.Asset, result *governance.Contribution) error {
+	var parents []asset.Asset
 	for _, parent := range assets {
-		if parent.Identity.Provider != asset.ProviderAzure || !isWAFType(parent.Identity.NativeType) {
-			continue
-		}
-		kind, _ := findType(parent.Identity.NativeType)
-		endpoint, err := s.client.resourceURL(kind, parent.Identity.NativeID)
-		if err != nil {
-			return err
-		}
-		live, err := s.client.request(ctx, "GET", endpoint)
-		if err != nil {
-			return err
-		}
-		if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
-			return serviceDenied("invalid_waf_policy_identity")
-		}
-		if err := wafIncarnation(parent, live.data); err != nil {
-			return err
-		}
-		if err := s.client.servicePrivateIncarnation(parent, live.data); err != nil {
-			return err
-		}
-		links, _ := wafLinks(parent.Identity.NativeType, live.data)
-		if !slices.Equal(links, stringValues(parent.Normalized["_waf_links"])) {
-			return serviceDenied("waf_associations_changed")
-		}
-		for _, id := range links {
-			_, parsedType, _ := parseID(id)
-			childKind, known := findType(parsedType)
-			if known {
-				parsedType = childKind.NativeType
-			}
-			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": parsedType, "instance_id": id}
-			var target *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeID, id) && strings.EqualFold(candidate.Identity.NativeType, parsedType) {
-					if target != nil {
-						return serviceDenied("ambiguous_waf_association")
-					}
-					target = candidate
-				}
-			}
-			if !known || childKind.ReadOnly || target == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: parsedType, NativeID: id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
-				continue
-			}
-			childURL, err := s.client.resourceURL(childKind, id)
-			if err != nil {
-				return err
-			}
-			child, err := s.client.request(ctx, "GET", childURL)
-			if err != nil {
-				return err
-			}
-			if !validResourceResponse(child, id, childKind.NativeType) {
-				return serviceDenied("invalid_waf_referrer_identity")
-			}
-			policyID, err := wafPolicyReference(childKind.NativeType, child.data)
-			if err != nil || !strings.EqualFold(policyID, parent.Identity.NativeID) || !wafPrerequisite(parent, *target) {
-				return serviceDenied("waf_association_disagrees")
-			}
-			if err := serviceIncarnation(*target, child.data); err != nil {
-				return err
-			}
-			if err := s.client.servicePrivateIncarnation(*target, child.data); err != nil {
-				return err
-			}
-			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: "azure:waf-association", Evidence: evidence, Confidence: 1})
-		}
-		latest, err := s.client.request(ctx, "GET", endpoint)
-		if err != nil {
-			return err
-		}
-		if !validResourceResponse(latest, parent.Identity.NativeID, parent.Identity.NativeType) {
-			return serviceDenied("invalid_waf_policy_identity")
-		}
-		latestLinks, err := wafLinks(parent.Identity.NativeType, latest.data)
-		if err != nil || !slices.Equal(links, latestLinks) || s.client.privateConfiguration(wafSnapshot(parent.Identity.NativeType, live.data)) != s.client.privateConfiguration(wafSnapshot(parent.Identity.NativeType, latest.data)) {
-			return serviceDenied("waf_associations_changed")
+		if parent.Identity.Provider == asset.ProviderAzure && isWAFType(parent.Identity.NativeType) {
+			parents = append(parents, parent)
 		}
 	}
+	// Each policy's before read, referrer reads and after read run in that
+	// order on their own; policies run concurrently and merge in asset order.
+	reads, errs := readConcurrently(len(parents), func(i int) (governance.Contribution, error) {
+		return s.wafReferences(ctx, parents[i], assets)
+	})
+	for i := range parents {
+		if errs[i] != nil {
+			return errs[i]
+		}
+		result.Relationships = append(result.Relationships, reads[i].Relationships...)
+		result.Unresolved = append(result.Unresolved, reads[i].Unresolved...)
+	}
 	return nil
+}
+
+func (s *serviceCascades) wafReferences(ctx context.Context, parent asset.Asset, assets []asset.Asset) (result governance.Contribution, err error) {
+	kind, _ := findType(parent.Identity.NativeType)
+	endpoint, err := s.client.resourceURL(kind, parent.Identity.NativeID)
+	if err != nil {
+		return result, err
+	}
+	live, err := s.client.request(ctx, "GET", endpoint)
+	if err != nil {
+		return result, err
+	}
+	if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
+		return result, serviceDenied("invalid_waf_policy_identity")
+	}
+	if err := wafIncarnation(parent, live.data); err != nil {
+		return result, err
+	}
+	if err := s.client.servicePrivateIncarnation(parent, live.data); err != nil {
+		return result, err
+	}
+	links, _ := wafLinks(parent.Identity.NativeType, live.data)
+	if !slices.Equal(links, stringValues(parent.Normalized["_waf_links"])) {
+		return result, serviceDenied("waf_associations_changed")
+	}
+	for _, id := range links {
+		_, parsedType, _ := parseID(id)
+		childKind, known := findType(parsedType)
+		if known {
+			parsedType = childKind.NativeType
+		}
+		evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": parsedType, "instance_id": id}
+		var target *asset.Asset
+		for i := range assets {
+			candidate := &assets[i]
+			if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeID, id) && strings.EqualFold(candidate.Identity.NativeType, parsedType) {
+				if target != nil {
+					return result, serviceDenied("ambiguous_waf_association")
+				}
+				target = candidate
+			}
+		}
+		if !known || childKind.ReadOnly || target == nil {
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: parsedType, NativeID: id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+			continue
+		}
+		childURL, err := s.client.resourceURL(childKind, id)
+		if err != nil {
+			return result, err
+		}
+		child, err := s.client.request(ctx, "GET", childURL)
+		if err != nil {
+			return result, err
+		}
+		if !validResourceResponse(child, id, childKind.NativeType) {
+			return result, serviceDenied("invalid_waf_referrer_identity")
+		}
+		policyID, err := wafPolicyReference(childKind.NativeType, child.data)
+		if err != nil || !strings.EqualFold(policyID, parent.Identity.NativeID) || !wafPrerequisite(parent, *target) {
+			return result, serviceDenied("waf_association_disagrees")
+		}
+		if err := serviceIncarnation(*target, child.data); err != nil {
+			return result, err
+		}
+		if err := s.client.servicePrivateIncarnation(*target, child.data); err != nil {
+			return result, err
+		}
+		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: "azure:waf-association", Evidence: evidence, Confidence: 1})
+	}
+	latest, err := s.client.request(ctx, "GET", endpoint)
+	if err != nil {
+		return result, err
+	}
+	if !validResourceResponse(latest, parent.Identity.NativeID, parent.Identity.NativeType) {
+		return result, serviceDenied("invalid_waf_policy_identity")
+	}
+	latestLinks, err := wafLinks(parent.Identity.NativeType, latest.data)
+	if err != nil || !slices.Equal(links, latestLinks) || s.client.privateConfiguration(wafSnapshot(parent.Identity.NativeType, live.data)) != s.client.privateConfiguration(wafSnapshot(parent.Identity.NativeType, latest.data)) {
+		return result, serviceDenied("waf_associations_changed")
+	}
+	return result, nil
 }

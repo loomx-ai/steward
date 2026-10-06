@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -35,7 +36,10 @@ func TestDeploymentStackPreparationStage(t *testing.T) {
 			calls, writes, polls := 0, []string{}, map[string]int{}
 			fault := false
 			callbacks := map[string]string{}
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				calls++
 				if q.Method == "DELETE" {
 					t.Fatal("preparation stage deleted resource")

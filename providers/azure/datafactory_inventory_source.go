@@ -301,12 +301,16 @@ func (c *client) dataFactoryContext(ctx context.Context, hints map[string]dataFa
 			}
 		}
 	}
-	for _, rootID := range slices.Sorted(maps.Keys(trees)) {
-		tree := trees[rootID]
-		tree.work, err = c.dataFactoryWork(ctx, tree, knownWork[rootID])
-		if err != nil {
-			return nil, nil, err
+	rootIDs := slices.Sorted(maps.Keys(trees))
+	works, errs := readConcurrently(len(rootIDs), func(i int) (dataFactoryWork, error) {
+		return c.dataFactoryWork(ctx, trees[rootIDs[i]], knownWork[rootIDs[i]])
+	})
+	for i, rootID := range rootIDs {
+		if errs[i] != nil {
+			return nil, nil, errs[i]
 		}
+		tree := trees[rootID]
+		tree.work = works[i]
 		trees[rootID] = tree
 	}
 	if err := c.dataFactoryRelations(ctx, trees, metadata); err != nil {

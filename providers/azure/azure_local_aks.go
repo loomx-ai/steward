@@ -154,25 +154,40 @@ func (c *client) azureLocalAKSResources(ctx context.Context, known []string) (ma
 	if err != nil {
 		return nil, err
 	}
+	// Parents are checked in order before any read. Rows past the first
+	// invalid one are not read, and its error follows the earlier reads.
 	seen := map[string]bool{}
+	var parents []map[string]any
+	var ids []string
+	var invalid error
 	for _, row := range rows {
 		raw := object(row)
 		parent, e := c.azureLocalAKSIdentity(text(raw["id"]), fleetArcClusterType)
 		if e != nil || seen[parent] || !strings.EqualFold(text(raw["type"]), fleetArcClusterType) {
-			return nil, serviceDenied("invalid_azure_local_aks_parent_index")
+			invalid = serviceDenied("invalid_azure_local_aks_parent_index")
+			break
 		}
 		seen[parent] = true
-		live, e := c.azureLocalAKSRead(ctx, parent, fleetArcClusterType)
-		if e != nil {
-			return nil, e
+		parents, ids = append(parents, raw), append(ids, parent)
+	}
+	lives, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.azureLocalAKSRead(ctx, ids[i], fleetArcClusterType) })
+	for i, raw := range parents {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		if serviceListedIncarnation(raw, live.data) != nil || !nativeConfigurationContains(raw, live.data) {
+		if serviceListedIncarnation(raw, lives[i].data) != nil || !nativeConfigurationContains(raw, lives[i].data) {
 			return nil, serviceDenied("azure_local_aks_parent_index_changed")
 		}
-		instances[parent+azureLocalAKSSuffix] = true
+		instances[ids[i]+azureLocalAKSSuffix] = true
 	}
-	resources := map[string]map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(instances)) {
+	if invalid != nil {
+		return nil, invalid
+	}
+	// Each instance's index and GET run concurrently; results and the first
+	// failure are taken in ID order.
+	ids = slices.Sorted(maps.Keys(instances))
+	values, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) {
+		id := ids[i]
 		req, e := c.azureLocalAKSRequest(azureLocalAKSType, id, true)
 		if e != nil {
 			return nil, e
@@ -195,7 +210,7 @@ func (c *client) azureLocalAKSResources(ctx context.Context, known []string) (ma
 		}
 		live, e := c.azureLocalAKSRead(ctx, id, azureLocalAKSType)
 		if isNotFound(e) && listed == nil {
-			continue
+			return nil, nil
 		}
 		if e != nil {
 			return nil, e
@@ -203,7 +218,16 @@ func (c *client) azureLocalAKSResources(ctx context.Context, known []string) (ma
 		if listed != nil && (serviceListedIncarnation(listed, live.data) != nil || !nativeConfigurationContains(listed, live.data)) {
 			return nil, serviceDenied("azure_local_aks_index_changed")
 		}
-		resources[id] = live.data
+		return live.data, nil
+	})
+	resources := map[string]map[string]any{}
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, errs[i]
+		}
+		if values[i] != nil {
+			resources[id] = values[i]
+		}
 	}
 	return resources, nil
 }

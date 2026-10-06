@@ -110,20 +110,34 @@ func (c *client) defenderPricingIndex(ctx context.Context, scope string) (map[st
 		return nil, "", serviceDenied("invalid_defender_index")
 	}
 	values := map[string]map[string]any{}
+	// Rows are checked in order before any read; rows at or after the first
+	// invalid one are not read, and its error follows earlier read results.
+	var invalid error
+	var ids []string
+	seen := map[string]bool{}
 	for _, row := range rows {
 		raw := object(row)
 		id, parent, err := c.defenderIdentity(text(raw["id"]))
-		if err != nil || parent != scope || values[id] != nil || !strings.EqualFold(text(raw["name"]), last(id)) || !strings.EqualFold(text(raw["type"]), defenderPricingType) || defenderProperties(raw) != nil {
-			return nil, "", serviceDenied("invalid_defender_index_member")
+		if err != nil || parent != scope || seen[id] || !strings.EqualFold(text(raw["name"]), last(id)) || !strings.EqualFold(text(raw["type"]), defenderPricingType) || defenderProperties(raw) != nil {
+			invalid = serviceDenied("invalid_defender_index_member")
+			break
 		}
-		live, err := c.defenderRead(ctx, text(raw["id"]))
+		seen[id] = true
+		ids = append(ids, id)
+	}
+	lives, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.defenderRead(ctx, text(object(rows[i])["id"])) })
+	for i, id := range ids {
+		live, err := lives[i], errs[i]
 		if err != nil {
 			return nil, "", err
 		}
-		if c.privateConfiguration(defenderSnapshot(raw)) != c.privateConfiguration(defenderSnapshot(live.data)) {
+		if c.privateConfiguration(defenderSnapshot(object(rows[i]))) != c.privateConfiguration(defenderSnapshot(live.data)) {
 			return nil, "", serviceDenied("defender_index_member_changed")
 		}
 		values[id] = live.data
+	}
+	if invalid != nil {
+		return nil, "", invalid
 	}
 	return values, res.requestID, nil
 }
@@ -140,30 +154,51 @@ func (r *Runtime) defenderSnapshot(ctx context.Context, c *client, request contr
 		if err != nil {
 			return nil, nil, "", err
 		}
+		// Rows are checked in order before any read; rows at or after the
+		// first invalid one are not read, and its error follows earlier reads.
+		var invalid error
+		var ids []string
+		seen := map[string]bool{}
 		for _, row := range rows {
 			raw := object(row)
 			id, typ, err := parseID(text(raw["id"]))
-			if err != nil || !strings.EqualFold(typ, kind) || !strings.EqualFold(text(raw["type"]), kind) || parents[id] != nil {
-				return nil, nil, "", serviceDenied("invalid_defender_parent_index")
+			if err != nil || !strings.EqualFold(typ, kind) || !strings.EqualFold(text(raw["type"]), kind) || parents[id] != nil || seen[id] {
+				invalid = serviceDenied("invalid_defender_parent_index")
+				break
 			}
-			current, err := c.defenderParent(ctx, id)
-			if err != nil {
-				return nil, nil, "", err
+			seen[id] = true
+			ids = append(ids, id)
+		}
+		currents, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.defenderParent(ctx, ids[i]) })
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, nil, "", errs[i]
 			}
-			if serviceListedIncarnation(raw, current) != nil {
+			if serviceListedIncarnation(object(rows[i]), currents[i]) != nil {
 				return nil, nil, "", serviceDenied("defender_parent_changed")
 			}
-			parents[id] = current
+			parents[id] = currents[i]
+		}
+		if invalid != nil {
+			return nil, nil, "", invalid
 		}
 	}
 	known, values := map[string]bool{}, map[string]map[string]any{}
+	// Known IDs are checked in order before any read, as in the serial walk.
+	var invalid error
+	var knownIDs, scopes []string
 	for _, id := range request.KnownNativeIDs {
 		canonical, scope, err := c.defenderIdentity(id)
 		if err != nil || canonical != id || known[id] {
-			return nil, nil, "", serviceDenied("invalid_defender_known_identity")
+			invalid = serviceDenied("invalid_defender_known_identity")
+			break
 		}
 		known[id] = true
-		live, err := c.defenderRead(ctx, id)
+		knownIDs, scopes = append(knownIDs, id), append(scopes, scope)
+	}
+	lives, errs := readConcurrently(len(knownIDs), func(i int) (response, error) { return c.defenderRead(ctx, knownIDs[i]) })
+	for i, id := range knownIDs {
+		scope, live, err := scopes[i], lives[i], errs[i]
 		if isNotFound(err) {
 			continue
 		}
@@ -179,14 +214,26 @@ func (r *Runtime) defenderSnapshot(ctx context.Context, c *client, request contr
 			parents[scope] = parent
 		}
 	}
+	if invalid != nil {
+		return nil, nil, "", invalid
+	}
 	for id := range request.KnownNativeMetadata {
 		if !known[id] {
 			return nil, nil, "", serviceDenied("unrelated_defender_known_metadata")
 		}
 	}
 	provenance := ""
-	for _, scope := range slices.Sorted(maps.Keys(parents)) {
-		index, requestID, err := c.defenderPricingIndex(ctx, scope)
+	type pricingIndex struct {
+		values    map[string]map[string]any
+		requestID string
+	}
+	scopes = slices.Sorted(maps.Keys(parents))
+	indexes, errs := readConcurrently(len(scopes), func(i int) (pricingIndex, error) {
+		index, requestID, err := c.defenderPricingIndex(ctx, scopes[i])
+		return pricingIndex{index, requestID}, err
+	})
+	for i := range scopes {
+		index, requestID, err := indexes[i].values, indexes[i].requestID, errs[i]
 		if err != nil {
 			return nil, nil, "", err
 		}

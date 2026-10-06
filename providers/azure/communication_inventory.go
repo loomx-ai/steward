@@ -91,20 +91,33 @@ func (c *client) communicationARMIndex(ctx context.Context, kind string, parent 
 		if err != nil {
 			return nil, err
 		}
+		// Rows are checked in order before any read; rows past the first
+		// invalid one are not read, and its error follows the earlier reads'.
+		var ids []string
+		var invalid error
+		seen := map[string]bool{}
 		for _, value := range values {
 			raw := object(value)
 			id := responseID(kind, text(raw["id"]))
-			if c.communicationIdentity(id, kind) != nil || items[id] != nil || !validResponseType(kind, text(raw["type"])) {
-				return nil, serviceDenied("invalid_communication_root_index")
+			if c.communicationIdentity(id, kind) != nil || seen[id] || !validResponseType(kind, text(raw["type"])) {
+				invalid = serviceDenied("invalid_communication_root_index")
+				break
 			}
-			current, err := c.communicationARMRead(ctx, id, kind)
-			if err != nil {
-				return nil, err
+			seen[id] = true
+			ids = append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.communicationARMRead(ctx, ids[i], kind) })
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
-			if !nativeConfigurationContains(communicationSnapshot(kind, raw), communicationSnapshot(kind, current)) {
+			if !nativeConfigurationContains(communicationSnapshot(kind, object(values[i])), communicationSnapshot(kind, reads[i])) {
 				return nil, serviceDenied("communication_root_index_changed")
 			}
-			items[id] = current
+			items[id] = reads[i]
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		return items, nil
 	}
@@ -152,6 +165,11 @@ func (c *client) communicationDataIndex(ctx context.Context, account communicati
 		return nil, err
 	}
 	items := map[string]map[string]any{}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
+	var ids []string
+	var invalid error
+	seen := map[string]bool{}
 	for _, raw := range values {
 		path := "/rooms/" + text(raw["id"])
 		if kind == communicationPhoneType {
@@ -161,19 +179,27 @@ func (c *client) communicationDataIndex(ctx context.Context, account communicati
 			path = "/availablePhoneNumbers/reservations/" + text(raw["id"])
 		}
 		id := account.endpoint + path
-		if c.communicationIdentity(id, kind) != nil || items[id] != nil {
-			return nil, serviceDenied("invalid_communication_data_index")
+		if c.communicationIdentity(id, kind) != nil || seen[id] {
+			invalid = serviceDenied("invalid_communication_data_index")
+			break
 		}
-		current, err := c.communicationObservedData(ctx, account, id, kind)
-		if err != nil {
-			return nil, err
+		seen[id] = true
+		ids = append(ids, id)
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.communicationObservedData(ctx, account, ids[i], kind) })
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
 		// Reservation collections omit phoneNumbers. Compare the native fields
 		// they expose and always fetch the full reservation through its own GET.
-		if !nativeConfigurationContains(communicationSnapshot(kind, raw), communicationSnapshot(kind, current)) {
+		if !nativeConfigurationContains(communicationSnapshot(kind, values[i]), communicationSnapshot(kind, reads[i])) {
 			return nil, serviceDenied("communication_data_index_changed")
 		}
-		items[id] = current
+		items[id] = reads[i]
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	return items, nil
 }
@@ -583,8 +609,12 @@ func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client,
 	}
 	trees := map[string]communicationTree{}
 	rows := map[string]communicationMember{}
-	for _, id := range slices.Sorted(maps.Keys(roots)) {
-		tree, err := c.communicationTree(ctx, roots[id], hints)
+	rootIDs := slices.Sorted(maps.Keys(roots))
+	// Each root's tree walk (with its own after-read) runs concurrently;
+	// trees merge in root order.
+	walked, errs := readConcurrently(len(rootIDs), func(i int) (communicationTree, error) { return c.communicationTree(ctx, roots[rootIDs[i]], hints) })
+	for i, id := range rootIDs {
+		tree, err := walked[i], errs[i]
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -597,10 +627,15 @@ func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client,
 		}
 	}
 	missing := map[string]bool{}
+	var unowned []string
 	for _, id := range slices.Sorted(maps.Keys(hints)) {
-		if rows[id].id != "" {
-			continue
+		if rows[id].id == "" {
+			unowned = append(unowned, id)
 		}
+	}
+	// Hints outside every tree are read concurrently, then checked in order.
+	_, errs = readConcurrently(len(unowned), func(i int) (struct{}, error) {
+		id := unowned[i]
 		hint := hints[id]
 		var err error
 		if isCommunicationDataType(hint.kind) {
@@ -612,6 +647,10 @@ func (r *Runtime) communicationInventorySnapshot(ctx context.Context, c *client,
 		} else {
 			_, err = c.communicationARMRead(ctx, id, hint.kind)
 		}
+		return struct{}{}, err
+	})
+	for i, id := range unowned {
+		err := errs[i]
 		if isNotFound(err) {
 			missing[id] = true
 			continue

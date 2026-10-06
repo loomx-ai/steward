@@ -127,22 +127,31 @@ func (c *client) dataFactoryRuns(ctx context.Context, root dataFactoryMember, kn
 		if err != nil {
 			return nil, err
 		}
+		// Rows are checked in order before any read. Rows past the first invalid
+		// one are not read, and its error follows the earlier rows' checks.
+		var reads []map[string]any
+		var invalid error
 		for _, value := range rows {
 			row := object(value)
 			runID := text(row["runId"])
-			if err := dataFactoryRunMetadata(root.id, runID, row); err != nil {
-				return nil, err
+			if invalid = dataFactoryRunMetadata(root.id, runID, row); invalid != nil {
+				break
 			}
 			if seen[runID] {
-				return nil, serviceDenied("duplicate_datafactory_pipeline_run")
+				invalid = serviceDenied("duplicate_datafactory_pipeline_run")
+				break
 			}
 			seen[runID] = true
 			// Historical results do not authorize mutations. For active work,
 			// require the named GET and bind that response's private definition.
-			if !dataFactoryRunActive(row) && known[runID] == nil {
-				continue
+			if dataFactoryRunActive(row) || known[runID] != nil {
+				reads = append(reads, row)
 			}
-			live, err := c.dataFactoryRun(ctx, root.id, runID)
+		}
+		lives, errs := readConcurrently(len(reads), func(i int) (map[string]any, error) { return c.dataFactoryRun(ctx, root.id, text(reads[i]["runId"])) })
+		for i, row := range reads {
+			runID := text(row["runId"])
+			live, err := lives[i], errs[i]
 			if err != nil {
 				return nil, err
 			}
@@ -157,6 +166,9 @@ func (c *client) dataFactoryRuns(ctx context.Context, root dataFactoryMember, kn
 			if dataFactoryRunActive(live) {
 				result[runID] = live
 			}
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		if next == "" {
 			break

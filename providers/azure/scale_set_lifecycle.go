@@ -76,18 +76,27 @@ func (c *client) flexibleScaleSetVMs(ctx context.Context, parentID string) ([]se
 	kind, _ := findType(vmType)
 	seen := map[string]bool{}
 	children := []serviceChild{}
+	// Rows are checked in order before any read; rows at or after the first
+	// invalid one are not read, and its error follows earlier read results.
+	var invalid error
+	var ids, endpoints []string
 	for _, value := range values {
-		listed := object(value)
-		id, parsed, err := parseID(text(listed["id"]))
-		if err != nil || !strings.EqualFold(parsed, vmType) || !validResponseType(vmType, text(listed["type"])) || seen[id] {
-			return nil, fmt.Errorf("invalid or duplicate Flexible scale set VM identity")
+		id, parsed, err := parseID(text(object(value)["id"]))
+		if err != nil || !strings.EqualFold(parsed, vmType) || !validResponseType(vmType, text(object(value)["type"])) || seen[id] {
+			invalid = fmt.Errorf("invalid or duplicate Flexible scale set VM identity")
+			break
 		}
 		seen[id] = true
 		endpoint, err := c.resourceURL(kind, id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		live, err := c.request(ctx, "GET", endpoint)
+		ids, endpoints = append(ids, id), append(endpoints, endpoint)
+	}
+	lives, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, id := range ids {
+		listed, live, err := object(values[i]), lives[i], errs[i]
 		if err != nil {
 			return nil, err
 		}
@@ -100,6 +109,9 @@ func (c *client) flexibleScaleSetVMs(ctx context.Context, parentID string) ([]se
 		if strings.EqualFold(text(object(object(live.data["properties"])["virtualMachineScaleSet"])["id"]), parentID) {
 			children = append(children, serviceChild{id: id, kind: vmType, data: live.data, direct: true})
 		}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	sort.Slice(children, func(i, j int) bool { return children[i].id < children[j].id })
 	return children, nil
@@ -188,12 +200,20 @@ func (c *client) uniformVMChildren(ctx context.Context, parent asset.Identity, r
 		return nil, fmt.Errorf("Uniform scale set NIC membership changed")
 	}
 	kind, _ := findType(diskType)
+	// Disk IDs are checked in order before any read, as in the serial walk.
+	var invalid error
+	var endpoints []string
 	for _, id := range ids {
 		endpoint, err := c.resourceURL(kind, id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		current, err := c.request(ctx, "GET", endpoint)
+		endpoints = append(endpoints, endpoint)
+	}
+	disks, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, id := range ids[:len(endpoints)] {
+		current, err := disks[i], errs[i]
 		if err != nil {
 			return nil, err
 		}
@@ -211,6 +231,9 @@ func (c *client) uniformVMChildren(ctx context.Context, parent asset.Identity, r
 			}
 		}
 		children = append(children, serviceChild{id: id, kind: diskType, data: current.data})
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	return children, nil
 }

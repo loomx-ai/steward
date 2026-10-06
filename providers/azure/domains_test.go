@@ -10,6 +10,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -179,7 +180,12 @@ func TestDomainOfficialContracts(t *testing.T) {
 func TestDomainNativeInventoryAndPrivacy(t *testing.T) {
 	s, r, assets := domainScenario(t, true)
 	var logs []execution.JobLogEntry
-	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+	var logsMu sync.Mutex
+	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+		logsMu.Lock()
+		logs = append(logs, entry)
+		logsMu.Unlock()
+	}))
 	for _, kind := range []string{domainType, domainOwnershipType} {
 		request := productRequest(r, kind)
 		request.Scope = asset.Scope{Kind: asset.ScopeGlobal, NativeID: testSubscription + "/global"}

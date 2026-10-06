@@ -129,8 +129,13 @@ func (a *fleetAction) rootResidualReadback(ctx context.Context, request contract
 	}
 	exists := false
 	children := object(state["children"])
-	for _, id := range slices.Sorted(maps.Keys(children)) {
-		_, err := a.client.fleetRead(ctx, text(object(children[id])["kind"]), id)
+	// Own GETs run concurrently; results and the first error are taken in order.
+	ids := slices.Sorted(maps.Keys(children))
+	_, errs := readConcurrently(len(ids), func(i int) (response, error) {
+		return a.client.fleetRead(ctx, text(object(children[ids[i]])["kind"]), ids[i])
+	})
+	for i := range ids {
+		err := errs[i]
 		if isNotFound(err) {
 			continue
 		}
@@ -141,18 +146,28 @@ func (a *fleetAction) rootResidualReadback(ctx context.Context, request contract
 	}
 	members := object(state["members"])
 	absentGroups := map[string]bool{}
+	// Endpoints are checked in order before any read; the GETs run concurrently
+	// and are checked in order, then the invalid member's error.
+	ids = nil
+	var endpoints []string
+	var invalid error
 	for _, id := range slices.Sorted(maps.Keys(members)) {
-		member := object(members[id])
-		kind := text(member["kind"])
-		rule, known := findType(kind)
+		rule, known := findType(text(object(members[id])["kind"]))
 		if !known {
 			continue
 		}
 		endpoint, err := a.client.resourceURL(rule, id)
 		if err != nil {
-			return contracts.ReadbackResult{}, err
+			invalid = err
+			break
 		}
-		live, err := a.client.request(ctx, "GET", endpoint)
+		ids, endpoints = append(ids, id), append(endpoints, endpoint)
+	}
+	reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return a.client.request(ctx, "GET", endpoints[i]) })
+	for i, id := range ids {
+		member := object(members[id])
+		kind := text(member["kind"])
+		live, err := reads[i], errs[i]
 		if isNotFound(err) {
 			if strings.EqualFold(kind, groupType) {
 				absentGroups[id] = true
@@ -166,6 +181,9 @@ func (a *fleetAction) rootResidualReadback(ctx context.Context, request contract
 			return contracts.ReadbackResult{}, serviceDenied("fleet_hub_residual_configuration_changed")
 		}
 		exists = true
+	}
+	if invalid != nil {
+		return contracts.ReadbackResult{}, invalid
 	}
 	for _, value := range members {
 		member := object(value)

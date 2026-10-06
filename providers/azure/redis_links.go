@@ -88,28 +88,39 @@ func (c *client) redisIncomingLinks(ctx context.Context, target string) ([]servi
 	links := map[string]serviceChild{}
 	secondary := []serviceChild{}
 	found := false
+	// Rows are checked in order before any read; caches at or after the first
+	// invalid row are not read, and its error follows earlier read results.
+	var invalid error
+	var ids []string
+	var listed []map[string]any
 	for _, value := range rows {
 		row := object(value)
 		id, nativeType, err := parseID(text(row["id"]))
 		if err != nil || !strings.EqualFold(nativeType, redisType) || seen[id] || !validResponseType(redisType, text(row["type"])) {
-			return nil, serviceDenied("invalid_redis_subscription_list")
+			invalid = serviceDenied("invalid_redis_subscription_list")
+			break
 		}
 		seen[id] = true
-		raw, err := c.redisResource(ctx, id)
+		ids, listed = append(ids, id), append(listed, row)
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) ([]serviceChild, error) {
+		raw, err := c.redisResource(ctx, ids[i])
 		if err != nil {
 			return nil, err
 		}
-		if err := serviceListedIncarnation(row, raw); err != nil {
+		if err := serviceListedIncarnation(listed[i], raw); err != nil {
 			return nil, err
+		}
+		return c.redisNativeLinks(ctx, raw)
+	})
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
 		if strings.EqualFold(id, target) {
 			found = true
 		}
-		children, err := c.redisNativeLinks(ctx, raw)
-		if err != nil {
-			return nil, err
-		}
-		for _, child := range children {
+		for _, child := range reads[i] {
 			peer, err := redisLinkPeer(child.data)
 			if err != nil {
 				return nil, err
@@ -123,6 +134,9 @@ func (c *client) redisIncomingLinks(ctx context.Context, target string) ([]servi
 				secondary = append(secondary, child)
 			}
 		}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	if !found {
 		return nil, serviceDenied("redis_subscription_index_incomplete")

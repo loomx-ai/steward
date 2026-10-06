@@ -77,36 +77,53 @@ func (c *client) dataFactoryIndex(ctx context.Context, kind string, parent dataF
 			return nil, err
 		}
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
+	var rows []dataFactoryMember
+	var invalid error
+	seen := map[string]bool{}
 	for _, value := range values {
 		raw, ok := value.(map[string]any)
 		if !ok {
-			return nil, serviceDenied("invalid_datafactory_index_item")
+			invalid = serviceDenied("invalid_datafactory_index_item")
+			break
 		}
 		nodeName, id := "", strings.ToLower(text(raw["id"]))
 		if kind == dataFactoryNodeType {
 			nodeName, ok = raw["nodeName"].(string)
 			if !ok {
-				return nil, serviceDenied("datafactory_node_name_missing")
+				invalid = serviceDenied("datafactory_node_name_missing")
+				break
 			}
 			id = parent.id + "/nodes/" + strings.ToLower(nodeName)
 			if _, err := dataFactoryWireID(id, kind, nodeName); err != nil {
-				return nil, err
+				invalid = err
+				break
 			}
 		}
-		if c.dataFactoryIdentity(id, kind) != nil || dataFactoryParent(id, kind) != parent.id || result[id].id != "" {
-			return nil, serviceDenied("invalid_datafactory_index_identity")
+		if c.dataFactoryIdentity(id, kind) != nil || dataFactoryParent(id, kind) != parent.id || seen[id] {
+			invalid = serviceDenied("invalid_datafactory_index_identity")
+			break
 		}
-		if err := dataFactoryMetadata(id, kind, nodeName, raw); err != nil {
-			return nil, err
+		if invalid = dataFactoryMetadata(id, kind, nodeName, raw); invalid != nil {
+			break
 		}
-		live, err := c.dataFactoryRead(ctx, id, kind, nodeName)
-		if err != nil {
-			return nil, err
+		seen[id] = true
+		rows = append(rows, dataFactoryMember{id: id, kind: kind, parent: parent.id, root: dataFactoryRoot(id), nodeName: nodeName, raw: raw})
+	}
+	reads, errs := readConcurrently(len(rows), func(i int) (map[string]any, error) { return c.dataFactoryRead(ctx, rows[i].id, kind, rows[i].nodeName) })
+	for i, row := range rows {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		if !nativeConfigurationContains(dataFactorySnapshot(kind, raw), dataFactorySnapshot(kind, live)) {
+		if !nativeConfigurationContains(dataFactorySnapshot(kind, row.raw), dataFactorySnapshot(kind, reads[i])) {
 			return nil, serviceDenied("datafactory_index_configuration_changed")
 		}
-		result[id] = dataFactoryMember{id: id, kind: kind, parent: parent.id, root: dataFactoryRoot(id), nodeName: nodeName, raw: live}
+		row.raw = reads[i]
+		result[row.id] = row
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	return result, nil
 }
@@ -282,8 +299,12 @@ func (c *client) dataFactoryForest(ctx context.Context, hints map[string]dataFac
 		roots[id] = hint
 	}
 	trees, found, missing := map[string]dataFactoryTree{}, map[string]bool{}, map[string]bool{}
-	for _, id := range slices.Sorted(maps.Keys(roots)) {
-		tree, err := c.dataFactoryTree(ctx, roots[id], hints)
+	rootIDs := slices.Sorted(maps.Keys(roots))
+	// Each root's tree walk (with its own after-read) runs concurrently;
+	// trees merge in root order.
+	walked, errs := readConcurrently(len(rootIDs), func(i int) (dataFactoryTree, error) { return c.dataFactoryTree(ctx, roots[rootIDs[i]], hints) })
+	for i, id := range rootIDs {
+		tree, err := walked[i], errs[i]
 		if err != nil {
 			return nil, nil, err
 		}
@@ -295,12 +316,18 @@ func (c *client) dataFactoryForest(ctx context.Context, hints map[string]dataFac
 			found[child] = true
 		}
 	}
+	var unowned []string
 	for _, id := range slices.Sorted(maps.Keys(hints)) {
-		if found[id] {
-			continue
+		if !found[id] {
+			unowned = append(unowned, id)
 		}
-		hint := hints[id]
-		_, err := c.dataFactoryRead(ctx, id, hint.kind, hint.nodeName)
+	}
+	// Hints outside every tree are read concurrently, then checked in order.
+	_, errs = readConcurrently(len(unowned), func(i int) (map[string]any, error) {
+		return c.dataFactoryRead(ctx, unowned[i], hints[unowned[i]].kind, hints[unowned[i]].nodeName)
+	})
+	for i, id := range unowned {
+		err := errs[i]
 		if isNotFound(err) {
 			missing[id] = true
 			continue

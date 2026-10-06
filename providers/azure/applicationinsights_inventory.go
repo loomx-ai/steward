@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
@@ -58,23 +59,35 @@ func (c *client) insightsComponents(ctx context.Context) ([]serviceChild, string
 		values = append(values, page...)
 		endpoint = next
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
 	seen := map[string]bool{}
-	var components []serviceChild
+	var rows []map[string]any
+	var ids []string
+	var invalid error
 	for _, value := range values {
 		raw, ok := value.(map[string]any)
 		id, kind, err := parseID(text(raw["id"]))
 		if !ok || err != nil || !strings.EqualFold(kind, applicationInsightsType) || !strings.EqualFold(text(raw["type"]), applicationInsightsType) || !strings.HasPrefix(id, c.root()+"/") || seen[id] {
-			return nil, "", serviceDenied("invalid_insights_component_list_identity")
+			invalid = serviceDenied("invalid_insights_component_list_identity")
+			break
 		}
 		seen[id] = true
-		current, err := c.insightsComponent(ctx, id)
-		if err != nil {
-			return nil, "", err // A vanished parent cannot prove an empty child index.
+		rows, ids = append(rows, raw), append(ids, id)
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.insightsComponent(ctx, ids[i]) })
+	var components []serviceChild
+	for i, id := range ids {
+		if errs[i] != nil {
+			return nil, "", errs[i] // A vanished parent cannot prove an empty child index.
 		}
-		if !nativeConfigurationContains(monitorPrivateLinkTargetSnapshot(raw), monitorPrivateLinkTargetSnapshot(current)) {
+		if !nativeConfigurationContains(monitorPrivateLinkTargetSnapshot(rows[i]), monitorPrivateLinkTargetSnapshot(reads[i])) {
 			return nil, "", serviceDenied("insights_component_list_configuration_changed")
 		}
-		components = append(components, serviceChild{id: id, kind: applicationInsightsType, data: current})
+		components = append(components, serviceChild{id: id, kind: applicationInsightsType, data: reads[i]})
+	}
+	if invalid != nil {
+		return nil, "", invalid
 	}
 	slices.SortFunc(components, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 	return components, provenance, nil
@@ -161,27 +174,39 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 	if err != nil {
 		return nil, nil, "", err
 	}
-	var items []contracts.InventoryItem
-	groups := map[string]map[string]any{}
+	groupIDs := []string{}
 	for _, component := range components {
+		if groupID := strings.Join(strings.Split(component.id, "/")[:5], "/"); indexedGroups[groupID] != nil {
+			groupIDs = append(groupIDs, groupID)
+		}
+	}
+	// Components are read concurrently and merged in order, so the first
+	// failure is the one a serial walk would return. The group lookup is for
+	// one walk at a time.
+	groupsAhead := c.insightsGroupsAhead(ctx, groupIDs)
+	var groupsMu sync.Mutex
+	type componentRead struct {
+		items  []contracts.InventoryItem
+		absent []string
+	}
+	reads, errs := readConcurrently(len(components), func(i int) (componentRead, error) {
+		component := components[i]
 		parent, err := r.inventoryItem(ctx, c, component.data, owners, locks)
 		if err != nil {
-			return nil, nil, "", err
+			return componentRead{}, err
 		}
 		if !productScopeMatches(request, parent) {
-			continue
+			return componentRead{}, nil
 		}
 		groupID := strings.Join(strings.Split(component.id, "/")[:5], "/")
-		group, exists := groups[groupID]
-		if !exists {
-			if indexedGroups[groupID] == nil {
-				return nil, nil, "", serviceDenied("insights_inventory_group_disagrees")
-			}
-			group, err = c.insightsGroup(ctx, groupID, indexedGroups[groupID])
-			if err != nil {
-				return nil, nil, "", err
-			}
-			groups[groupID] = group
+		if indexedGroups[groupID] == nil {
+			return componentRead{}, serviceDenied("insights_inventory_group_disagrees")
+		}
+		groupsMu.Lock()
+		group, err := groupsAhead(groupID, indexedGroups[groupID])
+		groupsMu.Unlock()
+		if err != nil {
+			return componentRead{}, err
 		}
 		if protectedAzureTags(object(group["tags"])) {
 			parent.Normalized["cleanup_protected"] = true
@@ -191,37 +216,35 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		parent.Normalized["_inventory_source"] = productInventorySource
 		if strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) {
 			if err := c.insightsWorkspaceInventory(ctx, &parent, component.data, indexedGroups); err != nil {
-				return nil, nil, "", err
+				return componentRead{}, err
 			}
 			if err := c.insightsConfigurationInventory(ctx, &parent, component.data); err != nil {
-				return nil, nil, "", err
+				return componentRead{}, err
 			}
-			items = append(items, parent)
-			continue
+			return componentRead{items: []contracts.InventoryItem{parent}}, nil
 		}
 		var children []serviceChild
 		var windowIDs map[string]bool
-		var childAbsent []string
+		var read componentRead
 		if request.ResourceKind.NativeType == insightsAnnotationType {
-			children, windowIDs, childAbsent, err = c.insightsAnnotationInventoryChildren(ctx, component.id, window, request.KnownNativeIDs)
+			children, windowIDs, read.absent, err = c.insightsAnnotationInventoryChildren(ctx, component.id, window, request.KnownNativeIDs)
 		} else {
 			children, err = c.insightsChildren(ctx, component.id, request.ResourceKind.NativeType)
 		}
 		if err != nil {
-			return nil, nil, "", err
+			return componentRead{}, err
 		}
-		absent = append(absent, childAbsent...)
 		current, err := c.insightsComponent(ctx, component.id)
 		if err != nil {
-			return nil, nil, "", err
+			return componentRead{}, err
 		}
 		if c.privateConfiguration(monitorPrivateLinkTargetSnapshot(current)) != parent.Normalized["_monitor_private_link_target_configuration"] {
-			return nil, nil, "", serviceDenied("insights_inventory_component_changed")
+			return componentRead{}, serviceDenied("insights_inventory_component_changed")
 		}
 		for _, child := range children {
 			item, err := r.insightsChildItem(ctx, c, parent, child)
 			if err != nil {
-				return nil, nil, "", err
+				return componentRead{}, err
 			}
 			if item.NativeType == insightsAnnotationType {
 				item.Normalized["_insights_annotation_window"] = window
@@ -230,8 +253,17 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 					item.Normalized["_insights_annotation_discovery"] = "time-window"
 				}
 			}
-			items = append(items, item)
+			read.items = append(read.items, item)
 		}
+		return read, nil
+	})
+	var items []contracts.InventoryItem
+	for i, read := range reads {
+		if errs[i] != nil {
+			return nil, nil, "", errs[i]
+		}
+		items = append(items, read.items...)
+		absent = append(absent, read.absent...)
 	}
 	slices.SortFunc(items, func(a, b contracts.InventoryItem) int { return strings.Compare(a.NativeID, b.NativeID) })
 	slices.Sort(absent)
@@ -374,14 +406,15 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 		return batch, serviceDenied("unexpected_insights_annotation_window")
 	}
 	batch, err = r.scopedSnapshotPage(ctx, c, request, cursor.productCursor, "insights_inventory_cursor_changed", cursor.Window, func() (inventorySnapshot, error) {
-		items, absent, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+		// Each snapshot has its own memo scope, so the second re-reads live.
+		items, absent, provenance, err := r.insightsInventorySnapshot(withReadMemo(ctx), c, request, cursor.Window)
 		if err != nil {
 			return inventorySnapshot{}, err
 		}
 		// As with Batch's native inventory, materialize the current collection
 		// before slicing. Two independently read snapshots catch membership and
 		// private-configuration drift; an old cursor must not skip new resources.
-		current, afterAbsent, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+		current, afterAbsent, _, err := r.insightsInventorySnapshot(withReadMemo(ctx), c, request, cursor.Window)
 		if err != nil {
 			return inventorySnapshot{}, err
 		}

@@ -156,45 +156,74 @@ func cloneNormalizedWithoutGeneration(normalized map[string]any) map[string]any 
 func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contracts.ActionRequest) error {
 	seen := map[string]bool{}
 	assetIDs := map[asset.AssetID]bool{request.Asset.ID: true}
+	// Rows are checked in order before any read. Rows past the first invalid
+	// one are not read, and its error follows the earlier rows' checks. A Batch
+	// node row has no endpoint; its own absence check runs as its read.
+	type pendingRead struct {
+		node     asset.Asset
+		endpoint string
+	}
+	var rows []pendingRead
+	var invalid error
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		identity := prerequisite.Asset.Identity
 		if identity.NativeType == batchNodeType {
 			id := strings.ToLower(identity.NativeID)
 			if !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition {
-				return serviceDenied("invalid_service_prerequisite")
+				invalid = serviceDenied("invalid_service_prerequisite")
+				break
 			}
 			seen[id], assetIDs[prerequisite.Asset.ID] = true, true
-			if err := a.batchNodePrerequisiteAbsent(ctx, request.Asset, prerequisite.Asset); err != nil {
-				return err
-			}
+			rows = append(rows, pendingRead{node: prerequisite.Asset})
 			continue
 		}
 		id, nativeType, err := parseID(identity.NativeID)
 		if err != nil || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(nativeType, identity.NativeType) || !servicePrerequisiteKind(a.kind.NativeType, identity.NativeType) || (!serviceChildRelation(request.Asset, prerequisite.Asset) && !incomingMigrationPrerequisite(request.Asset, prerequisite.Asset) && !recoveryPrerequisite(request.Asset, prerequisite.Asset) && !cdnPrerequisite(request.Asset, prerequisite.Asset) && !apimPrerequisite(request.Asset, prerequisite.Asset) && !wafPrerequisite(request.Asset, prerequisite.Asset) && !redisSharedPrerequisite(request.Asset, prerequisite.Asset)) {
-			return serviceDenied("invalid_service_prerequisite")
+			invalid = serviceDenied("invalid_service_prerequisite")
+			break
 		}
 		seen[id], assetIDs[prerequisite.Asset.ID] = true, true
 		if isDomainType(identity.NativeType) {
 			if _, err := a.client.domainPlan(prerequisite.Asset); err != nil {
-				return err
+				invalid = err
+				break
 			}
 		}
 		kind, known := findType(identity.NativeType)
 		if !known || kind.ReadOnly {
-			return serviceDenied("invalid_service_prerequisite")
+			invalid = serviceDenied("invalid_service_prerequisite")
+			break
 		}
 		endpoint, err := a.client.plannedResourceURL(prerequisite.Asset)
 		if err != nil {
-			return err
+			invalid = err
+			break
 		}
-		if _, err := a.client.readResource(ctx, endpoint); !isNotFound(err) {
+		rows = append(rows, pendingRead{endpoint: endpoint})
+	}
+	_, errs := readConcurrently(len(rows), func(i int) (struct{}, error) {
+		if rows[i].endpoint == "" {
+			return struct{}{}, a.batchNodePrerequisiteAbsent(ctx, request.Asset, rows[i].node)
+		}
+		_, err := a.client.readResource(ctx, rows[i].endpoint)
+		return struct{}{}, err
+	})
+	for i, row := range rows {
+		err := errs[i]
+		if row.endpoint == "" {
+			if err != nil {
+				return err
+			}
+			continue
+		}
+		if !isNotFound(err) {
 			if err != nil {
 				return err
 			}
 			return serviceDenied("service_prerequisite_still_exists")
 		}
 	}
-	return nil
+	return invalid
 }
 
 // Network resources report their live occupants on their own read. Azure

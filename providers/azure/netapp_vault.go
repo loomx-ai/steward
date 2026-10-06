@@ -55,8 +55,10 @@ func (c *client) netappVaultMembers(ctx context.Context, id, region string, know
 		ids[child] = true
 	}
 	members := map[string]any{}
-	for _, child := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.netappRead(ctx, child, netappBackupType)
+	children := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(children), func(i int) (response, error) { return c.netappRead(ctx, children[i], netappBackupType) })
+	for i, child := range children {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && !ids[child] {
 			continue
 		}

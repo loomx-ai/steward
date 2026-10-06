@@ -368,20 +368,36 @@ func (c *client) insightsLegacyChildren(ctx context.Context, parent, kind string
 		if next != "" || operationLocation(result.header) != "" || result.data["code"] != nil {
 			return nil, serviceDenied("unexpected_insights_legacy_continuation")
 		}
+		// Rows are checked in order before any read. Rows past the first
+		// invalid one are not read, and its error follows the earlier rows'.
+		type listedChild struct {
+			raw map[string]any
+			id  string
+		}
+		var listed []listedChild
+		var invalid error
 		for _, value := range values {
 			raw, ok := value.(map[string]any)
 			selector, valid := raw[row.field].(string)
 			if !ok || !valid {
-				return nil, serviceDenied("invalid_insights_legacy_list_identity")
+				invalid = serviceDenied("invalid_insights_legacy_list_identity")
+				break
 			}
 			id, err := insightsLegacyURL(parent, row.kind, selector)
 			if err != nil || seen[id] || insightsLegacyResponseIdentity(row, selector, raw) != nil {
-				return nil, serviceDenied("invalid_insights_legacy_list_identity")
+				invalid = serviceDenied("invalid_insights_legacy_list_identity")
+				break
 			}
 			seen[id] = true
-			current, err := c.insightsLegacyRead(ctx, resourceType{NativeType: row.kind, ReadOperations: []string{insightsLegacyOperationID(row.read)}}, id)
-			if err != nil {
-				return nil, err
+			listed = append(listed, listedChild{raw, id})
+		}
+		reads, errs := readConcurrently(len(listed), func(i int) (response, error) {
+			return c.insightsLegacyRead(ctx, resourceType{NativeType: row.kind, ReadOperations: []string{insightsLegacyOperationID(row.read)}}, listed[i].id)
+		})
+		for i, child := range listed {
+			raw, id, current := child.raw, child.id, reads[i]
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
 			if !nativeConfigurationContains(insightsLegacySnapshot(row.kind, raw), insightsLegacySnapshot(row.kind, current.data)) {
 				return nil, serviceDenied("insights_legacy_list_configuration_changed")
@@ -396,6 +412,9 @@ func (c *client) insightsLegacyChildren(ctx context.Context, parent, kind string
 				}
 			}
 			children = append(children, serviceChild{id: id, kind: row.kind, data: current.data})
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 	}
 	after, err := c.insightsComponent(ctx, parent)

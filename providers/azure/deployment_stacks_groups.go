@@ -66,31 +66,51 @@ func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.A
 			return nil, serviceDenied("deployment_stack_group_pages_repeated_or_excessive")
 		}
 		seen[pageKey] = true
-		rows, following, response, err := c.listPageResult(ctx, next, collection.Path)
+		rows, following, listedPage, err := c.listPageResult(ctx, next, collection.Path)
 		if err != nil {
 			return nil, err
 		}
-		if operationLocation(response.header) != "" {
+		if operationLocation(listedPage.header) != "" {
 			return nil, serviceDenied("incomplete_deployment_stack_group_index")
 		}
+		// Rows are checked in order before any read. Rows past the first invalid
+		// one are not read, and its error follows the earlier rows' checks.
+		type groupRow struct {
+			raw    map[string]any
+			id     string
+			member asset.Asset
+		}
+		var listed []groupRow
+		var invalid error
 		for _, row := range rows {
 			raw := object(row)
 			wire, valid := raw["id"].(string)
 			id, kind, err := deploymentStackMemberID(wire)
 			if err != nil || !valid || !inResourceGroup(id, group.Identity.NativeID) || !validResponseType(kind, text(raw["type"])) || seenResources[id] {
-				return nil, serviceDenied("invalid_deployment_stack_group_resource")
+				invalid = serviceDenied("invalid_deployment_stack_group_resource")
+				break
 			}
 			seenResources[id] = true
 			member := req.Asset
 			if !strings.EqualFold(id, req.Asset.Identity.NativeID) {
 				impact, found := impacts[id]
 				if !found || !impact.Delete || !strings.EqualFold(kind, impact.Asset.Identity.NativeType) {
-					return nil, serviceDenied("deployment_stack_group_resource_not_reviewed")
+					invalid = serviceDenied("deployment_stack_group_resource_not_reviewed")
+					break
 				}
 				member = impact.Asset
 			}
+			if current, found := members[member.ID]; found && !completed[member.ID] {
+				member = current
+			}
+			listed = append(listed, groupRow{raw, id, member})
+		}
+		lives, errs := readConcurrently(len(listed), func(i int) (response, error) { return c.deploymentStackMemberRead(ctx, listed[i].member) })
+		for i, row := range listed {
+			raw, id, member := row.raw, row.id, row.member
+			live, err := lives[i], errs[i]
 			if completed[member.ID] {
-				if _, err := c.deploymentStackMemberRead(ctx, member); !isNotFound(err) {
+				if !isNotFound(err) {
 					if err != nil {
 						return nil, err
 					}
@@ -98,10 +118,6 @@ func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.A
 				}
 				continue
 			}
-			if current, found := members[member.ID]; found {
-				member = current
-			}
-			live, err := c.deploymentStackMemberRead(ctx, member)
 			if err != nil {
 				return nil, err
 			}
@@ -115,6 +131,9 @@ func (c *client) reviewedResourceGroupIndex(ctx context.Context, req contracts.A
 				return nil, serviceDenied("azure_protected_tag")
 			}
 			snapshot[id] = live.data
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		next = following
 	}
@@ -198,25 +217,42 @@ func (c *client) deploymentStackCheckGroupClosure(ctx context.Context, req contr
 		return nil, err
 	}
 	native := object(object(req.Asset.Normalized[deploymentStackReviewKey])["members"])
+	// Groups are checked in order before any index. Each group's two passes
+	// stay sequential; groups run concurrently and fail in order.
+	var checked []asset.Asset
+	var invalid error
 	for _, impact := range req.LifecycleImpacts {
 		if !impact.Delete || state.Completed[impact.Asset.ID] || !strings.EqualFold(impact.Asset.Identity.NativeType, groupType) {
 			continue
 		}
 		if native[strings.ToLower(impact.Asset.Identity.NativeID)] == nil {
-			return nil, serviceDenied("deployment_stack_group_not_native_member")
+			invalid = serviceDenied("deployment_stack_group_not_native_member")
+			break
 		}
-		first, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations, state)
+		checked = append(checked, impact.Asset)
+	}
+	_, errs := readConcurrently(len(checked), func(i int) (struct{}, error) {
+		first, err := c.deploymentStackGroupIndex(ctx, req, checked[i], configurations, state)
 		if err != nil {
-			return nil, err
+			return struct{}{}, err
 		}
-		second, err := c.deploymentStackGroupIndex(ctx, req, impact.Asset, configurations, state)
+		second, err := c.deploymentStackGroupIndex(ctx, req, checked[i], configurations, state)
 		if err != nil {
-			return nil, err
+			return struct{}{}, err
 		}
 		if c.privateConfiguration(first) != c.privateConfiguration(second) {
-			return nil, serviceDenied("deployment_stack_group_members_changed")
+			return struct{}{}, serviceDenied("deployment_stack_group_members_changed")
 		}
-		groups = append(groups, impact.Asset.ID)
+		return struct{}{}, nil
+	})
+	for i, group := range checked {
+		if errs[i] != nil {
+			return nil, errs[i]
+		}
+		groups = append(groups, group.ID)
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	if _, err := observe(); err != nil {
 		return nil, err

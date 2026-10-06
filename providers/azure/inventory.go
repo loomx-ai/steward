@@ -388,6 +388,14 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		return c.request(ctx, "GET", rows[i].readURL)
 	})
+	// Rows are checked in order before any child read; rows past the first
+	// invalid one are not read, and its error follows the earlier rows'.
+	type listedParent struct {
+		raw, live map[string]any
+		kind      resourceType
+	}
+	var parents []listedParent
+	var invalid error
 	for i, row := range rows {
 		raw, kind := row.raw, row.kind
 		var live map[string]any
@@ -397,10 +405,12 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 				continue
 			} // Resource removed after the list snapshot.
 			if err != nil {
-				return contracts.InventoryBatch{}, err
+				invalid = err
+				break
 			}
 			if !validResourceResponse(detail, text(raw["id"]), kind.NativeType) {
-				return contracts.InventoryBatch{}, fmt.Errorf("Azure resource detail identity mismatch")
+				invalid = fmt.Errorf("Azure resource detail identity mismatch")
+				break
 			}
 			if HasServiceCascade(kind.NativeType) {
 				live = batchClone(detail.data)
@@ -412,20 +422,28 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 				raw["location"] = resourceRegion(row.raw)
 			}
 		}
-		if err := appendItem(raw); err != nil {
+		parents = append(parents, listedParent{raw, live, kind})
+	}
+	// ARM's subscription list omits some child resources. Enumerate the
+	// children whose lifecycle and dependencies Steward models explicitly.
+	children, childErrs := readConcurrently(len(parents), func(i int) ([]map[string]any, error) {
+		return c.childrenOf(ctx, parents[i].kind, parents[i].raw, parents[i].live)
+	})
+	for i, parent := range parents {
+		if err := appendItem(parent.raw); err != nil {
 			return contracts.InventoryBatch{}, err
 		}
-		// ARM's subscription list omits some child resources. Enumerate the
-		// children whose lifecycle and dependencies Steward models explicitly.
-		children, err := c.childrenOf(ctx, kind, raw, live)
-		if err != nil {
-			return contracts.InventoryBatch{}, err
+		if childErrs[i] != nil {
+			return contracts.InventoryBatch{}, childErrs[i]
 		}
-		for _, child := range children {
+		for _, child := range children[i] {
 			if err := appendItem(child); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 		}
+	}
+	if invalid != nil {
+		return contracts.InventoryBatch{}, invalid
 	}
 	return batch, nil
 }

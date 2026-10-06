@@ -111,12 +111,21 @@ func (c *client) eventHubClusterNamespaces(ctx context.Context, parent asset.Ide
 	}
 	namespaceKind, _ := findType(eventHubNamespaceType)
 	children := []serviceChild{}
+	// Endpoints are checked in order before any read; namespaces are read
+	// concurrently and checked in ID order, then the invalid ID's error.
+	var endpoints []string
+	var invalid error
 	for _, id := range ids {
 		endpoint, err := c.resourceURL(namespaceKind, id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		live, err := c.request(ctx, "GET", endpoint)
+		endpoints = append(endpoints, endpoint)
+	}
+	reads, errs := readConcurrently(len(endpoints), func(i int) (response, error) { return c.request(ctx, "GET", endpoints[i]) })
+	for i, id := range ids[:len(endpoints)] {
+		live, err := reads[i], errs[i]
 		if err != nil {
 			return nil, err
 		}
@@ -124,6 +133,9 @@ func (c *client) eventHubClusterNamespaces(ctx context.Context, parent asset.Ide
 			return nil, serviceDenied("eventhub_cluster_membership_changed")
 		}
 		children = append(children, serviceChild{kind: eventHubNamespaceType, id: id, data: live.data, direct: true})
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	current, err := list()
 	if err != nil {
@@ -134,9 +146,14 @@ func (c *client) eventHubClusterNamespaces(ctx context.Context, parent asset.Ide
 	}
 	// Namespace association changes need not change an ARM ETag. Repeat both
 	// identity and backlink checks after the final member-list read.
-	for _, child := range children {
-		endpoint, _ := c.resourceURL(namespaceKind, child.id)
-		live, err := c.request(ctx, "GET", endpoint)
+	// These re-reads all follow the final list read; they run concurrently and
+	// are checked in order.
+	reads, errs = readConcurrently(len(children), func(i int) (response, error) {
+		endpoint, _ := c.resourceURL(namespaceKind, children[i].id)
+		return c.request(ctx, "GET", endpoint)
+	})
+	for i, child := range children {
+		live, err := reads[i], errs[i]
 		if err != nil {
 			return nil, err
 		}

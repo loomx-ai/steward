@@ -38,18 +38,21 @@ func (c *client) deploymentStackObserveMemberConfigurations(ctx context.Context,
 	if err := verifyStack(parent); err != nil {
 		return err
 	}
-	for _, member := range members {
+	// Members are checked concurrently, between the two Stack reads, and the
+	// first failure in member order wins.
+	_, errs := readConcurrently(len(members), func(i int) (struct{}, error) {
+		member := members[i]
 		if strings.EqualFold(member.Identity.NativeType, deploymentStackType) {
-			if err := verifyStack(member); err != nil {
-				return err
-			}
-			continue
+			return struct{}{}, verifyStack(member)
 		}
 		current, err := c.deploymentStackMemberRead(ctx, member)
 		if err != nil {
-			return err
+			return struct{}{}, err
 		}
-		if err := c.deploymentStackPreparedMember(member, current.data, object(configurations[strings.ToLower(member.Identity.NativeID)])); err != nil {
+		return struct{}{}, c.deploymentStackPreparedMember(member, current.data, object(configurations[strings.ToLower(member.Identity.NativeID)]))
+	})
+	for _, err := range errs {
+		if err != nil {
 			return err
 		}
 	}

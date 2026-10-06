@@ -20,18 +20,27 @@ func (c *client) batchAccountForEndpoint(ctx context.Context, endpoint string) (
 	if err != nil {
 		return batchAccountContext{}, err
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
 	seen := map[string]bool{}
-	var match batchAccountContext
+	var ids []string
+	var invalid error
 	for _, value := range values {
 		raw := object(value)
 		id, kind, err := parseID(text(raw["id"]))
 		if err != nil || batchKind(kind) != batchAccountType || !strings.HasPrefix(id, c.root()+"/") || seen[id] || !validResponseType(batchAccountType, text(raw["type"])) {
-			return batchAccountContext{}, serviceDenied("invalid_batch_account_list_identity")
+			invalid = serviceDenied("invalid_batch_account_list_identity")
+			break
 		}
 		seen[id] = true
-		current, err := c.batchAccount(ctx, id)
-		if err != nil {
-			return batchAccountContext{}, err
+		ids = append(ids, id)
+	}
+	accounts, errs := readConcurrently(len(ids), func(i int) (batchAccountContext, error) { return c.batchAccount(ctx, ids[i]) })
+	var match batchAccountContext
+	for i := range ids {
+		raw, current := object(values[i]), accounts[i]
+		if errs[i] != nil {
+			return batchAccountContext{}, errs[i]
 		}
 		if !nativeConfigurationContains(batchSnapshot(batchAccountType, raw), batchSnapshot(batchAccountType, current.raw)) {
 			return batchAccountContext{}, serviceDenied("batch_account_list_changed")
@@ -42,6 +51,9 @@ func (c *client) batchAccountForEndpoint(ctx context.Context, endpoint string) (
 			}
 			match = current
 		}
+	}
+	if invalid != nil {
+		return batchAccountContext{}, invalid
 	}
 	if match.id == "" {
 		return batchAccountContext{}, serviceDenied("batch_account_outside_subscription")
@@ -145,19 +157,30 @@ func (c *client) batchPools(ctx context.Context, account batchAccountContext) ([
 	for _, pool := range pools {
 		index[strings.ToLower(last(pool.id))] = true
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
+	var names []string
+	var invalid error
 	for _, listed := range values {
 		name := text(listed["id"])
 		if !batchNamePattern.MatchString(name) || !index[strings.ToLower(name)] || !strings.EqualFold(text(listed["url"]), account.endpoint+"/pools/"+name) {
-			return nil, requestID, serviceDenied("batch_pool_indexes_disagree")
+			invalid = serviceDenied("batch_pool_indexes_disagree")
+			break
 		}
 		delete(index, strings.ToLower(name))
-		current, err := c.batchPoolData(ctx, account, name)
-		if err != nil {
-			return nil, requestID, err
+		names = append(names, name)
+	}
+	reads, errs := readConcurrently(len(names), func(i int) (response, error) { return c.batchPoolData(ctx, account, names[i]) })
+	for i := range names {
+		if errs[i] != nil {
+			return nil, requestID, errs[i]
 		}
-		if !nativeConfigurationContains(batchPoolDataSnapshot(listed), batchPoolDataSnapshot(current.data)) {
+		if !nativeConfigurationContains(batchPoolDataSnapshot(values[i]), batchPoolDataSnapshot(reads[i].data)) {
 			return nil, requestID, serviceDenied("batch_data_pool_configuration_changed")
 		}
+	}
+	if invalid != nil {
+		return nil, requestID, invalid
 	}
 	if len(index) != 0 {
 		return nil, requestID, serviceDenied("batch_pool_indexes_disagree")

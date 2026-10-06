@@ -279,13 +279,21 @@ func (c *client) resourceGroupMonitorMembers(ctx context.Context, req contracts.
 	for _, impact := range req.LifecycleImpacts {
 		reviewed[strings.ToLower(impact.Asset.Identity.NativeID)] = impact
 	}
+	// Members are checked in order before any read; members at or after the
+	// first unreviewed one are not read, and its error follows earlier reads.
+	var invalid error
+	var impacts []contracts.ActionImpact
 	for _, raw := range members {
-		id := strings.ToLower(text(raw["id"]))
-		impact, found := reviewed[id]
+		impact, found := reviewed[strings.ToLower(text(raw["id"]))]
 		if !found || !impact.Delete || !strings.EqualFold(impact.Asset.Identity.NativeType, text(raw["type"])) {
-			return serviceDenied("resource_group_monitor_member_not_reviewed")
+			invalid = serviceDenied("resource_group_monitor_member_not_reviewed")
+			break
 		}
-		live, err := c.deploymentStackMemberRead(ctx, impact.Asset)
+		impacts = append(impacts, impact)
+	}
+	lives, errs := readConcurrently(len(impacts), func(i int) (response, error) { return c.deploymentStackMemberRead(ctx, impacts[i].Asset) })
+	for i, impact := range impacts {
+		raw, live, err := members[i], lives[i], errs[i]
 		if err != nil {
 			return err
 		}
@@ -295,9 +303,9 @@ func (c *client) resourceGroupMonitorMembers(ctx context.Context, req contracts.
 		if err = c.deploymentStackPreparedMember(impact.Asset, live.data, nil); err != nil {
 			return err
 		}
-		indexed[id] = live.data
+		indexed[strings.ToLower(text(raw["id"]))] = live.data
 	}
-	return nil
+	return invalid
 }
 
 // Native group enumeration and every product's own closure/preflight are separate
@@ -358,15 +366,20 @@ func (r *Runtime) resourceGroupPreflight(ctx context.Context, req contracts.Acti
 		if err = r.resourceGroupPrerequisitesAbsent(ctx, c, req); err != nil {
 			return err
 		}
-		for _, impact := range req.LifecycleImpacts {
+		lives, liveErrs := readConcurrently(len(req.LifecycleImpacts), func(i int) (response, error) {
+			if req.LifecycleImpacts[i].Delete {
+				return response{}, nil
+			}
+			return c.deploymentStackMemberRead(ctx, req.LifecycleImpacts[i].Asset)
+		})
+		for i, impact := range req.LifecycleImpacts {
 			if impact.Delete {
 				continue
 			}
-			live, err := c.deploymentStackMemberRead(ctx, impact.Asset)
-			if err != nil {
-				return err
+			if liveErrs[i] != nil {
+				return liveErrs[i]
 			}
-			if err = c.deploymentStackPreparedMember(impact.Asset, live.data, nil); err != nil {
+			if err = c.deploymentStackPreparedMember(impact.Asset, lives[i].data, nil); err != nil {
 				return err
 			}
 		}

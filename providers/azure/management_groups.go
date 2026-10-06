@@ -153,8 +153,9 @@ func (r *Runtime) listManagementGroups(ctx context.Context, c *client, request c
 		}
 	}
 	slices.Sort(ids)
-	for _, id := range ids {
-		res, err := c.readManagementGroup(ctx, id)
+	reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.readManagementGroup(ctx, ids[i]) })
+	for i, id := range ids {
+		res, err := reads[i], errs[i]
 		if isNotFound(err) && known[id] {
 			batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id)
 			continue

@@ -18,25 +18,36 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 			byID[value.Identity.NativeID] = value
 		}
 	}
+	// Volumes are checked in order before any read. Their snapshot reads run
+	// concurrently and are applied in order, then the invalid volume's error.
+	type volumeRead struct {
+		value      asset.Asset
+		expected   map[string]any
+		known      map[string]any
+		incomplete bool
+	}
+	var volumes []volumeRead
+	var invalid error
+scan:
 	for _, value := range assets {
 		if value.Identity.Provider != asset.ProviderAzure || value.Identity.NativeType != elasticSanVolumeType {
 			continue
 		}
 		state := object(value.Normalized[elasticSanSnapshotCleanup])
 		if value.Identity.ConnectionID != s.connectionID || value.ID == "" || len(state) != 4 || value.Normalized[elasticSanSnapshotCleanupProof] != s.client.elasticSanChildBinding(value, state) {
-			return serviceDenied("elastic_san_volume_graph_changed")
+			invalid = serviceDenied("elastic_san_volume_graph_changed")
+			break
 		}
 		if _, err := s.client.elasticSanRecorded(value); err != nil {
-			return err
+			invalid = err
+			break
 		}
 		if object(state["volume"])["snapshots_complete"] == false {
 			if state["protected"] != true {
-				return serviceDenied("elastic_san_volume_graph_changed")
+				invalid = serviceDenied("elastic_san_volume_graph_changed")
+				break
 			}
-			// Full inventory already performed known snapshot own reads. Persist
-			// incomplete membership instead of failing the entire scope graph or
-			// publishing destructive bindings from a partial member set.
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanVolumeType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_volume_snapshot_membership_incomplete"}})
+			volumes = append(volumes, volumeRead{value: value, incomplete: true})
 			continue
 		}
 		expected := object(object(state["volume"])["snapshots"])
@@ -52,13 +63,31 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 			}
 			refs, err := s.client.elasticSanRecordedReferences(child)
 			if err != nil {
-				return err
+				invalid = err
+				break scan
 			}
 			if slices.Contains(refs[elasticSanVolumeType], value.Identity.NativeID) {
 				known[id] = true
 			}
 		}
-		children, err := s.client.elasticSanVolumeSnapshots(ctx, value.Identity.NativeID, known)
+		volumes = append(volumes, volumeRead{value: value, expected: expected, known: known})
+	}
+	snapshots, errs := readConcurrently(len(volumes), func(i int) (map[string]map[string]any, error) {
+		if volumes[i].incomplete {
+			return nil, nil
+		}
+		return s.client.elasticSanVolumeSnapshots(ctx, volumes[i].value.Identity.NativeID, volumes[i].known)
+	})
+	for i, volume := range volumes {
+		value, expected := volume.value, volume.expected
+		if volume.incomplete {
+			// Full inventory already performed known snapshot own reads. Persist
+			// incomplete membership instead of failing the entire scope graph or
+			// publishing destructive bindings from a partial member set.
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanVolumeType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_volume_snapshot_membership_incomplete"}})
+			continue
+		}
+		children, err := snapshots[i], errs[i]
 		if isNotFound(err) {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanVolumeType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_volume_membership_requires_refresh"}})
 			continue
@@ -88,7 +117,7 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: value.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
-	return nil
+	return invalid
 }
 
 // Native group membership owns volumes, while incoming private connections keep

@@ -179,6 +179,21 @@ func (r *Runtime) dataMigrationItems(ctx context.Context, c *client, connection 
 		}
 		forest.members[id] = member
 	}
+	// Groups are read ahead concurrently; the walk below still checks each in
+	// its own order and stops where it would have.
+	groupIDs := []string{}
+	for _, id := range slices.Sorted(maps.Keys(forest.members)) {
+		root := forest.members[forest.members[id].service].id
+		if root == "" {
+			break
+		}
+		for _, resource := range []string{id, root} {
+			if groupID := strings.Join(strings.Split(resource, "/")[:5], "/"); groups[groupID] != nil {
+				groupIDs = append(groupIDs, groupID)
+			}
+		}
+	}
+	groupsAhead := c.insightsGroupsAhead(ctx, groupIDs)
 	for _, id := range slices.Sorted(maps.Keys(forest.members)) {
 		member := forest.members[id]
 		root := forest.members[member.service]
@@ -241,7 +256,7 @@ func (r *Runtime) dataMigrationItems(ctx context.Context, c *client, connection 
 				if groups[groupID] == nil {
 					return nil, nil, serviceDenied("datamigration_group_missing_from_index")
 				}
-				verified[groupID], err = c.insightsGroup(ctx, groupID, groups[groupID])
+				verified[groupID], err = groupsAhead(groupID, groups[groupID])
 				if err != nil {
 					return nil, nil, err
 				}

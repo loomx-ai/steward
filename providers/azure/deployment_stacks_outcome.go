@@ -58,17 +58,31 @@ func (c *client) deploymentStackObserveOutcome(ctx context.Context, req contract
 	}
 	// Do not stop at the first remaining deleted member: a later retained member
 	// might already be missing and must not be hidden as normal deletion progress.
-	for _, impact := range req.LifecycleImpacts {
+	// Members are read concurrently and checked in order.
+	type memberRead struct {
+		absent  bool
+		current response
+	}
+	reads, errs := readConcurrently(len(req.LifecycleImpacts), func(i int) (memberRead, error) {
+		value := req.LifecycleImpacts[i].Asset
+		if strings.EqualFold(value.Identity.NativeType, deploymentStackType) {
+			absent, err := checkStack(value)
+			return memberRead{absent: absent}, err
+		}
+		current, err := c.deploymentStackMemberRead(ctx, value)
+		return memberRead{current: current}, err
+	})
+	for i, impact := range req.LifecycleImpacts {
 		value := impact.Asset
 		absent := false
+		err = errs[i]
 		if strings.EqualFold(value.Identity.NativeType, deploymentStackType) {
-			absent, err = checkStack(value)
+			absent = reads[i].absent
 			if !impact.Delete && err == nil && !absent {
 				out.RetentionEvidence[value.ID] = "creation_identity"
 			}
 		} else {
-			var current response
-			current, err = c.deploymentStackMemberRead(ctx, value)
+			current := reads[i].current
 			if isNotFound(err) {
 				absent, err = true, nil
 			} else if err == nil {

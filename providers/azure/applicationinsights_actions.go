@@ -59,49 +59,67 @@ func (a *insightsComponentAction) prerequisitesAbsent(ctx context.Context, reque
 	for _, impact := range request.LifecycleImpacts {
 		seen[impact.Asset.Identity.NativeID], assets[impact.Asset.ID] = true, true
 	}
+	// Prerequisites are checked in order before any read. Those past the
+	// first invalid one are not read, and its error follows earlier reads.
+	type absentRead struct {
+		read    func() error
+		present string
+	}
+	var reads []absentRead
+	var invalid error
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		value := prerequisite.Asset
 		identity := value.Identity
 		if !prerequisite.Delete || prerequisite.ControllerID != a.assetID || value.ID == "" || assets[value.ID] || seen[identity.NativeID] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != a.connectionID || identity.Partition != a.partition {
-			return serviceDenied("invalid_insights_component_prerequisite")
+			invalid = serviceDenied("invalid_insights_component_prerequisite")
+			break
 		}
 		seen[identity.NativeID], assets[value.ID] = true, true
 		if slices.Contains(insightsComponentChildKinds(), identity.NativeType) || identity.NativeType == insightsAnnotationType {
 			id, parent, kind, _, err := insightsChildIdentity(identity.NativeID)
 			if err != nil || id != identity.NativeID || parent != a.id || kind != identity.NativeType || value.Location != a.location || text(value.Normalized["_insights_component"]) != a.id || text(value.Normalized["_insights_component_configuration"]) != a.configuration || text(value.Normalized[insightsChildProofKey(kind)]) == "" {
-				return serviceDenied("insights_component_child_prerequisite_changed")
+				invalid = serviceDenied("insights_component_child_prerequisite_changed")
+				break
 			}
 			mapping, _ := findType(kind)
-			if _, err := a.client.insightsChildRead(ctx, mapping, id); !isNotFound(err) {
-				if err != nil {
-					return err
-				}
-				return serviceDenied("insights_component_child_requires_deletion")
-			}
+			reads = append(reads, absentRead{func() error {
+				_, err := a.client.insightsChildRead(ctx, mapping, id)
+				return err
+			}, "insights_component_child_requires_deletion"})
 			continue
 		}
 		id, kind, err := parseID(identity.NativeID)
 		linked, linkedErr := monitorPrivateLinkReference(map[string]any{"properties": value.Normalized})
 		workspaceLink := linked == text(state["workspace"]) && text(state["managed_group"]) != ""
 		if err != nil || id != identity.NativeID || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(kind, monitorScopedResourceType) || identity.NativeType != monitorScopedResourceType || linkedErr != nil || linked != a.id && !workspaceLink || text(value.Normalized["_monitor_private_link_private_configuration"]) == "" {
-			return serviceDenied("invalid_insights_private_link_prerequisite")
+			invalid = serviceDenied("invalid_insights_private_link_prerequisite")
+			break
 		}
 		if workspaceLink && text(object(state["incoming"])[id]) != text(value.Normalized["_monitor_private_link_private_configuration"]) {
-			return serviceDenied("insights_workspace_prerequisite_configuration_changed")
+			invalid = serviceDenied("insights_workspace_prerequisite_configuration_changed")
+			break
 		}
 		mapping, _ := findType(monitorScopedResourceType)
 		endpoint, err := a.client.resourceURL(mapping, id)
 		if err != nil {
-			return err
+			invalid = err
+			break
 		}
-		if _, err := a.client.request(ctx, "GET", endpoint); !isNotFound(err) {
+		reads = append(reads, absentRead{func() error {
+			_, err := a.client.request(ctx, "GET", endpoint)
+			return err
+		}, "insights_private_link_requires_unlink"})
+	}
+	_, errs := readConcurrently(len(reads), func(i int) (struct{}, error) { return struct{}{}, reads[i].read() })
+	for i, read := range reads {
+		if err := errs[i]; !isNotFound(err) {
 			if err != nil {
 				return err
 			}
-			return serviceDenied("insights_private_link_requires_unlink")
+			return serviceDenied(read.present)
 		}
 	}
-	return nil
+	return invalid
 }
 
 func (a *insightsComponentAction) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {

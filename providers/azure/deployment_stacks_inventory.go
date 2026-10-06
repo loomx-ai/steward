@@ -103,8 +103,9 @@ func (c *client) deploymentStackInventory(ctx context.Context, scope string, kno
 	sort.Strings(ordered)
 	rows := []map[string]any{}
 	absent := []string{}
-	for _, id := range ordered {
-		res, err := c.deploymentStackRead(ctx, ids[id])
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.deploymentStackRead(ctx, ids[ordered[i]]) })
+	for i, id := range ordered {
+		res, err := reads[i], errs[i]
 		if err != nil {
 			if isNotFound(err) && !listed[id] {
 				absent = append(absent, id)

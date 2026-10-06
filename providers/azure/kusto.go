@@ -414,24 +414,35 @@ func (c *client) kustoFollowerAttachments(ctx context.Context, parent asset.Iden
 	if err != nil {
 		return nil, err
 	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier reads'.
 	seen := map[string]bool{}
-	var children []serviceChild
+	var rows []map[string]any
+	var ids, databases []string
+	var invalid error
 	for _, value := range values {
 		properties := object(object(value)["properties"])
 		follower, kind, err := parseID(text(properties["clusterResourceId"]))
 		name, nameErr := kustoName(properties["attachedDatabaseConfigurationName"])
 		database, databaseErr := kustoName(properties["databaseName"])
 		if err != nil || kustoKind(kind) != kustoType || follower == root || nameErr != nil || databaseErr != nil {
-			return nil, serviceDenied("invalid_kusto_follower_index")
+			invalid = serviceDenied("invalid_kusto_follower_index")
+			break
 		}
 		id := follower + "/attacheddatabaseconfigurations/" + strings.ToLower(name)
 		if seen[id] {
-			return nil, serviceDenied("duplicate_kusto_follower")
+			invalid = serviceDenied("duplicate_kusto_follower")
+			break
 		}
 		seen[id] = true
-		live, err := c.kustoResource(ctx, id)
-		if err != nil {
-			return nil, err
+		rows, ids, databases = append(rows, properties), append(ids, id), append(databases, database)
+	}
+	lives, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.kustoResource(ctx, ids[i]) })
+	var children []serviceChild
+	for i, id := range ids {
+		properties, database, live := rows[i], databases[i], lives[i]
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
 		source, selector, err := kustoAttachmentSource(live)
 		if err != nil || source != root || !strings.EqualFold(selector, database) {
@@ -443,6 +454,9 @@ func (c *client) kustoFollowerAttachments(ctx context.Context, parent asset.Iden
 		if parent.NativeType == kustoType || database == "*" || strings.EqualFold(database, last(parent.NativeID)) {
 			children = append(children, serviceChild{kind: kustoAttachmentType, id: id, data: live})
 		}
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	return children, nil
 }

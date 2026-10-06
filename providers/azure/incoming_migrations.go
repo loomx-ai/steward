@@ -69,35 +69,53 @@ func (c *client) incomingMigrations(ctx context.Context) (map[string][]incomingM
 		ids = append(ids, id)
 	}
 	slices.Sort(ids)
+	kind, _ := findType(serviceBusNamespaceType)
+	// Endpoints are bound in order before any read; namespaces past the first
+	// failure are not read, and its error follows the earlier reads'.
+	var endpoints []string
+	var invalid error
 	for _, id := range ids {
-		record := listed[id]
-		kind, _ := findType(serviceBusNamespaceType)
 		endpoint, err := c.resourceURL(kind, id)
 		if err != nil {
-			return nil, err
+			invalid = err
+			break
 		}
-		live, err := c.request(ctx, "GET", endpoint)
+		endpoints = append(endpoints, endpoint)
+	}
+	type namespaceRead struct {
+		data     map[string]any
+		children []serviceChild
+	}
+	reads, errs := readConcurrently(len(endpoints), func(i int) (namespaceRead, error) {
+		id := ids[i]
+		live, err := c.request(ctx, "GET", endpoints[i])
 		if isNotFound(err) {
-			return nil, messagingNamespaceSetChanged()
+			return namespaceRead{}, messagingNamespaceSetChanged()
 		}
 		if err != nil {
-			return nil, err
+			return namespaceRead{}, err
 		}
 		if !validResourceResponse(live, id, serviceBusNamespaceType) {
-			return nil, fmt.Errorf("Azure messaging namespace identity mismatch")
+			return namespaceRead{}, fmt.Errorf("Azure messaging namespace identity mismatch")
 		}
-		if err := serviceListedIncarnation(record, live.data); err != nil {
-			return nil, messagingNamespaceSetChanged()
+		if err := serviceListedIncarnation(listed[id], live.data); err != nil {
+			return namespaceRead{}, messagingNamespaceSetChanged()
 		}
 		children, err := c.nativeServiceChildren(ctx, asset.Identity{NativeID: id, NativeType: serviceBusNamespaceType}, live.data, []string{serviceBusMigrationType})
 		if isNotFound(err) || errors.Is(err, errProductParentGenerationChanged) {
-			return nil, messagingNamespaceSetChanged()
+			return namespaceRead{}, messagingNamespaceSetChanged()
 		}
-		if err != nil {
-			return nil, err
+		return namespaceRead{live.data, children}, err
+	})
+	for i := range endpoints {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		namespaces[id] = live.data
-		configurations = append(configurations, children...)
+		namespaces[ids[i]] = reads[i].data
+		configurations = append(configurations, reads[i].children...)
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	// Detect a namespace appearing or disappearing during this subscription
 	// read, including another selected namespace being deleted by a sibling step.

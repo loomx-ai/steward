@@ -121,10 +121,14 @@ func (a *dataMigrationAction) observe(ctx context.Context, request contracts.Act
 		expected[id] = map[string]any{"kind": dataMigrationKind(typ), "configuration": configuration}
 	}
 	expected[a.id] = map[string]any{"kind": a.kind.NativeType, "configuration": request.Asset.Normalized[dataMigrationConfiguration]}
-	for _, id := range slices.Sorted(maps.Keys(expected)) {
+	ids := slices.Sorted(maps.Keys(expected))
+	raws, errs := readConcurrently(len(ids), func(i int) (map[string]any, error) {
+		return a.client.dataMigrationRead(ctx, ids[i], text(object(expected[ids[i]])["kind"]))
+	})
+	for i, id := range ids {
 		entry := object(expected[id])
 		kind := text(entry["kind"])
-		raw, err := a.client.dataMigrationRead(ctx, id, kind)
+		raw, err := raws[i], errs[i]
 		if isNotFound(err) {
 			out.missingParent = out.missingParent || object(request.Asset.Normalized["_datamigration_ancestors"])[id] != nil
 			continue

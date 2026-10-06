@@ -364,8 +364,12 @@ func (r *Runtime) listSynapseBackups(ctx context.Context, c *client, req contrac
 			items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}, Name: text(raw["name"]), State: "Retained", Location: region, Tags: map[string]string{}, Raw: safe, Normalized: normalized, NativeAliases: []string{id}, NetworkReferences: network, Actionable: &actionable})
 		}
 		if kind == synapseRestorePointType {
+			// Each review touches only its own item; failures are checked in item order.
+			_, errs := readConcurrently(len(items), func(i int) (struct{}, error) {
+				return struct{}{}, r.restorePointInventory(ctx, c, req, &items[i])
+			})
 			for i := range items {
-				if err := r.restorePointInventory(ctx, c, req, &items[i]); err != nil {
+				if err := errs[i]; err != nil {
 					return inventorySnapshot{}, err
 				}
 				review := object(items[i].Normalized[synapseRestoreReview])

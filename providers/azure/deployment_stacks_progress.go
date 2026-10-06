@@ -143,16 +143,23 @@ func (r *Runtime) deploymentStackObserveProgress(ctx context.Context, req contra
 		return out, err
 	}
 	for pass := 0; pass < 2; pass++ {
-		for _, value := range members {
+		// Members are read concurrently within a pass and checked in order.
+		lives, errs := readConcurrently(len(members), func(i int) (response, error) {
+			if strings.EqualFold(members[i].Identity.NativeType, deploymentStackType) {
+				return response{}, c.deploymentStackObserveMembers(ctx, members[i], nil)
+			}
+			return c.deploymentStackMemberRead(ctx, members[i])
+		})
+		for i, value := range members {
 			member := value
+			live, err := lives[i], errs[i]
 			if strings.EqualFold(member.Identity.NativeType, deploymentStackType) {
-				if err := c.deploymentStackObserveMembers(ctx, member, nil); err != nil {
+				if err != nil {
 					return out, err
 				}
 				out.Members[member.ID] = member
 				continue
 			}
-			live, err := c.deploymentStackMemberRead(ctx, member)
 			if err != nil {
 				return out, err
 			}

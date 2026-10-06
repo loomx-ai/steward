@@ -129,23 +129,38 @@ func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []st
 			children = append(children, values...)
 		}
 		var result, nested []serviceChild
-		for _, child := range children {
-			if err := apimReady(child.kind, child.data); err != nil {
-				return nil, err
+		// Children are checked in order before any reference read. Children
+		// past the first unready one are not read; its error follows theirs.
+		ready := len(children)
+		var invalid error
+		for i, child := range children {
+			if invalid = apimReady(child.kind, child.data); invalid != nil {
+				ready = i
+				break
+			}
+		}
+		refs, errs := readConcurrently(ready, func(i int) ([]string, error) {
+			if !slices.Contains(kinds, children[i].kind) {
+				return nil, nil
+			}
+			return c.apimResolvedReferences(ctx, children[i].kind, children[i].id, children[i].data, indexes, nil)
+		})
+		for i, child := range children[:ready] {
+			if errs[i] != nil {
+				return nil, errs[i]
 			}
 			if slices.Contains(kinds, child.kind) {
-				refs, err := c.apimResolvedReferences(ctx, child.kind, child.id, child.data, indexes, nil)
-				if err != nil {
-					return nil, err
-				}
 				mu.Lock()
-				resolved[child.id] = refs
+				resolved[child.id] = refs[i]
 				mu.Unlock()
 				result = append(result, child)
 			}
 			if slices.ContainsFunc(kinds, func(kind string) bool { return strings.HasPrefix(kind, child.kind+"/") }) {
 				nested = append(nested, child)
 			}
+		}
+		if invalid != nil {
+			return nil, invalid
 		}
 		read := func(i int) ([]serviceChild, error) {
 			return collect(asset.Identity{NativeID: nested[i].id, NativeType: nested[i].kind}, nested[i].data, false)

@@ -145,37 +145,49 @@ func (c *client) azureLocalVMResources(ctx context.Context, known []string) (map
 	if err != nil {
 		return nil, err
 	}
+	// Machines are checked in order before any read. Rows past the first
+	// invalid one are not read, and its error follows the earlier reads.
 	seen := map[string]bool{}
+	var machines []map[string]any
+	var machineIDs []string
+	var invalid error
 	for _, value := range rows {
 		raw := object(value)
 		id, err := c.hybridComputeIdentity(text(raw["id"]), hybridMachineType)
 		if err != nil || seen[id] || !strings.EqualFold(text(raw["type"]), hybridMachineType) {
-			return nil, serviceDenied("invalid_azure_local_disk_consumer_index")
+			invalid = serviceDenied("invalid_azure_local_disk_consumer_index")
+			break
 		}
 		seen[id] = true
-		live, err := c.hybridComputeRead(ctx, id, hybridMachineType)
-		if err != nil {
-			return nil, err
+		machines, machineIDs = append(machines, raw), append(machineIDs, id)
+	}
+	lives, errs := readConcurrently(len(machineIDs), func(i int) (response, error) { return c.hybridComputeRead(ctx, machineIDs[i], hybridMachineType) })
+	for i, raw := range machines {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		if serviceListedIncarnation(raw, live.data) != nil {
+		if serviceListedIncarnation(raw, lives[i].data) != nil {
 			return nil, serviceDenied("azure_local_disk_consumer_parent_changed")
 		}
-		ids[id+"/providers/microsoft.azurestackhci/virtualmachineinstances/default"] = true
+		ids[machineIDs[i]+"/providers/microsoft.azurestackhci/virtualmachineinstances/default"] = true
+	}
+	if invalid != nil {
+		return nil, invalid
 	}
 	resources := map[string]map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(ids)) {
-		res, err := c.azureLocalRead(ctx, id, azureLocalVMType)
-		if isNotFound(err) {
+	sorted := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(sorted), func(i int) (response, error) { return c.azureLocalRead(ctx, sorted[i], azureLocalVMType) })
+	for i, id := range sorted {
+		if isNotFound(errs[i]) {
 			continue
 		}
-		if err != nil {
+		if errs[i] != nil {
+			return nil, errs[i]
+		}
+		if _, err := azureLocalReferences(id, azureLocalVMType, reads[i].data); err != nil {
 			return nil, err
 		}
-		_, err = azureLocalReferences(id, azureLocalVMType, res.data)
-		if err != nil {
-			return nil, err
-		}
-		resources[id] = res.data
+		resources[id] = reads[i].data
 	}
 	return resources, nil
 }

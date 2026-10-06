@@ -284,6 +284,10 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 			}
 		}
 		ids, listed := map[string]bool{}, map[string]string{}
+		// Parents are checked in order before any index read; parents past the
+		// first invalid one are not read, and its error follows earlier reads'.
+		var indexed []string
+		var invalid error
 		for _, parent := range parents {
 			if definition.family == "Subvolumes" {
 				flag := object(raws[parent]["properties"])["enableSubvolumes"]
@@ -291,10 +295,15 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 					continue
 				}
 				if flag != "Enabled" {
-					return nil, serviceDenied("unknown_netapp_subvolume_support")
+					invalid = serviceDenied("unknown_netapp_subvolume_support")
+					break
 				}
 			}
-			rows, err := c.netappIndex(ctx, typ, parent)
+			indexed = append(indexed, parent)
+		}
+		indexes, errs := readConcurrently(len(indexed), func(i int) ([]any, error) { return c.netappIndex(ctx, typ, indexed[i]) })
+		for i, parent := range indexed {
+			rows, err := indexes[i], errs[i]
 			if err != nil {
 				return nil, contracts.DependencyReadError(err)
 			}
@@ -308,10 +317,16 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 				listed[id] = strings.ReplaceAll(strings.ToLower(text(raw["location"])), " ", "")
 			}
 		}
+		if invalid != nil {
+			return nil, invalid
+		}
 		for id := range hints[typ] {
 			ids[id] = true
 		}
 		out := []string{}
+		// IDs are checked in order before any read (elsewhere marks only this
+		// level, read by the next); IDs past the first invalid one are not read.
+		var reading []string
 		for _, id := range slices.Sorted(maps.Keys(ids)) {
 			parent := redisParentID(id)
 			if definition.parent != "" && raws[parent] == nil && elsewhere[parent] || listed[id] != "" && req.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(listed[id], req.Scope.NativeID) {
@@ -322,9 +337,15 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 				continue
 			}
 			if definition.parent != "" && raws[parent] == nil {
-				return nil, serviceDenied("netapp_lookup_parent_unavailable")
+				invalid = serviceDenied("netapp_lookup_parent_unavailable")
+				break
 			}
-			own, err := c.netappRead(ctx, id, typ)
+			reading = append(reading, id)
+		}
+		reads, readErrs := readConcurrently(len(reading), func(i int) (response, error) { return c.netappRead(ctx, reading[i], typ) })
+		for i, id := range reading {
+			parent := redisParentID(id)
+			own, err := reads[i], readErrs[i]
 			if isNotFound(err) {
 				if typ == kind && known[id] {
 					absent = append(absent, id)
@@ -351,6 +372,9 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 				requestID = own.requestID
 			}
 		}
+		if invalid != nil {
+			return nil, invalid
+		}
 		return out, nil
 	}
 	ids, err := collect(kind)
@@ -358,9 +382,14 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		return nil, nil, nil, "", err
 	}
 	contextHashes := map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(raws)) {
-		_, typ, _ := parseID(id)
-		own, err := c.netappRead(ctx, id, typ)
+	// These rereads all follow the whole collection above.
+	reread := slices.Sorted(maps.Keys(raws))
+	rereads, rereadErrs := readConcurrently(len(reread), func(i int) (response, error) {
+		_, typ, _ := parseID(reread[i])
+		return c.netappRead(ctx, reread[i], typ)
+	})
+	for i, id := range reread {
+		own, err := rereads[i], rereadErrs[i]
 		if err != nil {
 			return nil, nil, nil, "", contracts.DependencyReadError(err)
 		}

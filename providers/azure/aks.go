@@ -289,6 +289,7 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 	if err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	var clusters []asset.Asset
 	for _, cluster := range assets {
 		if cluster.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(cluster.Identity.NativeType, aksType) {
 			continue
@@ -296,32 +297,40 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 		if fleetOwners[managedGroupKey(cluster.Identity, cluster.Identity.NativeID)] != "" {
 			continue // Fleet verifies and owns the Hub's entire native cascade.
 		}
+		clusters = append(clusters, cluster)
+	}
+	// Clusters are read and walked concurrently; contributions and the first
+	// failure are taken in asset order.
+	contributions, errs := readConcurrently(len(clusters), func(i int) (governance.Contribution, error) {
+		cluster := clusters[i]
 		kind, _ := findType(aksType)
 		endpoint, err := h.client.resourceURL(kind, cluster.Identity.NativeID)
 		if err != nil {
-			return result, err
+			return governance.Contribution{}, err
 		}
 		response, err := h.client.request(ctx, "GET", endpoint)
 		if err != nil {
-			return result, err
+			return governance.Contribution{}, err
 		}
 		if !validResourceResponse(response, cluster.Identity.NativeID, aksType) {
-			return result, fmt.Errorf("AKS cluster identity mismatch")
+			return governance.Contribution{}, fmt.Errorf("AKS cluster identity mismatch")
 		}
 		if err := serviceIncarnation(cluster, response.data); err != nil {
-			return result, err
+			return governance.Contribution{}, err
 		}
 		group, err := aksNodeGroup(h.client.subscription, object(response.data["properties"]))
 		if err != nil {
-			return result, err
+			return governance.Contribution{}, err
 		}
 		planned, err := aksNodeGroup(h.client.subscription, cluster.Normalized)
 		if err != nil || group != planned || inResourceGroup(cluster.Identity.NativeID, group) {
-			return result, fmt.Errorf("AKS node resource group changed; refresh inventory")
+			return governance.Contribution{}, fmt.Errorf("AKS node resource group changed; refresh inventory")
 		}
-		contribution, err := h.client.contributeManagedGroup(ctx, cluster, response, group, aksSource, assets)
-		if err != nil {
-			return result, err
+		return h.client.contributeManagedGroup(ctx, cluster, response, group, aksSource, assets)
+	})
+	for i, contribution := range contributions {
+		if errs[i] != nil {
+			return result, errs[i]
 		}
 		result.Bindings = append(result.Bindings, contribution.Bindings...)
 		result.Relationships = append(result.Relationships, contribution.Relationships...)

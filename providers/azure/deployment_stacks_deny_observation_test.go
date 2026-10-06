@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -25,7 +26,10 @@ func testDeploymentStackDenyObservation(t *testing.T, groupScoped bool) {
 			addedID := strings.ToLower(text(added["id"]))
 			final := false
 			calls, lists, owns := 0, 0, 0
+			var fixtureMu sync.Mutex
 			c.http.Transport = roundTripFunc(func(q *http.Request) (*http.Response, error) {
+				fixtureMu.Lock() // Reads may run concurrently.
+				defer fixtureMu.Unlock()
 				if q.Method != "GET" {
 					t.Fatal("deny observation mutated state", q.Method, q.URL)
 				}

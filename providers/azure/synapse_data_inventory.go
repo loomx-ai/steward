@@ -303,29 +303,43 @@ func (c *synapseDataClient) synapseListData(ctx context.Context, target synapseD
 			}
 			total = count
 		}
+		// Rows are checked in order before any detail read. Rows past the first
+		// invalid one are not read, and its error follows the earlier rows' checks.
+		var rows []map[string]any
+		var readParams []map[string]any
+		var invalid error
 		for _, row := range array(res.data[field]) {
 			raw := object(row)
-			id, readParams, err := synapseObservedID(target, d, raw)
+			id, params, err := synapseObservedID(target, d, raw)
 			if err != nil {
-				return nil, "", "", err
+				invalid = err
+				break
 			}
 			if ids[id] {
-				return nil, "", "", serviceDenied("duplicate_synapse_data_identity")
+				invalid = serviceDenied("duplicate_synapse_data_identity")
+				break
 			}
 			ids[id] = true
 			index[id] = synapseDataSnapshot(d, raw)
-			if !details {
-				result = append(result, raw)
-				continue
+			rows, readParams = append(rows, raw), append(readParams, params)
+		}
+		if !details {
+			result = append(result, rows...)
+		} else {
+			reads, errs := readConcurrently(len(rows), func(i int) (response, error) { return c.synapseReadData(ctx, target, d, readParams[i]) })
+			for i, raw := range rows {
+				detail, err := reads[i], errs[i]
+				if err != nil {
+					return nil, "", "", err
+				}
+				if !nativeConfigurationContains(synapseDataSnapshot(d, raw), synapseDataSnapshot(d, detail.data)) {
+					return nil, "", "", serviceDenied("synapse_listed_data_changed")
+				}
+				result = append(result, detail.data)
 			}
-			detail, err := c.synapseReadData(ctx, target, d, readParams)
-			if err != nil {
-				return nil, "", "", err
-			}
-			if !nativeConfigurationContains(synapseDataSnapshot(d, raw), synapseDataSnapshot(d, detail.data)) {
-				return nil, "", "", serviceDenied("synapse_listed_data_changed")
-			}
-			result = append(result, detail.data)
+		}
+		if invalid != nil {
+			return nil, "", "", invalid
 		}
 		if next == "" {
 			break
@@ -543,34 +557,53 @@ func (r *Runtime) listSynapseData(ctx context.Context, c *synapseDataClient, req
 				}
 				values = append(values, res.data)
 			}
-			for _, raw := range values {
+			// Each value's item, re-read and review run in that order on their own;
+			// results are checked in value order. The duplicate check falls between
+			// an item and its later steps, so those failures are kept apart (late).
+			type observedValue struct {
+				item contracts.InventoryItem
+				late error
+			}
+			reads, errs := readConcurrently(len(values), func(i int) (observedValue, error) {
+				raw := values[i]
 				item, err := r.synapseDataInventoryItem(ctx, c, target, d, raw, request, owners, locks)
 				if err != nil {
+					return observedValue{}, err
+				}
+				late := func() error {
+					// Re-read after reference resolution so graph edges never come from a
+					// different artifact/job configuration than the saved observation.
+					_, params, err := synapseObservedID(target, d, raw)
+					if err != nil {
+						return err
+					}
+					after, err := c.synapseReadData(ctx, target, d, params)
+					if err != nil {
+						return err
+					}
+					if c.arm.privateConfiguration(synapseDataSnapshot(d, raw)) != c.arm.privateConfiguration(synapseDataSnapshot(d, after.data)) {
+						return serviceDenied("synapse_data_configuration_changed")
+					}
+					if synapseReviewArtifact(d.kind) {
+						return r.synapseArtifactInventory(ctx, c, target, d, raw, request, &item)
+					}
+					return nil
+				}()
+				return observedValue{item: item, late: late}, nil
+			})
+			for i := range values {
+				read, err := reads[i], errs[i]
+				if err != nil {
 					return batch, err
 				}
-				if observed[item.NativeID] {
+				if observed[read.item.NativeID] {
 					return batch, serviceDenied("duplicate_synapse_data_asset")
 				}
-				observed[item.NativeID] = true
-				// Re-read after reference resolution so graph edges never come from a
-				// different artifact/job configuration than the saved observation.
-				_, params, err := synapseObservedID(target, d, raw)
-				if err != nil {
-					return batch, err
+				observed[read.item.NativeID] = true
+				if read.late != nil {
+					return batch, read.late
 				}
-				after, err := c.synapseReadData(ctx, target, d, params)
-				if err != nil {
-					return batch, err
-				}
-				if c.arm.privateConfiguration(synapseDataSnapshot(d, raw)) != c.arm.privateConfiguration(synapseDataSnapshot(d, after.data)) {
-					return batch, serviceDenied("synapse_data_configuration_changed")
-				}
-				if synapseReviewArtifact(d.kind) {
-					if err := r.synapseArtifactInventory(ctx, c, target, d, raw, request, &item); err != nil {
-						return batch, err
-					}
-				}
-				items = append(items, item)
+				items = append(items, read.item)
 			}
 			// Offset pagination has no server snapshot. Confirm the full observed
 			// membership and authored list state again before returning a complete page.

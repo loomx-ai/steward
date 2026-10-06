@@ -40,15 +40,20 @@ func (s *serviceCascades) communicationGraphSnapshot(ctx context.Context, select
 	}
 	trees := map[string]communicationTree{}
 	domains := map[string]bool{}
-	for _, id := range slices.Sorted(maps.Keys(roots)) {
-		raw, err := s.client.communicationARMRead(ctx, id, roots[id])
+	rootIDs := slices.Sorted(maps.Keys(roots))
+	// Each root is read and walked concurrently; trees merge in root order.
+	walked, errs := readConcurrently(len(rootIDs), func(i int) (communicationTree, error) {
+		raw, err := s.client.communicationARMRead(ctx, rootIDs[i], roots[rootIDs[i]])
 		if err != nil {
-			return nil, nil, err
+			return communicationTree{}, err
 		}
-		tree, err := s.client.communicationTree(ctx, raw, hints)
-		if err != nil {
-			return nil, nil, err
+		return s.client.communicationTree(ctx, raw, hints)
+	})
+	for i, id := range rootIDs {
+		if errs[i] != nil {
+			return nil, nil, errs[i]
 		}
+		tree := walked[i]
 		trees[id] = tree
 		for id, member := range tree.members {
 			if member.kind == communicationDomainType {

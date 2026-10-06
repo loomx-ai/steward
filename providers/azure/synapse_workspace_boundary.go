@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"maps"
+	"slices"
 	"strings"
 	"time"
 
@@ -197,13 +198,22 @@ func (c *synapseDataClient) workspaceBoundary(ctx context.Context, w synapseWork
 			return nil, serviceDenied("synapse_workspace_pool_index_changed")
 		}
 	}
-	for id, value := range members {
-		entry := object(value)
-		d := synapseDataKind(text(entry["kind"]))
-		if d.kind == "" {
-			continue
+	// Final member reads all follow the pool re-index; they run concurrently
+	// and are checked in member id order.
+	var ids []string
+	for _, id := range slices.Sorted(maps.Keys(members)) {
+		if synapseDataKind(text(object(members[id])["kind"])).kind != "" {
+			ids = append(ids, id)
 		}
-		final, err := c.synapseReadData(ctx, synapseDataTarget{workspace: w}, d, object(entry["parameters"]))
+	}
+	finals, errs := readConcurrently(len(ids), func(i int) (response, error) {
+		entry := object(members[ids[i]])
+		return c.synapseReadData(ctx, synapseDataTarget{workspace: w}, synapseDataKind(text(entry["kind"])), object(entry["parameters"]))
+	})
+	for i, id := range ids {
+		entry := object(members[id])
+		d := synapseDataKind(text(entry["kind"]))
+		final, err := finals[i], errs[i]
 		if err != nil {
 			return nil, err
 		}

@@ -44,8 +44,10 @@ func (c *client) protectionPolicyConsumers(ctx context.Context, policy string, k
 		}
 	}
 	consumers := map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(ids)) {
-		own, err := c.dataProtectionRead(ctx, id, ids[id])
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.dataProtectionRead(ctx, ordered[i], ids[ordered[i]]) })
+	for i, id := range ordered {
+		own, err := reads[i], errs[i]
 		if isNotFound(err) && listed[id] == nil {
 			continue
 		}

@@ -292,13 +292,18 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 				vaults[parent] = map[string]any{}
 			}
 		}
+		var ids []string
 		for _, id := range slices.Sorted(maps.Keys(vaults)) {
 			// A listed vault the list places in another region yields nothing
 			// here; a known child's unlisted vault is still read.
 			if listed := vaults[id]; req.Scope.Kind == asset.ScopeRegion && text(listed["location"]) != "" && !strings.EqualFold(resourceRegion(listed), req.Scope.NativeID) {
 				continue
 			}
-			own, err := c.recoveryServicesRead(ctx, id, recoveryServicesVault)
+			ids = append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.recoveryServicesRead(ctx, ids[i], recoveryServicesVault) })
+		for i, id := range ids {
+			own, err := reads[i], errs[i]
 			if err != nil {
 				return nil, nil, contracts.DependencyReadError(err)
 			}
@@ -321,8 +326,12 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 	}
 	rows := map[string]map[string]any{}
 	locations := map[string]string{}
-	for _, path := range slices.Sorted(maps.Keys(targets)) {
-		listed, err := c.recoveryServicesCollection(ctx, path, kind)
+	paths := slices.Sorted(maps.Keys(targets))
+	collections, errs := readConcurrently(len(paths), func(i int) (map[string]map[string]any, error) {
+		return c.recoveryServicesCollection(ctx, paths[i], kind)
+	})
+	for i, path := range paths {
+		listed, err := collections[i], errs[i]
 		if err != nil {
 			return nil, nil, err
 		}
@@ -353,8 +362,25 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 	containers := map[string]map[string]any{}
 	items := []contracts.InventoryItem{}
 	absent := []string{}
-	for _, id := range slices.Sorted(maps.Keys(rows)) {
+	// Each row's own read, and an item's container read when the serial walk
+	// would make it, run concurrently; rows are then processed in order.
+	type recoveryRow struct {
+		own, container response
+		containerErr   error
+	}
+	ids := slices.Sorted(maps.Keys(rows))
+	reads, errs := readConcurrently(len(ids), func(i int) (recoveryRow, error) {
+		id := ids[i]
 		own, err := c.recoveryServicesRead(ctx, id, kind)
+		row := recoveryRow{own: own}
+		if err != nil || kind != recoveryServicesItem || len(rows[id]) != 0 && !nativeConfigurationContains(rows[id], own.data) || req.Scope.Kind == asset.ScopeRegion && !strings.EqualFold(locations[id], req.Scope.NativeID) {
+			return row, err
+		}
+		row.container, row.containerErr = c.recoveryServicesRead(ctx, redisParentID(id), recoveryServicesContainer)
+		return row, nil
+	})
+	for i, id := range ids {
+		own, err := reads[i].own, errs[i]
 		if isNotFound(err) && len(rows[id]) == 0 {
 			absent = append(absent, id)
 			continue
@@ -399,7 +425,7 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 		}
 		if kind == recoveryServicesItem {
 			container := redisParentID(id)
-			parent, err := c.recoveryServicesRead(ctx, container, recoveryServicesContainer)
+			parent, err := reads[i].container, reads[i].containerErr
 			if err != nil {
 				return nil, nil, contracts.DependencyReadError(err)
 			}
@@ -428,39 +454,35 @@ func (r *Runtime) recoveryServicesSnapshot(ctx context.Context, c *client, req c
 		actionable := false
 		items = append(items, contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: last(id), State: state, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Normalized: normalized, Raw: object(recoveryServicesSafeValue(own.data)), NativeAliases: []string{id}, Actionable: &actionable})
 	}
-	if kind == recoveryServicesContainer {
-		for i := range items {
-			if err := r.recoveryContainerInventory(ctx, c, req, &items[i]); err != nil {
+	// Each review writes only its own item.
+	if kind == recoveryServicesContainer || kind == recoveryServicesItem {
+		_, errs := readConcurrently(len(items), func(i int) (struct{}, error) {
+			if kind == recoveryServicesContainer {
+				return struct{}{}, r.recoveryContainerInventory(ctx, c, req, &items[i])
+			}
+			return struct{}{}, r.recoveryItemInventory(ctx, c, req, &items[i])
+		})
+		for _, err := range errs {
+			if err != nil {
 				return nil, nil, err
 			}
 		}
 	}
 
-	if kind == recoveryServicesItem {
-		for i := range items {
-			if err := r.recoveryItemInventory(ctx, c, req, &items[i]); err != nil {
-				return nil, nil, err
+	// The containers' and then the vaults' re-reads follow every read above.
+	for _, recheck := range []struct {
+		kind, changed string
+		raws          map[string]map[string]any
+	}{{recoveryServicesContainer, "recovery_services_container_changed", containers}, {recoveryServicesVault, "backup_vault_changed_during_inventory", parents}} {
+		ids := slices.Sorted(maps.Keys(recheck.raws))
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.recoveryServicesRead(ctx, ids[i], recheck.kind) })
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, nil, contracts.DependencyReadError(errs[i])
 			}
-		}
-	}
-
-	for id, raw := range containers {
-		own, err := c.recoveryServicesRead(ctx, id, recoveryServicesContainer)
-		if err != nil {
-			return nil, nil, contracts.DependencyReadError(err)
-		}
-		if c.privateConfiguration(raw) != c.privateConfiguration(own.data) {
-			return nil, nil, serviceDenied("recovery_services_container_changed")
-		}
-	}
-
-	for id, raw := range parents {
-		own, err := c.recoveryServicesRead(ctx, id, recoveryServicesVault)
-		if err != nil {
-			return nil, nil, contracts.DependencyReadError(err)
-		}
-		if c.privateConfiguration(raw) != c.privateConfiguration(own.data) {
-			return nil, nil, serviceDenied("backup_vault_changed_during_inventory")
+			if c.privateConfiguration(recheck.raws[id]) != c.privateConfiguration(reads[i].data) {
+				return nil, nil, serviceDenied(recheck.changed)
+			}
 		}
 	}
 	return items, absent, nil

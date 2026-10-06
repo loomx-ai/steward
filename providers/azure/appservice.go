@@ -266,32 +266,53 @@ func (c *client) appCertificateUnused(ctx context.Context, planned asset.Asset, 
 		if err != nil {
 			return err
 		}
+		// Sites are checked in order before any read, then each site's reads
+		// and checks run concurrently. The first failure in list order wins;
+		// sites past the first invalid one are not read.
 		seen := map[string]bool{}
+		type listedSite struct {
+			raw          map[string]any
+			id, endpoint string
+		}
+		var listed []listedSite
+		var invalid error
 		for _, value := range sites {
 			raw := object(value)
 			id, nativeType, err := parseID(text(raw["id"]))
 			if err != nil || !strings.EqualFold(nativeType, appSiteType) || seen[id] || !validResponseType(appSiteType, text(raw["type"])) {
-				return serviceDenied("invalid_certificate_referrer")
+				invalid = serviceDenied("invalid_certificate_referrer")
+				break
 			}
 			seen[id] = true
 			kind, _ := findType(appSiteType)
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
-				return err
+				invalid = err
+				break
 			}
-			current, err := c.request(ctx, "GET", endpoint)
+			listed = append(listed, listedSite{raw, id, endpoint})
+		}
+		_, errs := readConcurrently(len(listed), func(i int) (struct{}, error) {
+			raw, id := listed[i].raw, listed[i].id
+			current, err := c.request(ctx, "GET", listed[i].endpoint)
+			if err != nil {
+				return struct{}{}, err
+			}
+			if !validResourceResponse(current, id, appSiteType) {
+				return struct{}{}, serviceDenied("invalid_certificate_referrer")
+			}
+			if err := serviceListedIncarnation(raw, current.data); err != nil {
+				return struct{}{}, err
+			}
+			return struct{}{}, c.appCertificateSiteUnused(ctx, asset.Identity{NativeID: id, NativeType: appSiteType}, current.data, planned.Identity.NativeID, thumbprint)
+		})
+		for _, err := range errs {
 			if err != nil {
 				return err
 			}
-			if !validResourceResponse(current, id, appSiteType) {
-				return serviceDenied("invalid_certificate_referrer")
-			}
-			if err := serviceListedIncarnation(raw, current.data); err != nil {
-				return err
-			}
-			if err := c.appCertificateSiteUnused(ctx, asset.Identity{NativeID: id, NativeType: appSiteType}, current.data, planned.Identity.NativeID, thumbprint); err != nil {
-				return err
-			}
+		}
+		if invalid != nil {
+			return invalid
 		}
 	}
 	kind, _ := findType(planned.Identity.NativeType)

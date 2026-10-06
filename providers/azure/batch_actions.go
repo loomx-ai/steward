@@ -253,6 +253,18 @@ func (a *batchAction) preflight(ctx context.Context, request contracts.ActionReq
 		assets[id] = impact.Asset
 	}
 	seen := map[string]bool{}
+	// Descendants' protection reads run ahead concurrently; the walk below
+	// still visits and checks each child in its own order.
+	var descendants []string
+	for id := range topology.members {
+		if id != a.id && topology.descendant(id, a.id) {
+			descendants = append(descendants, id)
+		}
+	}
+	slices.Sort(descendants)
+	protected := readAhead(descendants, func(id string) (struct{}, error) {
+		return struct{}{}, a.protected(ctx, account, topology.members[id], locks)
+	})
 	var verify func(string) error
 	verify = func(id string) error {
 		for _, child := range topology.children(id) {
@@ -272,7 +284,7 @@ func (a *batchAction) preflight(ctx context.Context, request contracts.ActionReq
 			if err := topology.verifyAsset(a.client, impact.Asset, child); err != nil {
 				return err
 			}
-			if err := a.protected(ctx, account, child, locks); err != nil {
+			if _, err := protected(child.id); err != nil {
 				return err
 			}
 			if err := verify(child.id); err != nil {
@@ -295,13 +307,22 @@ func (a *batchAction) preflight(ctx context.Context, request contracts.ActionReq
 			return deny(serviceDenied("batch_impact_membership_changed"))
 		}
 	}
-	for id, member := range topology.members {
-		if topology.descendant(id, a.id) {
-			continue
+	// Other members' references are read concurrently and checked in ID order.
+	var others []string
+	for id := range topology.members {
+		if !topology.descendant(id, a.id) {
+			others = append(others, id)
 		}
-		refs, err := a.client.batchReferences(ctx, account, id, member.kind, member.raw)
-		if err != nil {
-			return deny(err)
+	}
+	slices.Sort(others)
+	references, errs := readConcurrently(len(others), func(i int) (map[string][]string, error) {
+		member := topology.members[others[i]]
+		return a.client.batchReferences(ctx, account, others[i], member.kind, member.raw)
+	})
+	for i, id := range others {
+		member, refs := topology.members[id], references[i]
+		if errs[i] != nil {
+			return deny(errs[i])
 		}
 		for kind, ids := range refs {
 			// Task placement is historical and RemoveNodes requeues running
@@ -337,30 +358,41 @@ func (a *batchAction) Preflight(ctx context.Context, request contracts.ActionReq
 }
 
 func (a *batchAction) prerequisitesAbsent(ctx context.Context, request contracts.ActionRequest, account batchAccountContext) error {
+	// Prerequisites are checked in order before any read. Those past the
+	// first invalid one are not read, and its error follows earlier reads.
 	seen := map[string]bool{}
+	var prerequisites []asset.Asset
+	var invalid error
 	for _, impact := range request.PrerequisiteDeletions {
 		id := strings.ToLower(impact.Asset.Identity.NativeID)
 		if seen[id] || id == a.id || !impact.Delete || impact.ControllerID != request.Asset.ID || impact.Asset.Identity.ConnectionID != request.Asset.Identity.ConnectionID || impact.Asset.Identity.Partition != request.Asset.Identity.Partition {
-			return serviceDenied("invalid_batch_prerequisite")
+			invalid = serviceDenied("invalid_batch_prerequisite")
+			break
 		}
 		seen[id] = true
-		if err := batchAssetAccount(a.client, impact.Asset, account); err != nil {
+		if invalid = batchAssetAccount(a.client, impact.Asset, account); invalid != nil {
+			break
+		}
+		prerequisites = append(prerequisites, impact.Asset)
+	}
+	_, errs := readConcurrently(len(prerequisites), func(i int) (struct{}, error) {
+		if prerequisites[i].Identity.NativeType == batchNodeType {
+			return struct{}{}, a.client.batchNodeAbsent(ctx, account, prerequisites[i])
+		}
+		if _, err := a.read(ctx, account, prerequisites[i]); !isNotFound(err) {
+			if err != nil {
+				return struct{}{}, err
+			}
+			return struct{}{}, serviceDenied("batch_prerequisite_still_exists")
+		}
+		return struct{}{}, nil
+	})
+	for _, err := range errs {
+		if err != nil {
 			return err
 		}
-		if impact.Asset.Identity.NativeType == batchNodeType {
-			if err := a.client.batchNodeAbsent(ctx, account, impact.Asset); err != nil {
-				return err
-			}
-			continue
-		}
-		if _, err := a.read(ctx, account, impact.Asset); !isNotFound(err) {
-			if err != nil {
-				return err
-			}
-			return serviceDenied("batch_prerequisite_still_exists")
-		}
 	}
-	return nil
+	return invalid
 }
 
 func batchETag(raw response) (string, error) {
@@ -516,8 +548,11 @@ func (a *batchAction) readImpacts(ctx context.Context, request contracts.ActionR
 	if err := a.prerequisitesAbsent(ctx, request, account); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	for _, impact := range impacts {
-		if _, err := a.read(ctx, account, impact.Asset); !isNotFound(err) {
+	// Impacts are read concurrently and checked in ID order.
+	ids := slices.Sorted(maps.Keys(impacts))
+	_, errs := readConcurrently(len(ids), func(i int) (response, error) { return a.read(ctx, account, impacts[ids[i]].Asset) })
+	for _, err := range errs {
+		if !isNotFound(err) {
 			if err != nil {
 				return contracts.ReadbackResult{}, err
 			}
@@ -619,22 +654,38 @@ func (a *batchAction) absentAccount(ctx context.Context, request contracts.Actio
 	// own ARM DELETE. Its authenticated receipt preserves that verification when
 	// ARM removes the endpoint authority. Check remaining ARM impacts directly.
 	account := batchAccountContext{id: a.accountID, endpoint: a.endpoint, location: a.location}
-	for _, impact := range impacts {
-		if isBatchDataType(impact.Asset.Identity.NativeType) {
-			return contracts.ReadbackResult{}, serviceDenied("batch_account_has_unverified_data_impact")
+	// Impacts are checked in ID order before any read; impacts past the
+	// first data impact are not read, and its error follows earlier reads.
+	var remaining []asset.Asset
+	var invalid error
+	for _, id := range slices.Sorted(maps.Keys(impacts)) {
+		if isBatchDataType(impacts[id].Asset.Identity.NativeType) {
+			invalid = serviceDenied("batch_account_has_unverified_data_impact")
+			break
 		}
-		if _, err := a.read(ctx, account, impact.Asset); !isNotFound(err) {
+		remaining = append(remaining, impacts[id].Asset)
+	}
+	_, errs := readConcurrently(len(remaining), func(i int) (response, error) { return a.read(ctx, account, remaining[i]) })
+	for _, err := range errs {
+		if !isNotFound(err) {
 			if err != nil {
 				return contracts.ReadbackResult{}, err
 			}
 			return contracts.ReadbackResult{Exists: true, State: "batch_account_children_deleting"}, nil
 		}
 	}
+	if invalid != nil {
+		return contracts.ReadbackResult{}, invalid
+	}
+	remaining = nil
 	for _, impact := range request.PrerequisiteDeletions {
-		if isBatchDataType(impact.Asset.Identity.NativeType) {
-			continue
+		if !isBatchDataType(impact.Asset.Identity.NativeType) {
+			remaining = append(remaining, impact.Asset)
 		}
-		if _, err := a.read(ctx, account, impact.Asset); !isNotFound(err) {
+	}
+	_, errs = readConcurrently(len(remaining), func(i int) (response, error) { return a.read(ctx, account, remaining[i]) })
+	for _, err := range errs {
+		if !isNotFound(err) {
 			if err != nil {
 				return contracts.ReadbackResult{}, err
 			}

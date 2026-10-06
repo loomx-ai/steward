@@ -112,22 +112,37 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 		if failure != nil {
 			return out, failure
 		}
+		// Children are checked in order before any read. Children past the first
+		// invalid one are not read, and its error follows the earlier checks.
 		seen := map[string]bool{}
+		var listed []serviceChild
+		var invalid error
 		for _, child := range children {
 			id := strings.ToLower(child.id)
 			reviewed, found := byID[id]
 			if seen[id] || !found || !strings.EqualFold(child.kind, reviewed.Asset.Identity.NativeType) || !reviewed.Delete {
-				return out, serviceDenied("deployment_stack_service_child_not_reviewed")
+				invalid = serviceDenied("deployment_stack_service_child_not_reviewed")
+				break
 			}
 			seen[id] = true
 			observed[id] = true
 			// An explicitly listed child can have the Stack as its execution controller.
 			// Implicit children require the native product controller from the plan.
 			if native[id] == nil && reviewed.ControllerID != parent.ID {
-				return out, serviceDenied("deployment_stack_service_child_controller_changed")
+				invalid = serviceDenied("deployment_stack_service_child_controller_changed")
+				break
 			}
+			listed = append(listed, child)
+		}
+		lives, failures := readConcurrently(len(listed), func(i int) (response, error) {
+			return c.deploymentStackMemberRead(ctx, byID[strings.ToLower(listed[i].id)].Asset)
+		})
+		for i, child := range listed {
+			id := strings.ToLower(child.id)
+			reviewed := byID[id]
+			live, failure := lives[i], failures[i]
 			if state.Completed[reviewed.Asset.ID] {
-				if _, failure := c.deploymentStackMemberRead(ctx, reviewed.Asset); !isNotFound(failure) {
+				if !isNotFound(failure) {
 					if failure != nil {
 						return out, failure
 					}
@@ -139,7 +154,6 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 			if current, found := state.Members[planned.ID]; found {
 				planned = current
 			}
-			live, failure := c.deploymentStackMemberRead(ctx, reviewed.Asset)
 			if failure != nil {
 				return out, failure
 			}
@@ -169,6 +183,9 @@ func (c *client) deploymentStackCheckServiceClosure(ctx context.Context, req con
 				direct[reviewed.Asset.ID] = true
 				out.DirectChildren = append(out.DirectChildren, reviewed)
 			}
+		}
+		if invalid != nil {
+			return out, invalid
 		}
 		out.Parents = append(out.Parents, parent.ID)
 		checked[parent.ID] = parent

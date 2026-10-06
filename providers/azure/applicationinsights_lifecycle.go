@@ -101,32 +101,49 @@ func (c *client) contributeInsightsChildren(ctx context.Context, parent asset.As
 	for _, child := range children {
 		indexed[child.id] = true
 	}
+	// Assets are checked in order before any read; those past the first
+	// invalid one are not read, and its error follows the earlier reads. A
+	// repeated ID is read once: its first read decides as a serial walk would.
+	type omitted struct{ id, kind string }
+	var reads []omitted
+	var invalid error
+	queued := map[string]bool{}
 	for _, value := range assets {
 		if value.Identity.Provider != parent.Identity.Provider || value.Identity.ConnectionID != parent.Identity.ConnectionID || value.Identity.Partition != parent.Identity.Partition || !slices.Contains(insightsComponentChildKinds(), value.Identity.NativeType) && value.Identity.NativeType != insightsAnnotationType {
 			continue
 		}
 		id, owner, kind, _, err := insightsChildIdentity(value.Identity.NativeID)
 		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType {
-			return result, serviceDenied("invalid_indexed_insights_child_identity")
+			invalid = serviceDenied("invalid_indexed_insights_child_identity")
+			break
 		}
-		if owner != parent.Identity.NativeID || indexed[id] {
+		if owner != parent.Identity.NativeID || indexed[id] || queued[id] {
 			continue
 		}
-		mapping, _ := findType(kind)
-		current, err := c.insightsChildRead(ctx, mapping, id)
-		if isNotFound(err) {
+		queued[id] = true
+		reads = append(reads, omitted{id, kind})
+	}
+	currents, errs := readConcurrently(len(reads), func(i int) (response, error) {
+		mapping, _ := findType(reads[i].kind)
+		return c.insightsChildRead(ctx, mapping, reads[i].id)
+	})
+	for i, read := range reads {
+		if isNotFound(errs[i]) {
 			continue
 		}
-		if err != nil {
-			return result, err
+		if errs[i] != nil {
+			return result, errs[i]
 		}
-		if kind != insightsAnnotationType {
+		if read.kind != insightsAnnotationType {
 			return result, serviceDenied("insights_child_missing_from_native_index")
 		}
 		// The bounded list cannot refute an older saved annotation. Its exact
 		// native GET and frozen private configuration still bind it to the plan.
-		children = append(children, serviceChild{id: id, kind: kind, data: current.data})
-		indexed[id] = true
+		children = append(children, serviceChild{id: read.id, kind: read.kind, data: currents[i].data})
+		indexed[read.id] = true
+	}
+	if invalid != nil {
+		return result, invalid
 	}
 	slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 	for _, child := range children {

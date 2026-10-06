@@ -507,20 +507,33 @@ func (c *client) fleetIndex(ctx context.Context, kind, scope string) (items map[
 		if operationLocation(result.header) != "" || result.data["code"] != nil || monitorRuleFields(result.data, "value", "nextLink") != nil {
 			return nil, "", serviceDenied("invalid_fleet_list_response")
 		}
+		// Rows are checked in order before any read. Rows past the first invalid
+		// one are not read, and its error follows the earlier rows' checks.
+		var ids []string
+		var invalid error
+		page := map[string]bool{}
 		for _, value := range values {
 			raw := object(value)
 			id, typ, err := fleetIdentity(text(raw["id"]))
-			if err != nil || typ != kind || !strings.HasPrefix(id, c.root()+"/") || items[id] != nil || fleetValidate(kind, raw) != nil || kind != fleetType && fleetParent(id, kind) != scope || kind == fleetType && scope != c.root() && !inResourceGroup(id, scope) {
-				return nil, "", serviceDenied("invalid_fleet_list_identity")
+			if err != nil || typ != kind || !strings.HasPrefix(id, c.root()+"/") || items[id] != nil || page[id] || fleetValidate(kind, raw) != nil || kind != fleetType && fleetParent(id, kind) != scope || kind == fleetType && scope != c.root() && !inResourceGroup(id, scope) {
+				invalid = serviceDenied("invalid_fleet_list_identity")
+				break
 			}
-			current, err := c.fleetRead(ctx, kind, id)
-			if err != nil {
-				return nil, "", err
+			page[id] = true
+			ids = append(ids, id)
+		}
+		reads, errs := readConcurrently(len(ids), func(i int) (response, error) { return c.fleetRead(ctx, kind, ids[i]) })
+		for i, id := range ids {
+			if errs[i] != nil {
+				return nil, "", errs[i]
 			}
-			if !nativeConfigurationContains(fleetSnapshot(kind, raw), fleetSnapshot(kind, current.data)) {
+			if !nativeConfigurationContains(fleetSnapshot(kind, object(values[i])), fleetSnapshot(kind, reads[i].data)) {
 				return nil, "", serviceDenied("fleet_list_configuration_changed")
 			}
-			items[id] = current.data
+			items[id] = reads[i].data
+		}
+		if invalid != nil {
+			return nil, "", invalid
 		}
 		if result.requestID != "" {
 			requestID = result.requestID

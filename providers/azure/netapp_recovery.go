@@ -133,14 +133,15 @@ func (c *client) netappBackupRetention(ctx context.Context, id string, raw map[s
 	orderKnown := true
 	count := 0
 	ownTime, validOwnTime := netappRecoveryTime(props["snapshotCreationDate"])
-	for _, target := range slices.Sorted(maps.Keys(ids)) {
-		var res response
-		var err error
+	ordered := slices.Sorted(maps.Keys(ids))
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) {
 		if cache != nil {
-			res = response{data: cache.backups[target], status: 200}
-		} else {
-			res, err = c.netappRead(ctx, target, netappBackupType)
+			return response{data: cache.backups[ordered[i]], status: 200}, nil
 		}
+		return c.netappRead(ctx, ordered[i], netappBackupType)
+	})
+	for i, target := range ordered {
+		res, err := reads[i], errs[i]
 		if isNotFound(err) {
 			if target == id {
 				return nil, nil, serviceDenied("netapp_backup_disappeared_during_review")

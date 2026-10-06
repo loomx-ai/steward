@@ -67,8 +67,17 @@ func (c *client) monitorResourceIndex(ctx context.Context, kind string, groups m
 	if err != nil {
 		return nil, "", err
 	}
-	for _, scope := range slices.Sorted(maps.Keys(groups)) {
-		rows, provenance, err := c.monitorBudgetIndex(ctx, kind, scope)
+	type budgetIndex struct {
+		rows       map[string]map[string]any
+		provenance string
+	}
+	scopes := slices.Sorted(maps.Keys(groups))
+	indexes, errs := readConcurrently(len(scopes), func(i int) (budgetIndex, error) {
+		rows, provenance, err := c.monitorBudgetIndex(ctx, kind, scopes[i])
+		return budgetIndex{rows, provenance}, err
+	})
+	for i := range scopes {
+		rows, provenance, err := indexes[i].rows, indexes[i].provenance, errs[i]
 		if err != nil {
 			return nil, "", err
 		}
@@ -245,8 +254,12 @@ func (r *Runtime) monitorInventorySnapshot(ctx context.Context, c *client, reque
 		lockBindings[id] = copy
 	}
 	items, bindings := []contracts.InventoryItem{}, map[string]any{}
-	for _, id := range slices.Sorted(maps.Keys(values)) {
-		item, err := r.monitorInventoryItem(ctx, c, values[id], owners, locks)
+	ids := slices.Sorted(maps.Keys(values))
+	reads, errs := readConcurrently(len(ids), func(i int) (contracts.InventoryItem, error) {
+		return r.monitorInventoryItem(ctx, c, values[ids[i]], owners, locks)
+	})
+	for i, id := range ids {
+		item, err := reads[i], errs[i]
 		if err != nil {
 			return nil, nil, "", err
 		}

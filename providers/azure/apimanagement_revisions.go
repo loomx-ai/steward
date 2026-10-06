@@ -124,56 +124,80 @@ func (c *client) apimAPIsResult(ctx context.Context, parent string) ([]serviceCh
 		bases = append(bases, base)
 	}
 	slices.Sort(bases)
-	var children []serviceChild
-	for _, base := range bases {
+	// Bases are read concurrently and merged in order, so the first failure
+	// is the one a serial walk would return. Each base still re-lists its
+	// revisions after its reads.
+	reads, errs := readConcurrently(len(bases), func(i int) ([]serviceChild, error) {
+		base := bases[i]
+		var children []serviceChild
 		revisions, err := c.apimRevisions(ctx, base)
 		if err != nil {
-			return nil, response{}, err
+			return nil, err
 		}
-		readByRevision := map[string]map[string]any{}
+		// Revisions are checked in order before any read; revisions past the
+		// first invalid one are not read, and its error follows the earlier reads'.
+		var ids []string
+		var invalid error
 		for _, revision := range revisions {
 			id, err := apimRevisionID(base, revision["apiId"])
 			if err != nil {
-				return nil, response{}, err
+				invalid = err
+				break
 			}
 			if revision["isCurrent"] == true {
 				id = base
 			}
-			raw, err := c.apimResource(ctx, id)
+			ids = append(ids, id)
+		}
+		raws, rawErrs := readConcurrently(len(ids), func(i int) (map[string]any, error) { return c.apimResource(ctx, ids[i]) })
+		readByRevision := map[string]map[string]any{}
+		for i, id := range ids {
+			revision, raw, err := revisions[i], raws[i], rawErrs[i]
 			if err != nil {
-				return nil, response{}, err
+				return nil, err
 			}
 			props := object(raw["properties"])
 			if props["apiRevision"] != revision["apiRevision"] || (props["isCurrent"] == true) != (revision["isCurrent"] == true) {
-				return nil, response{}, serviceDenied("apim_revision_changed_during_discovery")
+				return nil, serviceDenied("apim_revision_changed_during_discovery")
 			}
 			readByRevision[text(revision["apiRevision"])] = raw
 			children = append(children, serviceChild{kind: kindName, id: id, data: raw})
 		}
+		if invalid != nil {
+			return nil, invalid
+		}
 		for _, listed := range groups[base] {
 			live := readByRevision[text(object(listed["properties"])["apiRevision"])]
 			if live == nil {
-				return nil, response{}, serviceDenied("apim_api_revision_indexes_disagree")
+				return nil, serviceDenied("apim_api_revision_indexes_disagree")
 			}
 			// The current revision may be listed through its explicit ;rev=n alias.
 			originalID := text(listed["id"])
 			if strings.EqualFold(originalID, base) && !strings.EqualFold(text(live["id"]), base) {
-				return nil, response{}, serviceDenied("apim_api_alias_changed")
+				return nil, serviceDenied("apim_api_alias_changed")
 			}
 			copy := apimSnapshot(kindName, listed)
 			liveID := strings.ToLower(text(live["id"]))
 			copy["id"], copy["name"] = liveID, last(liveID)
 			if !nativeConfigurationContains(copy, apimSnapshot(kindName, live)) {
-				return nil, response{}, serviceDenied("apim_listed_revision_changed")
+				return nil, serviceDenied("apim_listed_revision_changed")
 			}
 		}
 		after, err := c.apimRevisions(ctx, base)
 		if err != nil {
-			return nil, response{}, err
+			return nil, err
 		}
 		if c.privateConfiguration(map[string]any{"revisions": revisions}) != c.privateConfiguration(map[string]any{"revisions": after}) {
-			return nil, response{}, serviceDenied("apim_revision_index_changed")
+			return nil, serviceDenied("apim_revision_index_changed")
 		}
+		return children, nil
+	})
+	var children []serviceChild
+	for i := range bases {
+		if errs[i] != nil {
+			return nil, response{}, errs[i]
+		}
+		children = append(children, reads[i]...)
 	}
 	slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 	return children, provenance, nil
