@@ -400,7 +400,7 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		contextHashes[id] = fingerprint
 	}
 	if kind == netappBackupType {
-		cache := &netappRecoveryInventoryCache{backups: map[string]map[string]any{}, sources: map[string]netappSourceObservation{}}
+		cache := &netappRecoveryInventoryCache{backups: map[string]map[string]any{}, sources: map[string]*netappSourceObservation{}}
 		for id, raw := range raws {
 			if strings.EqualFold(text(raw["type"]), netappBackupType) {
 				cache.backups[id] = raw
@@ -409,13 +409,18 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 		ctx = context.WithValue(ctx, netappRecoveryCacheKey{}, cache)
 	}
 	items := []contracts.InventoryItem{}
+	// Direct leaves (snapshots, backups, ...) are reviewed concurrently after
+	// the loop and applied in ID order; an item's own error stops the loop, so
+	// it follows the reviews of the items before it, as a serial walk.
+	var stopped error
 	for _, id := range ids {
 		raw := raws[id]
 		props := netappSafeProperties(object(raw["properties"]))
 		normalized := maps.Clone(props)
 		refs, err := netappReferences(id, kind, raw)
 		if err != nil {
-			return nil, nil, nil, "", err
+			stopped = err
+			break
 		}
 		network := []string{}
 		for typ, values := range refs {
@@ -463,13 +468,21 @@ func (r *Runtime) netappSnapshot(ctx context.Context, c *client, req contracts.I
 			if err := r.netappVolumeInventory(ctx, c, req, &item); err != nil {
 				return nil, nil, nil, "", err
 			}
-		} else if netappDirectLeaf(kind) {
-			if err := r.netappRecoveryInventory(ctx, c, req, &item); err != nil {
-				return nil, nil, nil, "", err
-			}
-
 		}
 		items = append(items, item)
+	}
+	if netappDirectLeaf(kind) {
+		_, errs := readConcurrently(len(items), func(i int) (struct{}, error) {
+			return struct{}{}, r.netappRecoveryInventory(ctx, c, req, &items[i])
+		})
+		for _, err := range errs {
+			if err != nil {
+				return nil, nil, nil, "", err
+			}
+		}
+	}
+	if stopped != nil {
+		return nil, nil, nil, "", stopped
 	}
 	return items, absent, contextHashes, requestID, nil
 }

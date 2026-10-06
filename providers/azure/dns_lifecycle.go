@@ -3,7 +3,9 @@ package azure
 import (
 	"context"
 	"fmt"
+	"maps"
 	"net/netip"
+	"net/url"
 	"slices"
 	"sort"
 	"strings"
@@ -313,42 +315,106 @@ func (c *client) virtualNetworkHasDNSLinks(ctx context.Context, id string) (bool
 }
 
 func (c *client) virtualNetworkDNSLinks(ctx context.Context, id string) ([]serviceChild, error) {
+	// Concurrent VNet checks share one walk of every zone's link list:
+	// started after they arrived (liveShared) for delete checks, and once per
+	// inventory page or contribution where the context carries a memo.
+	index, err := memoized(ctx, "private-dns-vnet-links", func() ([]map[string]any, error) {
+		return liveShared(ctx, c, "private-dns-vnet-links", func() ([]map[string]any, error) { return c.privateDNSLinkIndex(ctx) })
+	})
+	if err != nil {
+		return nil, err
+	}
+	// A listed link naming another VNet is not this VNet's. One naming none is
+	// read like a match, so a sparse list row cannot hide a link.
+	var candidates []map[string]any
+	for _, link := range index {
+		if vnet := text(object(object(link["properties"])["virtualNetwork"])["id"]); vnet == "" || strings.EqualFold(vnet, id) {
+			candidates = append(candidates, link)
+		}
+	}
+	rule, _ := findType(privateDNSLinkType)
+	reads, errs := readConcurrently(len(candidates), func(i int) (response, error) {
+		endpoint, err := c.resourceURL(rule, text(candidates[i]["id"]))
+		if err != nil {
+			return response{}, err
+		}
+		return c.request(ctx, "GET", endpoint)
+	})
+	result := []serviceChild{}
+	for i, listed := range candidates {
+		linkID, live, err := text(listed["id"]), reads[i], errs[i]
+		if isNotFound(err) {
+			continue // Deleted since the list, as the list's own detail read would skip it.
+		}
+		if err != nil {
+			return nil, err
+		}
+		bound := text(object(object(listed["properties"])["virtualNetwork"])["id"]) != ""
+		matches := strings.EqualFold(text(object(object(live.data["properties"])["virtualNetwork"])["id"]), id)
+		if !validResourceResponse(live, linkID, privateDNSLinkType) || bound && !matches {
+			return nil, fmt.Errorf("VNet DNS link membership changed")
+		}
+		if err := serviceListedIncarnation(listed, live.data); err != nil {
+			return nil, err
+		}
+		if matches {
+			result = append(result, serviceChild{id: linkID, kind: privateDNSLinkType, data: live.data})
+		}
+	}
+	return result, nil
+}
+
+// privateDNSLinkIndex lists the links of every private DNS zone in the
+// subscription, zones in ID order and each zone's links in list order, without
+// reading each link. Each zone's list is fenced by a read of the zone after it;
+// any failure fails the whole index, so a missing zone never reads as no link.
+// The returned rows are shared and must not be modified.
+func (c *client) privateDNSLinkIndex(ctx context.Context) ([]map[string]any, error) {
 	metadata, err := providerData()
 	if err != nil {
 		return nil, err
 	}
 	runtime := &Runtime{bundle: metadata.bundle}
 	kind := runtime.resourceKind(privateDNSLinkType)
+	definition, ok := runtime.productDefinition(privateDNSLinkType)
+	if !ok || definition.Discovery.List == nil {
+		return nil, fmt.Errorf("Azure resource %q has no product discovery rule", privateDNSLinkType)
+	}
 	request := contracts.InventoryRequest{Source: productInventorySource, ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}}
-	result := []serviceChild{}
-	for {
-		batch, err := runtime.listProduct(ctx, c, request, nil)
+	targets, err := runtime.productTargets(ctx, c, request, definition, []string{strings.ToLower(privateDNSLinkType)})
+	if err != nil {
+		return nil, err
+	}
+	pages, errs := readConcurrently(len(targets), func(i int) ([]map[string]any, error) {
+		u, err := url.Parse(targets[i].Endpoint)
 		if err != nil {
 			return nil, err
 		}
-		for _, link := range batch.Items {
-			if strings.EqualFold(text(object(link.Normalized["virtualNetwork"])["id"]), id) {
-				rule, _ := findType(privateDNSLinkType)
-				endpoint, err := c.resourceURL(rule, link.NativeID)
-				if err != nil {
-					return nil, err
-				}
-				live, err := c.request(ctx, "GET", endpoint)
-				if err != nil {
-					return nil, err
-				}
-				if !validResourceResponse(live, link.NativeID, privateDNSLinkType) || !strings.EqualFold(text(object(object(live.data["properties"])["virtualNetwork"])["id"]), id) {
-					return nil, fmt.Errorf("VNet DNS link membership changed")
-				}
-				if err := serviceIncarnation(asset.Asset{Normalized: link.Normalized}, live.data); err != nil {
-					return nil, err
-				}
-				result = append(result, serviceChild{id: link.NativeID, kind: privateDNSLinkType, data: live.data})
+		values, err := c.listAllURL(ctx, targets[i].Endpoint, u.Path)
+		if err != nil {
+			return nil, err
+		}
+		rows, seen := []map[string]any{}, map[string]bool{}
+		for _, value := range values {
+			raw := object(value)
+			linkID, parsedType, err := parseID(responseID(privateDNSLinkType, text(raw["id"])))
+			if err != nil || !strings.EqualFold(parsedType, privateDNSLinkType) || !validResponseType(privateDNSLinkType, text(raw["type"])) || seen[linkID] || !strings.EqualFold(linkID, u.Path+"/"+last(linkID)) {
+				return nil, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 			}
+			seen[linkID] = true
+			raw = maps.Clone(raw)
+			raw["id"] = linkID
+			rows = append(rows, raw)
 		}
-		if batch.Complete {
-			return result, nil
+		// A list read from a zone deleted or replaced meanwhile proves nothing.
+		return rows, c.verifyProductParent(ctx, targets[i])
+	})
+	var index []map[string]any
+	for i := range targets {
+		if errs[i] != nil {
+			return nil, errs[i]
 		}
-		request.Cursor = batch.NextCursor
+		index = append(index, pages[i]...)
 	}
+	return index, nil
 }

@@ -94,8 +94,9 @@ func (c *client) apimIncomingIndexFor(ctx context.Context, rootID string, kinds 
 
 // Walk only native branches that can refer to these kinds. Scan the whole
 // service so an ARM reference from another workspace cannot disappear from the
-// review. The service's direct children (each API with its operations and
-// policies) are walked concurrently; deeper levels stay serial.
+// review. Every level resolves its children's references concurrently. The
+// service's direct subtrees (each API with its operations and policies) are
+// also walked concurrently; only subtree recursion below them is serial.
 func (c *client) apimIncomingWalk(ctx context.Context, rootID string, kinds []string) (map[string][]serviceChild, error) {
 	resolved := map[string][]string{}
 	indexes := &apimIndexes{}
@@ -266,6 +267,14 @@ func (s *serviceCascades) contributeAPIMReferences(ctx context.Context, assets [
 		}
 	}
 	indexes := map[string]map[string][]serviceChild{}
+	known := contributeIndex(ctx, assets)
+	// APIM assets by exact native ID: the only possible cascade controllers.
+	apimAssets := map[string][]int{}
+	for i, candidate := range assets {
+		if isAPIMType(candidate.Identity.NativeType) {
+			apimAssets[candidate.Identity.NativeID] = append(apimAssets[candidate.Identity.NativeID], i)
+		}
+	}
 	for _, target := range assets {
 		kinds := apimIncomingKinds(target.Identity.NativeType)
 		if target.Identity.Provider != asset.ProviderAzure || len(kinds) == 0 {
@@ -287,16 +296,28 @@ func (s *serviceCascades) contributeAPIMReferences(ctx context.Context, assets [
 			}
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
 			controllers := map[string]any{}
-			var referrer *asset.Asset
-			for i := range assets {
-				candidate := &assets[i]
-				if candidate.Identity.Provider != target.Identity.Provider || candidate.Identity.ConnectionID != target.Identity.ConnectionID || candidate.Identity.Partition != target.Identity.Partition {
+			sameScope := func(candidate *asset.Asset) bool {
+				return candidate.Identity.Provider == target.Identity.Provider && candidate.Identity.ConnectionID == target.Identity.ConnectionID && candidate.Identity.Partition == target.Identity.Partition
+			}
+			for end := range len(target.Identity.NativeID) {
+				if target.Identity.NativeID[end] != '/' {
 					continue
 				}
-				if isAPIMType(candidate.Identity.NativeType) && strings.HasPrefix(target.Identity.NativeID, candidate.Identity.NativeID+"/") && strings.HasPrefix(child.id, candidate.Identity.NativeID+"/") {
-					controllers[string(candidate.ID)] = true
+				prefix := target.Identity.NativeID[:end]
+				for _, i := range apimAssets[prefix] {
+					if candidate := &assets[i]; sameScope(candidate) && strings.HasPrefix(child.id, prefix+"/") {
+						controllers[string(candidate.ID)] = true
+					}
 				}
-				if strings.EqualFold(candidate.Identity.NativeType, child.kind) && strings.EqualFold(candidate.Identity.NativeID, child.id) {
+			}
+			var referrer *asset.Asset
+			var positions []int
+			if known != nil {
+				positions = known.byIdentity[serviceAssetKeyOf(target.Identity, child.kind, child.id)]
+			}
+			for i := range assetPositions(known != nil, positions, len(assets)) {
+				candidate := &assets[i]
+				if sameScope(candidate) && strings.EqualFold(candidate.Identity.NativeType, child.kind) && strings.EqualFold(candidate.Identity.NativeID, child.id) {
 					if referrer != nil {
 						return serviceDenied("ambiguous_apim_reference")
 					}

@@ -66,66 +66,22 @@ func (c *client) hybridComputeLicenseAssignments(ctx context.Context, id string,
 		profiles[profile] = true
 	}
 	if list {
-		machines, err := c.hybridComputeIndex(ctx, hybridMachineType, "")
+		// One inventory pass reads the machine/profile index once for all its
+		// licenses; mutation review carries no memo and always reads it.
+		var err error
+		listed, err = memoized(ctx, "hybrid-license-profiles", func() (map[string]map[string]any, error) { return c.hybridComputeLicenseProfileIndex(ctx) })
 		if err != nil {
 			return nil, err
 		}
-		// Rows are checked in order before any read; rows past the first
-		// invalid one are not read, and its error follows the earlier reads'.
-		seen := map[string]bool{}
-		var raws []map[string]any
-		var ids []string
-		var invalid error
-		for _, value := range machines {
-			raw := object(value)
-			machine, err := c.hybridComputeIdentity(text(raw["id"]), hybridMachineType)
-			if err != nil || seen[machine] {
-				invalid = serviceDenied("invalid_hybrid_compute_license_machine_index")
-				break
-			}
-			seen[machine] = true
-			raws, ids = append(raws, raw), append(ids, machine)
-		}
-		type machineRead struct {
-			res      response
-			rows     []any
-			indexErr error
-		}
-		reads, errs := readConcurrently(len(ids), func(i int) (machineRead, error) {
-			res, err := c.hybridComputeRead(ctx, ids[i], hybridMachineType)
-			if err != nil {
-				return machineRead{}, err
-			}
-			rows, err := c.hybridComputeIndex(ctx, hybridProfileType, ids[i])
-			return machineRead{res, rows, err}, nil
-		})
-		for i, machine := range ids {
-			raw, res, rows := raws[i], reads[i].res, reads[i].rows
-			if errs[i] != nil {
-				return nil, errs[i]
-			}
-			if !strings.EqualFold(text(raw["type"]), hybridMachineType) || serviceListedIncarnation(raw, res.data) != nil {
-				return nil, serviceDenied("hybrid_compute_license_machine_changed")
-			}
-			if err := reads[i].indexErr; err != nil {
-				return nil, err
-			}
-			for _, value := range rows {
-				raw := object(value)
-				profile, err := c.hybridComputeIdentity(text(raw["id"]), hybridProfileType)
-				if err != nil || hybridComputeParent(profile, hybridProfileType) != machine || listed[profile] != nil || !strings.EqualFold(text(raw["type"]), hybridProfileType) {
-					return nil, serviceDenied("invalid_hybrid_compute_license_profile_index")
-				}
-				profiles[profile], listed[profile] = true, raw
-			}
-		}
-		if invalid != nil {
-			return nil, invalid
+		for profile := range listed {
+			profiles[profile] = true
 		}
 	}
 	result := map[string]map[string]any{}
 	ordered := slices.Sorted(maps.Keys(profiles))
-	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) { return c.hybridComputeRead(ctx, ordered[i], hybridProfileType) })
+	reads, errs := readConcurrently(len(ordered), func(i int) (response, error) {
+		return memoized(ctx, "hybrid-license-profile:"+ordered[i], func() (response, error) { return c.hybridComputeRead(ctx, ordered[i], hybridProfileType) })
+	})
 	for i, profile := range ordered {
 		res, err := reads[i], errs[i]
 		if isNotFound(err) && listed[profile] == nil {
@@ -146,6 +102,69 @@ func (c *client) hybridComputeLicenseAssignments(ctx context.Context, id string,
 		}
 	}
 	return result, nil
+}
+
+// hybridComputeLicenseProfileIndex lists every Arc machine, checks each against
+// its own read, and indexes the license profiles they list.
+func (c *client) hybridComputeLicenseProfileIndex(ctx context.Context) (map[string]map[string]any, error) {
+	listed := map[string]map[string]any{}
+	machines, err := c.hybridComputeIndex(ctx, hybridMachineType, "")
+	if err != nil {
+		return nil, err
+	}
+	// Rows are checked in order before any read; rows past the first
+	// invalid one are not read, and its error follows the earlier reads'.
+	seen := map[string]bool{}
+	var raws []map[string]any
+	var ids []string
+	var invalid error
+	for _, value := range machines {
+		raw := object(value)
+		machine, err := c.hybridComputeIdentity(text(raw["id"]), hybridMachineType)
+		if err != nil || seen[machine] {
+			invalid = serviceDenied("invalid_hybrid_compute_license_machine_index")
+			break
+		}
+		seen[machine] = true
+		raws, ids = append(raws, raw), append(ids, machine)
+	}
+	type machineRead struct {
+		res      response
+		rows     []any
+		indexErr error
+	}
+	reads, errs := readConcurrently(len(ids), func(i int) (machineRead, error) {
+		res, err := c.hybridComputeRead(ctx, ids[i], hybridMachineType)
+		if err != nil {
+			return machineRead{}, err
+		}
+		rows, err := c.hybridComputeIndex(ctx, hybridProfileType, ids[i])
+		return machineRead{res, rows, err}, nil
+	})
+	for i, machine := range ids {
+		raw, res, rows := raws[i], reads[i].res, reads[i].rows
+		if errs[i] != nil {
+			return nil, errs[i]
+		}
+		if !strings.EqualFold(text(raw["type"]), hybridMachineType) || serviceListedIncarnation(raw, res.data) != nil {
+			return nil, serviceDenied("hybrid_compute_license_machine_changed")
+		}
+		if err := reads[i].indexErr; err != nil {
+			return nil, err
+		}
+		for _, value := range rows {
+			raw := object(value)
+			profile, err := c.hybridComputeIdentity(text(raw["id"]), hybridProfileType)
+			if err != nil || hybridComputeParent(profile, hybridProfileType) != machine || listed[profile] != nil || !strings.EqualFold(text(raw["type"]), hybridProfileType) {
+				return nil, serviceDenied("invalid_hybrid_compute_license_profile_index")
+			}
+			listed[profile] = raw
+		}
+	}
+	if invalid != nil {
+		return nil, invalid
+	}
+	return listed, nil
 }
 
 func (c *client) hybridComputeAssignmentRecords(values map[string]map[string]any) map[string]any {

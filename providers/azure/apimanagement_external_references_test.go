@@ -314,7 +314,7 @@ func TestAPIMIndexesShareLoadsWithoutHoldingTheLock(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if values, err := indexes.load("a", slow); err != nil || len(values) != 1 {
+			if values, err := indexes.load(t.Context(), "a", slow); err != nil || len(values) != 1 {
 				t.Error(values, err)
 			}
 		}()
@@ -322,7 +322,7 @@ func TestAPIMIndexesShareLoadsWithoutHoldingTheLock(t *testing.T) {
 	for reads.Load() == 0 {
 		time.Sleep(time.Millisecond)
 	}
-	if _, err := indexes.load("b", func() ([]serviceChild, error) { close(other); return nil, nil }); err != nil {
+	if _, err := indexes.load(t.Context(), "b", func() ([]serviceChild, error) { close(other); return nil, nil }); err != nil {
 		t.Fatal(err)
 	}
 	wg.Wait()
@@ -330,10 +330,10 @@ func TestAPIMIndexesShareLoadsWithoutHoldingTheLock(t *testing.T) {
 		t.Fatal("concurrent readers did not share one load", reads.Load())
 	}
 	failed := errors.New("throttled")
-	if _, err := indexes.load("c", func() ([]serviceChild, error) { return nil, failed }); !errors.Is(err, failed) {
+	if _, err := indexes.load(t.Context(), "c", func() ([]serviceChild, error) { return nil, failed }); !errors.Is(err, failed) {
 		t.Fatal(err)
 	}
-	if values, err := indexes.load("c", func() ([]serviceChild, error) { return []serviceChild{{id: "c"}}, nil }); err != nil || len(values) != 1 {
+	if values, err := indexes.load(t.Context(), "c", func() ([]serviceChild, error) { return []serviceChild{{id: "c"}}, nil }); err != nil || len(values) != 1 {
 		t.Fatal("a failed load was kept", values, err)
 	}
 }

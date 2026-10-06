@@ -34,7 +34,7 @@ func (c *client) apimExternalReference(ctx context.Context, kind, selector strin
 	if kind == apimIdentityType && !uuidPattern.MatchString(selector) {
 		return "", serviceDenied("invalid_apim_identity_client_id")
 	}
-	values, err := indexes.load(kind, func() ([]serviceChild, error) {
+	values, err := indexes.load(ctx, kind, func() ([]serviceChild, error) {
 		rows, err := c.subscriptionReferenceIndex(ctx, kind)
 		if err != nil {
 			return nil, err

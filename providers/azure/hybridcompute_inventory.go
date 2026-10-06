@@ -13,6 +13,9 @@ import (
 )
 
 func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
+	// Each pass shares its own reads (such as the license profile index) and
+	// none with the other pass.
+	ctx = withReadMemo(ctx)
 	kind := hybridComputeKind(request.ResourceKind.NativeType)
 	values, parents := map[string]map[string]any{}, map[string]map[string]any{}
 	known := map[string]bool{}

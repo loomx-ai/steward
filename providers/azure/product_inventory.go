@@ -293,6 +293,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	details, readErrs := readConcurrently(len(rows), func(i int) (response, error) {
 		return c.readResource(ctx, rows[i].readURL)
 	})
+	if request.ScanRunID != "" && isAPIMType(kind.NativeType) {
+		ctx = withAPIMScanIndexes(ctx, func(root string) (*apimIndexes, error) {
+			key := productScanKey{run: request.ScanRunID, connection: request.ConnectionID, credential: c.fingerprint, name: "apim-indexes\x00" + root}
+			shared, err := r.productScan.share(ctx, &r.productScan.apimIndexes, key, func(any) bool { return true }, func() (any, error) { return &apimIndexes{}, nil })
+			indexes, _ := shared.(*apimIndexes)
+			return indexes, err
+		})
+	}
 	var byParent map[string]productTarget
 	if kind.NativeType == dataCollectionAssociationType {
 		byParent = dataCollectionTargetIndex(targets)
@@ -768,6 +776,10 @@ type productScanCache struct {
 	// Management issue indexes and subscription resource list pages are held
 	// apart, so that their numbers never evict a snapshot.
 	shared, apimIssues, resourcePages map[productScanKey]*productShared
+	// apimIndexes holds each API Management service's reference indexes
+	// (see apimScanIndexes), so its policy rows resolve named values,
+	// backends, certificates and vaults once per scan, not once per page.
+	apimIndexes map[productScanKey]*productShared
 }
 
 // productScanSweepInterval bounds how often place and commit sweep expired

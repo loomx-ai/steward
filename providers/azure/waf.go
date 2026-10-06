@@ -177,6 +177,7 @@ func (s *serviceCascades) wafReferences(ctx context.Context, parent asset.Asset,
 	if !slices.Equal(links, stringValues(parent.Normalized["_waf_links"])) {
 		return result, serviceDenied("waf_associations_changed")
 	}
+	index := contributeIndex(ctx, assets)
 	for _, id := range links {
 		_, parsedType, _ := parseID(id)
 		childKind, known := findType(parsedType)
@@ -185,7 +186,11 @@ func (s *serviceCascades) wafReferences(ctx context.Context, parent asset.Asset,
 		}
 		evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": parsedType, "instance_id": id}
 		var target *asset.Asset
-		for i := range assets {
+		var positions []int
+		if index != nil {
+			positions = index.byIdentity[serviceAssetKeyOf(parent.Identity, parsedType, id)]
+		}
+		for i := range assetPositions(index != nil, positions, len(assets)) {
 			candidate := &assets[i]
 			if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeID, id) && strings.EqualFold(candidate.Identity.NativeType, parsedType) {
 				if target != nil {

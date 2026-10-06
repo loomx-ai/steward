@@ -261,7 +261,11 @@ func (c *client) apimInventory(ctx context.Context, id, kind string, raw, normal
 		return err
 	}
 	external := map[string][]string{}
-	refs, err := c.apimResolvedReferences(ctx, kind, id, raw, nil, external)
+	indexes, err := apimScanIndexes(ctx, id)
+	if err != nil {
+		return err
+	}
+	refs, err := c.apimResolvedReferences(ctx, kind, id, raw, indexes, external)
 	if err != nil {
 		return err
 	}

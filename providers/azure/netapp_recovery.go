@@ -6,6 +6,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -14,12 +15,17 @@ import (
 
 type netappRecoveryCacheKey struct{}
 type netappSourceObservation struct {
-	res response
-	err error
+	once sync.Once
+	res  response
+	err  error
 }
+
+// netappRecoveryInventoryCache is one inventory pass's. Its rows are reviewed
+// concurrently: backups is read-only, and each source volume is read once.
 type netappRecoveryInventoryCache struct {
 	backups map[string]map[string]any
-	sources map[string]netappSourceObservation
+	mu      sync.Mutex
+	sources map[string]*netappSourceObservation
 }
 
 const netappSnapshotType = netappVolumeType + "/snapshots"
@@ -174,17 +180,18 @@ func (c *client) netappBackupRetention(ctx context.Context, id string, raw map[s
 	}
 	var volume response
 	var err error
-	observed, found := netappSourceObservation{}, false
 	if cache != nil {
-		observed, found = cache.sources[source]
-	}
-	if found {
+		cache.mu.Lock()
+		observed := cache.sources[source]
+		if observed == nil {
+			observed = &netappSourceObservation{}
+			cache.sources[source] = observed
+		}
+		cache.mu.Unlock()
+		observed.once.Do(func() { observed.res, observed.err = c.netappRead(ctx, source, netappVolumeType) })
 		volume, err = observed.res, observed.err
 	} else {
 		volume, err = c.netappRead(ctx, source, netappVolumeType)
-		if cache != nil {
-			cache.sources[source] = netappSourceObservation{res: volume, err: err}
-		}
 	}
 	absent := isNotFound(err)
 	if err != nil && !absent {

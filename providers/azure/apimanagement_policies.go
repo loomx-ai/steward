@@ -20,7 +20,9 @@ func apimPolicyExpression(value string) bool {
 
 // apimIndexes caches the collections one review resolves references against.
 // Concurrent readers of a key share its load; the lock guards only the map,
-// never a read. A failed load is not kept.
+// never a read. A failed load is not kept. An inventory scan shares one per
+// API Management service across its pages (apimScanIndexes); delete-time
+// reviews always build their own.
 type apimIndexes struct {
 	mu    sync.Mutex
 	loads map[string]*apimIndexLoad
@@ -30,35 +32,72 @@ type apimIndexLoad struct {
 	done   chan struct{}
 	values []serviceChild
 	err    error
+	// retry marks a load its reader's own cancellation failed: that failure
+	// is not a waiter's, which loads again.
+	retry bool
 }
 
-func (x *apimIndexes) load(key string, read func() ([]serviceChild, error)) ([]serviceChild, error) {
-	x.mu.Lock()
-	if x.loads == nil {
-		x.loads = map[string]*apimIndexLoad{}
-	}
-	load, loading := x.loads[key]
-	if !loading {
-		load = &apimIndexLoad{done: make(chan struct{})}
-		x.loads[key] = load
-	}
-	x.mu.Unlock()
-	if loading {
-		<-load.done
+func (x *apimIndexes) load(ctx context.Context, key string, read func() ([]serviceChild, error)) ([]serviceChild, error) {
+	for {
+		x.mu.Lock()
+		if x.loads == nil {
+			x.loads = map[string]*apimIndexLoad{}
+		}
+		load, loading := x.loads[key]
+		if !loading {
+			load = &apimIndexLoad{done: make(chan struct{})}
+			x.loads[key] = load
+		}
+		x.mu.Unlock()
+		if loading {
+			select {
+			case <-load.done:
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			}
+			if load.err != nil && load.retry {
+				continue
+			}
+			return load.values, load.err
+		}
+		func() {
+			// A read that panics must not leave waiters blocked or a zero value.
+			load.err = serviceDenied("apim_index_load_aborted")
+			defer func() {
+				if load.err != nil {
+					load.retry = ctx.Err() != nil
+					x.mu.Lock()
+					delete(x.loads, key)
+					x.mu.Unlock()
+				}
+				close(load.done)
+			}()
+			load.values, load.err = read()
+		}()
 		return load.values, load.err
 	}
-	load.values, load.err = read()
-	if load.err != nil {
-		x.mu.Lock()
-		delete(x.loads, key)
-		x.mu.Unlock()
+}
+
+type apimScanIndexesKey struct{}
+
+// withAPIMScanIndexes makes apimInventory resolve references against the
+// indexes shared returns for an item's API Management service.
+func withAPIMScanIndexes(ctx context.Context, shared func(root string) (*apimIndexes, error)) context.Context {
+	return context.WithValue(ctx, apimScanIndexesKey{}, shared)
+}
+
+// apimScanIndexes returns the scan's shared indexes for id's service, or nil
+// (a fresh index per call) outside a scan.
+func apimScanIndexes(ctx context.Context, id string) (*apimIndexes, error) {
+	shared, _ := ctx.Value(apimScanIndexesKey{}).(func(string) (*apimIndexes, error))
+	if shared == nil || apimRootID(id) == "" {
+		return nil, nil
 	}
-	close(load.done)
-	return load.values, load.err
+	return shared(apimRootID(id))
 }
 
 func (c *client) apimReferenceCollection(ctx context.Context, owner, name string, indexes *apimIndexes) ([]serviceChild, error) {
-	return indexes.load(owner+"/"+strings.ToLower(name), func() ([]serviceChild, error) { return c.apimReadReferenceCollection(ctx, owner, name) })
+	return indexes.load(ctx, owner+"/"+strings.ToLower(name), func() ([]serviceChild, error) { return c.apimReadReferenceCollection(ctx, owner, name) })
 }
 
 func (c *client) apimReadReferenceCollection(ctx context.Context, owner, name string) ([]serviceChild, error) {

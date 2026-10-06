@@ -160,10 +160,15 @@ func (c *client) contributeMonitorWorkspace(ctx context.Context, parent asset.As
 	if err != nil {
 		return result, err
 	}
+	known := contributeIndex(ctx, assets)
 	for _, child := range links {
 		evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
 		var target *asset.Asset
-		for i := range assets {
+		var positions []int
+		if known != nil {
+			positions = known.byIdentity[serviceAssetKeyOf(parent.Identity, child.kind, child.id)]
+		}
+		for i := range assetPositions(known != nil, positions, len(assets)) {
 			candidate := &assets[i]
 			if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeID, child.id) && strings.EqualFold(candidate.Identity.NativeType, child.kind) {
 				if target != nil {

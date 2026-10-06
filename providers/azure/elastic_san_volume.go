@@ -68,56 +68,107 @@ func (c *client) elasticSanVolumeProtection(raw map[string]any, retained bool) s
 // hiding a previously reviewed restore point. Snapshot deletion stays separate.
 func (c *client) elasticSanVolumeSnapshots(ctx context.Context, id string, known map[string]any) (map[string]map[string]any, error) {
 	group := elasticSanParent(id, elasticSanVolumeType)
-	rows, _, err := c.elasticSanIndex(ctx, elasticSanSnapshotType, group, false)
-	if err != nil {
-		return nil, err
-	}
+	// The group's index is volume-independent: a contribution (whose memo
+	// shares it) reads it once for all the group's volumes.
+	index, indexErr := memoized(ctx, "elastic-san-snapshots:"+group, func() ([]elasticSanSnapshotRow, error) { return c.elasticSanSnapshotIndex(ctx, group) })
 	result, seen := map[string]map[string]any{}, map[string]bool{}
-	read := func(child string, listed map[string]any) error {
-		res, err := c.elasticSanRead(ctx, child, elasticSanSnapshotType)
-		if isNotFound(err) && listed == nil {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if listed != nil && (serviceListedIncarnation(listed, res.data) != nil || !nativeConfigurationContains(object(listed["properties"]), object(res.data["properties"]))) {
-			return serviceDenied("elastic_san_snapshot_index_changed")
-		}
-		source, kind, err := parseID(text(object(object(res.data["properties"])["creationData"])["sourceId"]))
-		if err != nil || !strings.EqualFold(kind, elasticSanVolumeType) {
-			return serviceDenied("elastic_san_snapshot_source_unverified")
-		}
+	accept := func(child, source string, data map[string]any) error {
 		if source == id {
-			result[child] = res.data
+			result[child] = data
 		} else if known[child] != nil {
 			return serviceDenied("elastic_san_snapshot_source_changed")
 		}
 		return nil
 	}
-	for _, row := range rows {
-		raw := object(row)
-		child, err := c.elasticSanRecord(raw, elasticSanSnapshotType)
-		if err != nil {
+	// The index's rows are those before its first failing one, which this
+	// volume's own source checks still precede.
+	for _, row := range index {
+		seen[row.id] = true
+		if err := accept(row.id, row.source, row.data); err != nil {
 			return nil, err
 		}
-		seen[child] = true
-		if err := read(child, raw); err != nil {
-			return nil, err
-		}
+	}
+	if indexErr != nil {
+		return nil, indexErr
 	}
 	for child := range known {
 		canonical, err := c.elasticSanIdentity(child, elasticSanSnapshotType)
 		if err != nil || canonical != child || elasticSanParent(child, elasticSanSnapshotType) != group {
 			return nil, serviceDenied("elastic_san_snapshot_history_changed")
 		}
-		if !seen[child] {
-			if err := read(child, nil); err != nil {
-				return nil, err
-			}
+		if seen[child] {
+			continue
+		}
+		res, err := c.elasticSanRead(ctx, child, elasticSanSnapshotType)
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		source, err := elasticSanSnapshotSource(res.data)
+		if err != nil {
+			return nil, err
+		}
+		if err := accept(child, source, res.data); err != nil {
+			return nil, err
 		}
 	}
 	return result, nil
+}
+
+type elasticSanSnapshotRow struct {
+	id, source string
+	data       map[string]any
+}
+
+func elasticSanSnapshotSource(data map[string]any) (string, error) {
+	source, kind, err := parseID(text(object(object(data["properties"])["creationData"])["sourceId"]))
+	if err != nil || !strings.EqualFold(kind, elasticSanVolumeType) {
+		return "", serviceDenied("elastic_san_snapshot_source_unverified")
+	}
+	return source, nil
+}
+
+// elasticSanSnapshotIndex lists a volume group's snapshots and reads each,
+// concurrently. It returns the checked rows in list order up to the first
+// failing row, with that row's error, as a serial walk would reach it.
+func (c *client) elasticSanSnapshotIndex(ctx context.Context, group string) ([]elasticSanSnapshotRow, error) {
+	rows, _, err := c.elasticSanIndex(ctx, elasticSanSnapshotType, group, false)
+	if err != nil {
+		return nil, err
+	}
+	// Rows are checked in order before any read; rows past the first invalid
+	// one are not read, and its error follows the earlier rows'.
+	var listed []map[string]any
+	var children []string
+	var invalid error
+	for _, row := range rows {
+		raw := object(row)
+		child, err := c.elasticSanRecord(raw, elasticSanSnapshotType)
+		if err != nil {
+			invalid = err
+			break
+		}
+		listed, children = append(listed, raw), append(children, child)
+	}
+	reads, errs := readConcurrently(len(children), func(i int) (response, error) { return c.elasticSanRead(ctx, children[i], elasticSanSnapshotType) })
+	result := []elasticSanSnapshotRow{}
+	for i, child := range children {
+		res, err := reads[i], errs[i]
+		if err != nil {
+			return result, err
+		}
+		if serviceListedIncarnation(listed[i], res.data) != nil || !nativeConfigurationContains(object(listed[i]["properties"]), object(res.data["properties"])) {
+			return result, serviceDenied("elastic_san_snapshot_index_changed")
+		}
+		source, err := elasticSanSnapshotSource(res.data)
+		if err != nil {
+			return result, err
+		}
+		result = append(result, elasticSanSnapshotRow{id: child, source: source, data: res.data})
+	}
+	return result, invalid
 }
 
 func (c *client) elasticSanVolumeCleanup(raw, group, prior map[string]any, snapshots map[string]map[string]any, retained bool) (map[string]any, string, error) {
