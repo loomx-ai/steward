@@ -428,12 +428,16 @@ func (s *Store) CloseAssetTopology(ctx context.Context, assetID asset.AssetID, c
 		tx := store.db
 		// The asset's connection, and that of any scope whose open rows the
 		// closure touches.
+		workspaceID, err := s.workspaceArgument(ctx)
+		if err != nil {
+			return err
+		}
 		var connectionIDs []string
-		if err := tx.Raw(`SELECT connection_id FROM assets WHERE id = ?
-			UNION SELECT connection_id FROM scopes WHERE id IN (
+		if err := tx.Raw(`SELECT connection_id FROM assets WHERE id = ? AND workspace_id = ?
+			UNION SELECT connection_id FROM scopes WHERE workspace_id = ? AND id IN (
 				SELECT scope_id FROM relationships WHERE closed_at IS NULL AND (source_asset_id = ? OR target_asset_id = ?)
 				UNION SELECT scope_id FROM lifecycle_bindings WHERE closed_at IS NULL AND (controller_asset_id = ? OR managed_asset_id = ?))`,
-			string(assetID), string(assetID), string(assetID), string(assetID), string(assetID)).Scan(&connectionIDs).Error; err != nil {
+			string(assetID), workspaceID, workspaceID, string(assetID), string(assetID), string(assetID), string(assetID)).Scan(&connectionIDs).Error; err != nil {
 			return err
 		}
 		store.touch(connectionIDs...)

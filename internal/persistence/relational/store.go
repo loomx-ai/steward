@@ -2443,12 +2443,16 @@ func (s *Store) ListAssetIDsObservedByRun(ctx context.Context, runID asset.ScanR
 // shards read only their observations after the anchor, through
 // idx_asset_observations_shard_time, not every retained observation.
 func (s *Store) ListAssetIDsObservedByTarget(ctx context.Context, connectionID asset.ConnectionID, targetKey, source string, scopeID asset.ScopeID, kindID asset.ResourceKindID) ([]asset.AssetID, error) {
+	workspaceID, err := s.workspaceArgument(ctx)
+	if err != nil {
+		return nil, err
+	}
 	var ids []string
 	if err := s.db.WithContext(ctx).Raw(`
 WITH target AS (
 	SELECT shards.id, shards.created_at, shards.status, shards.authoritative
 	FROM scan_shards AS shards JOIN scan_tasks AS tasks ON tasks.id = shards.scan_task_id
-	WHERE shards.scope_id = ? AND shards.target_key = ? AND shards.source = ? AND shards.resource_kind_id = ? AND tasks.connection_id = ?
+	WHERE shards.scope_id = ? AND shards.target_key = ? AND shards.source = ? AND shards.resource_kind_id = ? AND tasks.connection_id = ? AND tasks.workspace_id = ?
 ), anchor AS (
 	SELECT MAX(created_at) AS created_at FROM target WHERE status = ? AND authoritative = ?
 )
@@ -2458,7 +2462,7 @@ UNION
 SELECT observations.asset_id FROM target JOIN asset_observations AS observations ON observations.scan_shard_id = target.id
 WHERE target.created_at < (SELECT created_at FROM anchor) AND observations.observed_at >= (SELECT created_at FROM anchor)
 ORDER BY 1`,
-		string(scopeID), targetKey, source, string(kindID), string(connectionID), string(asset.ShardSucceeded), true,
+		string(scopeID), targetKey, source, string(kindID), string(connectionID), workspaceID, string(asset.ShardSucceeded), true,
 	).Scan(&ids).Error; err != nil {
 		return nil, err
 	}
