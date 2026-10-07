@@ -194,3 +194,38 @@ func sharePgTrgm(t *testing.T, db *gorm.DB) {
 		t.Fatal(err)
 	}
 }
+
+// Each held lock pins a pooled connection, and the work under it needs
+// another. Holders of many different locks at once must not take the whole
+// pool, or none of them gets a connection for its work.
+func TestPostgresWithLockLeavesConnectionsForWork(t *testing.T) {
+	dsn := os.Getenv("STEWARD_TEST_POSTGRES_DSN")
+	if dsn == "" {
+		t.Skip("STEWARD_TEST_POSTGRES_DSN is not configured")
+	}
+	db, err := gorm.Open(gormpostgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxOpenConns(4)
+	t.Cleanup(func() { _ = sqlDB.Close() })
+	store := postgres.New(db)
+	ctx, cancel := context.WithTimeout(t.Context(), 20*time.Second)
+	defer cancel()
+	var wg sync.WaitGroup
+	for index := range 12 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			err := store.WithLock(ctx, fmt.Sprintf("work-%d", index), func(ctx context.Context) error {
+				time.Sleep(20 * time.Millisecond)
+				return db.WithContext(ctx).Exec("SELECT 1").Error
+			})
+			if err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+	wg.Wait()
+}
