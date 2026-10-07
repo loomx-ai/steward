@@ -1847,8 +1847,14 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 	query := s.db.WithContext(ctx).Table("assets").
 		Select("assets.*, scope_alias.superseded_by_scope_id AS canonical_scope_id").
 		Joins("LEFT JOIN scopes AS scope_alias ON scope_alias.id = assets.scope_id")
+	listOrder := "assets.first_seen_at ASC, assets.id ASC"
 	if !options.IncludeClosed {
 		query = query.Where("assets.closed_at IS NULL")
+		// Every row has closed_at NULL, so leading with it changes no order;
+		// PostgreSQL does not treat IS NULL as equality, and without it would
+		// sort every open asset instead of reading the cursor indexes, whose
+		// second column it is, in order.
+		listOrder = "assets.closed_at ASC, " + listOrder
 	}
 	if options.ConnectionID != "" {
 		query = query.Where("assets.connection_id = ?", string(options.ConnectionID))
@@ -1953,12 +1959,12 @@ func (s *Store) ListAssets(ctx context.Context, options persistence.ListOptions)
 		// first seen after them, which the next keystroke narrows down to.
 		candidates := query.Session(&gorm.Session{}).
 			Select("assets.id").
-			Order("assets.first_seen_at ASC, assets.id ASC").
+			Order(listOrder).
 			Limit(keywordIndexProbeLimit)
 		query = query.Where("assets.id IN (?)", candidates)
 		query = orderPanoramaAssetSearch(query, options.Query)
 	} else {
-		query = query.Order("assets.first_seen_at ASC, assets.id ASC")
+		query = query.Order(listOrder)
 	}
 	if err := query.Limit(limit + 1).Find(&rows).Error; err != nil {
 		return persistence.Page[asset.Asset]{}, err
