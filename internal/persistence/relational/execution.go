@@ -3,9 +3,9 @@ package relational
 import (
 	"context"
 	"errors"
-	"math/rand/v2"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -627,50 +627,53 @@ func (s *Store) FindLatestByType(ctx context.Context, connectionID asset.Connect
 
 func (s *Store) ClaimNext(ctx context.Context, owner string, now time.Time, leaseDuration time.Duration, allowedTypes ...execution.JobType) (execution.Job, error) {
 	condition := "run_at <= ? AND (status = ? OR (status = ? AND lease_until <= ?))"
-	claimable := func(db *gorm.DB) *gorm.DB {
-		query := db.Table("jobs").Where(condition, now, string(execution.JobPending), string(execution.JobRunning), now)
-		if len(allowedTypes) > 0 {
-			values := make([]string, 0, len(allowedTypes))
-			for _, jobType := range allowedTypes {
-				values = append(values, string(jobType))
-			}
-			query = query.Where("job_type IN ?", values)
+	types := make([]string, 0, len(allowedTypes))
+	for _, jobType := range allowedTypes {
+		types = append(types, string(jobType))
+	}
+	jobs := func(ctx context.Context) *gorm.DB {
+		query := s.db.WithContext(ctx).Table("jobs")
+		if len(types) > 0 {
+			query = query.Where("job_type IN ?", types)
 		}
 		return query
 	}
-	chosen, all, err := s.workspaces.resolve(ctx)
+	tenant, all, err := s.workspaces.resolve(ctx)
 	if err != nil {
 		return execution.Job{}, err
 	}
-	if all {
-		// Claim from a random workspace with claimable work, so one with a
-		// deep backlog cannot starve the others.
-		// ponytail: random pick over up to 32 workspaces; weight by running
-		// jobs if one workspace still crowds out the rest.
-		var candidates []string
-		if err := claimable(s.db.WithContext(ctx)).Distinct("workspace_id").Limit(32).Pluck("workspace_id", &candidates).Error; err != nil {
-			return execution.Job{}, err
-		}
-		if len(candidates) == 0 {
-			return execution.Job{}, persistence.ErrNotFound
-		}
-		chosen = workspace.ID(candidates[rand.IntN(len(candidates))])
-	}
-	ctx = workspace.With(ctx, chosen)
-	// An idle poll must not take SQLite's single write connection: probe on
-	// the read path first and open the claim transaction only when a job is
-	// claimable. The transaction re-checks, so a lost race is still ErrNotFound.
-	var probe []string
-	if err := claimable(s.db.WithContext(ctx)).Limit(1).Pluck("id", &probe).Error; err != nil {
+	// An idle poll must not take SQLite's single write connection: pick the
+	// job on the read path first and open the claim transaction only when
+	// there is one. The transaction re-checks, so a lost race is ErrNotFound.
+	// A job whose lease expired goes first: its worker died and it has waited
+	// longest. Running jobs are few, so this reads little.
+	var candidate struct{ ID, WorkspaceID string }
+	if err := jobs(ctx).Select("id", "workspace_id").
+		Where("status = ? AND lease_until <= ? AND run_at <= ?", string(execution.JobRunning), now, now).
+		Order("lease_until ASC, id ASC").Limit(1).Scan(&candidate).Error; err != nil {
 		return execution.Job{}, err
 	}
-	if len(probe) == 0 {
-		return execution.Job{}, persistence.ErrNotFound
+	if candidate.ID == "" {
+		if all {
+			if tenant, err = s.nextClaimWorkspace(ctx, jobs, types, now); err != nil {
+				return execution.Job{}, err
+			}
+		}
+		if err := jobs(workspace.With(ctx, tenant)).Select("id", "workspace_id").
+			Where("status = ? AND run_at <= ?", string(execution.JobPending), now).
+			Order("run_at ASC, id ASC").Limit(1).Scan(&candidate).Error; err != nil {
+			return execution.Job{}, err
+		}
+		if candidate.ID == "" {
+			return execution.Job{}, persistence.ErrNotFound
+		}
 	}
+	chosen := workspace.ID(candidate.WorkspaceID)
+	ctx = workspace.With(ctx, chosen)
 	var claimed execution.Job
 	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var row jobRow
-		if err := claimable(tx).Order("run_at ASC, id ASC").Take(&row).Error; err != nil {
+		if err := tx.Table("jobs").Where("id = ? AND "+condition, candidate.ID, now, string(execution.JobPending), string(execution.JobRunning), now).Take(&row).Error; err != nil {
 			return mapError(err)
 		}
 		job, err := decode[execution.Job](row.Payload)
@@ -1206,4 +1209,42 @@ func decodeJoinedLogs[T any](rows []T, fields func(T) (*string, *string)) ([]exe
 		logs = append(logs, value)
 	}
 	return logs, nil
+}
+
+// claimCursors remember, per set of job types, the workspace this server
+// last claimed pending work from, so claims across workspaces go round them
+// in turn and a workspace with a deep backlog cannot starve the others.
+type claimCursors struct {
+	mu    sync.Mutex
+	after map[string]string
+}
+
+// nextClaimWorkspace returns the first workspace after the cursor that has
+// claimable pending work, wrapping around once; idx_jobs_workspace_claim
+// answers it from the index however deep any backlog is.
+func (s *Store) nextClaimWorkspace(ctx context.Context, jobs func(context.Context) *gorm.DB, types []string, now time.Time) (workspace.ID, error) {
+	key := strings.Join(types, ",")
+	s.claims.mu.Lock()
+	after := s.claims.after[key]
+	s.claims.mu.Unlock()
+	for _, from := range []string{after, ""} {
+		var found []string
+		if err := jobs(ctx).Where("status = ? AND run_at <= ? AND workspace_id > ?", string(execution.JobPending), now, from).
+			Order("workspace_id ASC").Limit(1).Pluck("workspace_id", &found).Error; err != nil {
+			return "", err
+		}
+		if len(found) == 1 {
+			s.claims.mu.Lock()
+			if s.claims.after == nil {
+				s.claims.after = map[string]string{}
+			}
+			s.claims.after[key] = found[0]
+			s.claims.mu.Unlock()
+			return workspace.ID(found[0]), nil
+		}
+		if from == "" {
+			break
+		}
+	}
+	return "", persistence.ErrNotFound
 }

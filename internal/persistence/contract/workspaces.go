@@ -3,6 +3,7 @@ package contract
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -98,6 +99,35 @@ func RunWorkspaceIsolation(t *testing.T, factory Factory) {
 		}
 		if claimed["ws_first"] != "job-first" || claimed["ws_second"] != "job-second" {
 			t.Fatalf("claimed = %#v", claimed)
+		}
+	})
+
+	t.Run("claims go round workspaces however deep one backlog is", func(t *testing.T) {
+		for name, count := range map[workspace.ID]int{"ws_deep": 10, "ws_one": 1, "ws_two": 1} {
+			ctx := workspace.With(context.Background(), name)
+			for index := range count {
+				id := execution.JobID(fmt.Sprintf("job-%s-%d", name, index))
+				// Deep backlog jobs are the oldest, so oldest-first alone would
+				// serve them all before the others.
+				runAt := now.Add(-time.Hour + time.Duration(index)*time.Second)
+				if name != "ws_deep" {
+					runAt = now
+				}
+				if err := repositories.Jobs().Enqueue(ctx, execution.Job{ID: id, Type: execution.JobGraph, Status: execution.JobPending, RunAt: runAt, CreatedAt: now, UpdatedAt: now}); err != nil {
+					t.Fatal(err)
+				}
+			}
+		}
+		served := map[workspace.ID]bool{}
+		for range 3 {
+			job, err := repositories.Jobs().ClaimNext(workspace.AcrossAll(context.Background()), "worker", now, time.Minute, execution.JobGraph)
+			if err != nil {
+				t.Fatal(err)
+			}
+			served[job.WorkspaceID] = true
+		}
+		if len(served) != 3 {
+			t.Fatalf("three claims served only %v", served)
 		}
 	})
 }

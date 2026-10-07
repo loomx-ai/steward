@@ -31,6 +31,7 @@ type Store struct {
 	// changed; nil outside a transaction.
 	touched *touchedConnections
 	locks   *lockStripes
+	claims  *claimCursors
 	// workspaces confines every statement to the context's workspace.
 	workspaces *workspaceScope
 }
@@ -63,7 +64,7 @@ func (s *Store) touch(connectionIDs ...string) {
 // transaction, so a writer can touch connections without a savepoint.
 func (s *Store) write(ctx context.Context, fn func(*Store) error) error {
 	if s.touched != nil {
-		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched, locks: s.locks, workspaces: s.workspaces})
+		return fn(&Store{db: s.db.WithContext(ctx), aliases: s.aliases, touched: s.touched, locks: s.locks, claims: s.claims, workspaces: s.workspaces})
 	}
 	return s.transaction(ctx, fn)
 }
@@ -104,7 +105,7 @@ func (m *aliasMemo) reset() {
 }
 
 func New(db *gorm.DB) *Store {
-	return &Store{db: db, locks: &lockStripes{}, workspaces: workspacePlugin(db)}
+	return &Store{db: db, locks: &lockStripes{}, claims: &claimCursors{}, workspaces: workspacePlugin(db)}
 }
 
 // inTx returns the store a transaction callback works with. Only
@@ -120,7 +121,7 @@ func (s *Store) inTx(tx *gorm.DB) *Store {
 	if touched == nil {
 		touched = &touchedConnections{}
 	}
-	return &Store{db: tx, aliases: memo, touched: touched, locks: s.locks, workspaces: s.workspaces}
+	return &Store{db: tx, aliases: memo, touched: touched, locks: s.locks, claims: s.claims, workspaces: s.workspaces}
 }
 
 func (s *Store) transaction(ctx context.Context, fn func(*Store) error) error {

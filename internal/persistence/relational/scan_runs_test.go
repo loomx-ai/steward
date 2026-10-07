@@ -180,7 +180,7 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 		`CREATE TABLE connection_regions (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE relationships (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE lifecycle_bindings (id VARCHAR(128) PRIMARY KEY)`,
-		`CREATE TABLE jobs (id VARCHAR(128) PRIMARY KEY)`,
+		`CREATE TABLE jobs (id VARCHAR(128) PRIMARY KEY, job_type VARCHAR(64), status VARCHAR(32), run_at TIMESTAMP)`,
 		`CREATE TABLE outbox_events (id VARCHAR(128) PRIMARY KEY)`,
 		`CREATE TABLE audit_events (id VARCHAR(128) PRIMARY KEY, created_at TIMESTAMP)`,
 		`CREATE TABLE cleanup_tasks (id VARCHAR(128) PRIMARY KEY)`,
