@@ -224,17 +224,52 @@ func (w *Worker) Run(ctx context.Context) error {
 	if w.options.Concurrency == 1 {
 		return w.runLoop(ctx, w.options.WorkerID)
 	}
-	var workers sync.WaitGroup
-	workers.Add(w.options.Concurrency)
+	// One loop claims for every slot, so an idle worker polls the database
+	// once per interval rather than once per slot; a claimed job runs on a
+	// free slot, under that slot's lease owner.
+	free := make(chan string, w.options.Concurrency)
 	for slot := range w.options.Concurrency {
-		workerID := fmt.Sprintf("%s-%02d", w.options.WorkerID, slot+1)
-		go func() {
-			defer workers.Done()
-			_ = w.runLoop(ctx, workerID)
-		}()
+		free <- fmt.Sprintf("%s-%02d", w.options.WorkerID, slot+1)
 	}
-	workers.Wait()
-	return ctx.Err()
+	var running sync.WaitGroup
+	defer running.Wait()
+	ticker := time.NewTicker(w.options.PollInterval)
+	defer ticker.Stop()
+	for {
+		var workerID string
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case workerID = <-free:
+		}
+		job, err := w.claim(ctx, workerID)
+		if err == nil {
+			running.Add(1)
+			go func() {
+				defer running.Done()
+				defer func() { free <- workerID }()
+				if _, err := w.execute(ctx, workerID, job); err != nil {
+					w.reportError(ctx, err)
+				}
+			}()
+			continue
+		}
+		free <- workerID
+		if !errors.Is(err, persistence.ErrNotFound) {
+			w.reportError(ctx, err)
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+		}
+	}
+}
+
+func (w *Worker) reportError(ctx context.Context, err error) {
+	if ctx.Err() == nil && w.options.OnError != nil {
+		w.options.OnError(err)
+	}
 }
 
 func (w *Worker) runLoop(ctx context.Context, workerID string) error {
@@ -272,14 +307,24 @@ func (w *Worker) ProcessOne(ctx context.Context) (bool, error) {
 }
 
 func (w *Worker) processOne(ctx context.Context, workerID string) (bool, error) {
-	now := w.options.Now()
-	job, err := w.jobs.ClaimNext(workspace.AcrossAll(ctx), workerID, now, w.options.LeaseDuration, w.options.AllowedTypes...)
+	job, err := w.claim(ctx, workerID)
 	if errors.Is(err, persistence.ErrNotFound) {
 		return false, nil
 	}
 	if err != nil {
 		return false, err
 	}
+	return w.execute(ctx, workerID, job)
+}
+
+// claim leases the next claimable job of any workspace to workerID;
+// ErrNotFound means there is none.
+func (w *Worker) claim(ctx context.Context, workerID string) (execution.Job, error) {
+	return w.jobs.ClaimNext(workspace.AcrossAll(ctx), workerID, w.options.Now(), w.options.LeaseDuration, w.options.AllowedTypes...)
+}
+
+// execute runs a claimed job and settles it.
+func (w *Worker) execute(ctx context.Context, workerID string, job execution.Job) (bool, error) {
 	// Everything the job does from here on belongs to its workspace.
 	ctx = workspace.With(ctx, job.WorkspaceID)
 	logs := newJobLogEmitter(w.jobs, job, w.options.Now)

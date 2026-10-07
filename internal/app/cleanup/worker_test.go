@@ -5,6 +5,7 @@ import (
 	"errors"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -572,3 +573,26 @@ func (f *fakeJobs) ListCleanupLogsBefore(context.Context, asset.ConnectionID, pl
 }
 
 var _ persistence.JobRepository = (*fakeJobs)(nil)
+
+type countingClaims struct {
+	persistence.JobRepository
+	claims atomic.Int32
+}
+
+func (c *countingClaims) ClaimNext(context.Context, string, time.Time, time.Duration, ...execution.JobType) (execution.Job, error) {
+	c.claims.Add(1)
+	return execution.Job{}, persistence.ErrNotFound
+}
+
+// An idle worker polls once per interval however many slots it has; every
+// slot polling on its own would multiply idle database load by them.
+func TestIdleWorkerPollsOncePerInterval(t *testing.T) {
+	jobs := &countingClaims{}
+	worker := cleanup.NewWorker(jobs, nil, cleanup.WorkerOptions{WorkerID: "idle", Concurrency: 20, PollInterval: 20 * time.Millisecond})
+	ctx, cancel := context.WithTimeout(context.Background(), 210*time.Millisecond)
+	defer cancel()
+	_ = worker.Run(ctx)
+	if claims := jobs.claims.Load(); claims < 5 || claims > 15 {
+		t.Fatalf("20 idle slots claimed %d times in about ten intervals", claims)
+	}
+}

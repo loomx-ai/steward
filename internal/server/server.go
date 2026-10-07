@@ -244,17 +244,15 @@ func Run(ctx context.Context, config Config) error {
 			}
 		}()
 	}
-	for index := range config.ScanConcurrency {
-		scanWorker := cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{execution.JobScan: scanHandler}, cleanup.WorkerOptions{
-			WorkerID: fmt.Sprintf("%s/server-scan-%d", instance, index+1), AllowedTypes: []execution.JobType{execution.JobScan}, PollInterval: config.PollInterval,
-			OnError: func(err error) { slog.Error("durable scan target failed", "error", err) },
-		})
-		go func() {
-			if err := scanWorker.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
-				slog.Error("durable scan worker stopped", "error", err)
-			}
-		}()
-	}
+	scanWorker := cleanup.NewWorker(repositories.Jobs(), map[execution.JobType]cleanup.Handler{execution.JobScan: scanHandler}, cleanup.WorkerOptions{
+		WorkerID: instance + "/server-scan", AllowedTypes: []execution.JobType{execution.JobScan}, Concurrency: config.ScanConcurrency, PollInterval: config.PollInterval,
+		OnError: func(err error) { slog.Error("durable scan target failed", "error", err) },
+	})
+	go func() {
+		if err := scanWorker.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
+			slog.Error("durable scan worker stopped", "error", err)
+		}
+	}()
 
 	handler := withStaticFallback(apiHandler)
 	if issuer != nil {
