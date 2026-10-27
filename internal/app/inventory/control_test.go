@@ -639,3 +639,74 @@ func TestNetworkRetryRequeuesSuccessfulSourcesNeededForClosure(t *testing.T) {
 	}
 	t.Fatal("network retry job missing")
 }
+
+func TestScanControlCredentialRetryWaitsForRunningJobs(t *testing.T) {
+	for _, fatal := range []bool{false, true} {
+		name := "ordinary_failure"
+		if fatal {
+			name = "credential_abort"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+			repositories, creator, _ := creatorFixture(t)
+			created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection-a", RequestedBy: "alice", RegionMode: inventory.RegionModeAllActive})
+			if err != nil {
+				t.Fatal(err)
+			}
+			task := created.ScanRun
+			task.Status = asset.ScanFailed
+			if fatal {
+				task.CompletionStatus = asset.ScanFailed
+			}
+			if err := repositories.Inventory().PutScanRun(ctx, task); err != nil {
+				t.Fatal(err)
+			}
+			for _, shard := range created.Shards {
+				shard.Status = asset.ShardBlocked
+				if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					t.Fatal(err)
+				}
+			}
+			// Even terminal shards do not prove their worker has returned.
+			for _, job := range created.Jobs {
+				job.Status = execution.JobRunning
+				if err := repositories.Jobs().UpdateJob(ctx, job); err != nil {
+					t.Fatal(err)
+				}
+			}
+			controller, err := inventory.NewControlService(repositories)
+			if err != nil {
+				t.Fatal(err)
+			}
+			canRetry, err := controller.CanRetry(ctx, task, created.Shards)
+			if err != nil || canRetry == fatal {
+				t.Fatalf("CanRetry = %v, error %v", canRetry, err)
+			}
+			_, err = controller.Retry(ctx, task.ID, "alice")
+			if (err != nil) != fatal {
+				t.Fatalf("Retry error = %v", err)
+			}
+			if !fatal {
+				return
+			}
+			current, err := repositories.Inventory().GetScanRun(ctx, task.ID)
+			if err != nil || current.RetryGeneration != 0 || current.Status != asset.ScanFailed {
+				t.Fatalf("rejected retry task = %+v, error %v", current, err)
+			}
+			for _, job := range created.Jobs {
+				job.Status = execution.JobCanceled
+				if err := repositories.Jobs().UpdateJob(ctx, job); err != nil {
+					t.Fatal(err)
+				}
+			}
+			canRetry, err = controller.CanRetry(ctx, task, created.Shards)
+			if err != nil || !canRetry {
+				t.Fatalf("settled CanRetry = %v, error %v", canRetry, err)
+			}
+			retried, err := controller.Retry(ctx, task.ID, "alice")
+			if err != nil || retried.RetryGeneration != 1 || retried.Status != asset.ScanPending {
+				t.Fatalf("settled retry = %+v, error %v", retried, err)
+			}
+		})
+	}
+}
