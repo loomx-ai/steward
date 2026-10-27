@@ -908,8 +908,10 @@ type capturedJobLog struct {
 }
 
 type networkProductAdapter struct {
-	kinds       map[asset.ResourceKindID]asset.ResourceKind
-	failBackend bool
+	kinds           map[asset.ResourceKindID]asset.ResourceKind
+	failBackend     bool
+	credentialError error
+	onList          func(contracts.InventoryRequest)
 }
 
 func (a *networkProductAdapter) InventorySources() []contracts.InventorySource {
@@ -919,10 +921,16 @@ func (a *networkProductAdapter) List(_ context.Context, request contracts.Invent
 	if request.NetworkTarget == nil || request.ResourceKind == nil {
 		return contracts.InventoryBatch{}, errors.New("missing network/kind selection")
 	}
+	if a.onList != nil {
+		a.onList(request)
+	}
 	kind := a.kinds[request.ResourceKind.ID]
 	name, dependency := "backend", "network"
 	switch kind.ID {
 	case "kind-worker":
+		if a.credentialError != nil {
+			return contracts.InventoryBatch{}, a.credentialError
+		}
 		if a.failBackend {
 			return contracts.InventoryBatch{}, errors.New("backend API unavailable")
 		}
@@ -1132,5 +1140,596 @@ func TestKindlessAuthoritativeShardKeepsOtherKindsOfItsRegion(t *testing.T) {
 		if closed := value.ClosedAt != nil; closed != (value.ID == gone.ID) {
 			t.Fatalf("asset %s (%s) closed = %t, want only the unlisted CEN instance closed", value.ID, value.ResourceKindID, closed)
 		}
+	}
+}
+
+func TestScanHandlerFatalCredentialStopsWholeTask(t *testing.T) {
+	for _, code := range []string{"oauth_token_refresh_failed", "oauth_reauthentication_required", "credential_refresh_unavailable", "credential_refresh_conflict", "credential_expired", "credential_expiration_required", "oauth_sts_exchange_failed", "credential_fields_invalid", "oauth_site_mismatch", "credential_type_unsupported", "oidc_unavailable", "oidc_exchange_failed"} {
+		t.Run(code, func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openInventoryWorkerRepositories(t)
+			now := time.Now().UTC()
+			seedScanWorker(t, repositories, now)
+			first, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, id := range []asset.ScanShardID{"second-source", "other-region", "active-region"} {
+				shard := first
+				shard.ID = id
+				if id == "active-region" {
+					shard.Status = asset.ShardRunning
+				}
+				if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					t.Fatal(err)
+				}
+			}
+			pending := execution.Job{ID: "other-region-job", ConnectionID: "connection-worker", AggregateType: "scan_task", AggregateID: "run-worker", Type: execution.JobScan, Status: execution.JobPending, RunAt: now, CreatedAt: now, UpdatedAt: now, Payload: map[string]any{"scan_shard_id": "other-region"}}
+			if err := repositories.Jobs().Enqueue(ctx, pending); err != nil {
+				t.Fatal(err)
+			}
+			failure := contracts.NewCredentialValidationError(code, "credential is unusable", nil)
+			adapter := &pagedInventoryAdapter{err: failure}
+			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, inventory.NewService(repositories.Inventory()))
+			var logs []execution.JobLogEntry
+			ctx = execution.WithJobLogSink(ctx, execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
+			err = handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_ids": []string{"shard-worker", "second-source"}}})
+			if !errors.Is(err, failure) {
+				t.Fatalf("error = %v", err)
+			}
+			if len(adapter.requests) != 1 {
+				t.Fatalf("provider calls = %d", len(adapter.requests))
+			}
+			foundError := false
+			for _, entry := range logs {
+				if entry.Level == "error" {
+					foundError = true
+				}
+				if entry.Level == "warn" {
+					t.Fatalf("unexpected warning: %s", entry.Message)
+				}
+			}
+			if !foundError {
+				t.Fatal("missing fatal error log")
+			}
+			for id, status := range map[asset.ScanShardID]asset.ShardStatus{"shard-worker": asset.ShardFailed, "second-source": asset.ShardBlocked, "other-region": asset.ShardBlocked} {
+				shard, err := repositories.Inventory().GetScanShard(ctx, id)
+				if err != nil || shard.Status != status {
+					t.Fatalf("shard %s = %+v, error %v", id, shard, err)
+				}
+			}
+			job, err := repositories.Jobs().GetJob(ctx, pending.ID)
+			if err != nil || job.Status != execution.JobCanceled {
+				t.Fatalf("job = %+v, error %v", job, err)
+			}
+			// A worker already running another region stops at its next checkpoint.
+			err = handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_ids": []string{"active-region", "second-source"}}})
+			var stopped *execution.JobStatusError
+			if !errors.As(err, &stopped) || stopped.Status != execution.JobCanceled {
+				t.Fatalf("active target error = %v", err)
+			}
+			if len(adapter.requests) != 1 {
+				t.Fatal("active target called provider after fatal failure")
+			}
+			shard, err := repositories.Inventory().GetScanShard(ctx, "active-region")
+			if err != nil || shard.Status != asset.ShardBlocked {
+				t.Fatalf("active shard = %+v, error %v", shard, err)
+			}
+			run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+			if err != nil || run.Status != asset.ScanFailed || run.FinishedAt == nil {
+				t.Fatalf("run = %+v, error %v", run, err)
+			}
+			// Repair the credential and run the jobs produced by the existing retry workflow.
+			adapter.err = nil
+			controller, err := inventory.NewControlService(repositories)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := controller.Retry(ctx, run.ID, "tester"); err != nil {
+				t.Fatal(err)
+			}
+			shards, err := repositories.Inventory().ListScanShardsByRun(ctx, run.ID)
+			if err != nil || len(shards) != 4 {
+				t.Fatalf("retry shards = %+v, error %v", shards, err)
+			}
+			for _, shard := range shards {
+				if shard.Status != asset.ShardPending || shard.RetryGeneration != 1 {
+					t.Fatalf("shard not requeued: %+v", shard)
+				}
+			}
+			jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(run.ID))
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, job := range jobs {
+				if job.Type == execution.JobScan && job.RetryGeneration == 1 {
+					if err := handler.Handle(ctx, job); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			shards, err = repositories.Inventory().ListScanShardsByRun(ctx, run.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, shard := range shards {
+				if shard.Status != asset.ShardSucceeded {
+					t.Fatalf("retry did not finish source: %+v", shard)
+				}
+			}
+			run, err = repositories.Inventory().GetScanRun(ctx, run.ID)
+			if err != nil || run.CompletionStatus != asset.ScanSucceeded || run.Status != asset.ScanReconciling {
+				t.Fatalf("retried run = %+v, error %v", run, err)
+			}
+		})
+	}
+}
+
+// startupRuntime pauses resolution after the worker reads the run but before
+// it writes StartedAt, allowing another target to commit a credential abort.
+type startupRuntime struct {
+	adapter contracts.InventoryAdapter
+	ready   chan struct{}
+	resume  chan struct{}
+}
+
+func (r startupRuntime) ResolveInventory(asset.Provider) (contracts.InventoryAdapter, error) {
+	close(r.ready)
+	<-r.resume
+	return r.adapter, nil
+}
+
+func TestScanHandlerStaleStartupPreservesCredentialAbort(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	seedScanWorker(t, repositories, time.Now().UTC())
+	sibling, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sibling.ID = "sibling"
+	if err := repositories.Inventory().PutScanShard(ctx, sibling); err != nil {
+		t.Fatal(err)
+	}
+	adapter := &pagedInventoryAdapter{pages: []contracts.InventoryBatch{{Complete: true}}}
+	runtime := startupRuntime{adapter: adapter, ready: make(chan struct{}), resume: make(chan struct{})}
+	service := inventory.NewService(repositories.Inventory())
+	handler := inventory.NewScanHandler(repositories, runtime, service)
+	done := make(chan error, 1)
+	go func() {
+		done <- handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}})
+	}()
+	defer func() {
+		if runtime.resume != nil {
+			close(runtime.resume)
+		}
+	}()
+	select {
+	case <-runtime.ready:
+	case <-time.After(5 * time.Second):
+		t.Fatal("worker did not reach startup barrier")
+	}
+	failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+	fatalHandler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: &pagedInventoryAdapter{err: failure}}, service)
+	if err := fatalHandler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "sibling"}}); !errors.Is(err, failure) {
+		t.Fatalf("fatal handler error = %v", err)
+	}
+	close(runtime.resume)
+	runtime.resume = nil
+	select {
+	case err := <-done:
+		var stopped *execution.JobStatusError
+		if !errors.As(err, &stopped) || stopped.Status != execution.JobCanceled {
+			t.Fatalf("stale startup error = %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("worker did not stop")
+	}
+	if len(adapter.requests) != 0 {
+		t.Fatalf("provider calls after abort = %d", len(adapter.requests))
+	}
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil || run.Status != asset.ScanFailed || run.CompletionStatus != asset.ScanFailed || run.ControlVersion != 1 || run.FinishedAt == nil {
+		t.Fatalf("credential abort overwritten: %+v, error %v", run, err)
+	}
+	shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil || shard.Status != asset.ShardBlocked || shard.FinishedAt == nil {
+		t.Fatalf("stale worker shard = %+v, error %v", shard, err)
+	}
+	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(run.ID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, job := range jobs {
+		if job.Type == execution.JobGraph {
+			t.Fatalf("graph work queued after credential abort: %+v", job)
+		}
+	}
+}
+
+func TestScanHandlerLateSourceErrorPreservesCredentialAbort(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	seedScanWorker(t, repositories, time.Now().UTC())
+	sibling, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sibling.ID = "sibling"
+	if err := repositories.Inventory().PutScanShard(ctx, sibling); err != nil {
+		t.Fatal(err)
+	}
+	failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+	service := inventory.NewService(repositories.Inventory())
+	fatalHandler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: &pagedInventoryAdapter{err: failure}}, service)
+	sourceError := errors.New("source unavailable")
+	adapter := &pagedInventoryAdapter{err: sourceError, onList: func() {
+		if err := fatalHandler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "sibling"}}); !errors.Is(err, failure) {
+			t.Fatalf("fatal handler error = %v", err)
+		}
+	}}
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, service)
+	if err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}}); errors.Is(err, failure) {
+		t.Fatalf("ordinary source error misclassified: %v", err)
+	}
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil || run.Status != asset.ScanFailed || run.CompletionStatus != asset.ScanFailed || run.ControlVersion != 1 {
+		t.Fatalf("credential abort overwritten: %+v, error %v", run, err)
+	}
+	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(run.ID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, job := range jobs {
+		if job.Type == execution.JobGraph {
+			t.Fatalf("graph work queued after credential abort: %+v", job)
+		}
+	}
+}
+
+func TestScanHandlerLateCredentialErrorPreservesCancellation(t *testing.T) {
+	for _, status := range []asset.ScanStatus{asset.ScanCanceling, asset.ScanCanceled} {
+		t.Run(string(status), func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openInventoryWorkerRepositories(t)
+			seedScanWorker(t, repositories, time.Now().UTC())
+			failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+			adapter := &pagedInventoryAdapter{err: failure, onList: func() {
+				run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+				if err != nil {
+					t.Fatal(err)
+				}
+				expected := run.ControlVersion
+				run.Status = status
+				run.ControlVersion++
+				if err := repositories.Inventory().PutScanRunIfControlVersion(ctx, run, expected); err != nil {
+					t.Fatal(err)
+				}
+			}}
+			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, inventory.NewService(repositories.Inventory()))
+			if err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}}); !errors.Is(err, failure) {
+				t.Fatalf("handler error = %v", err)
+			}
+			run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+			if err != nil || run.Status != asset.ScanCanceled || run.CompletionStatus != "" || run.CanceledAt == nil || run.FinishedAt == nil {
+				t.Fatalf("cancellation overwritten: %+v, error %v", run, err)
+			}
+			controller, err := inventory.NewControlService(repositories)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := controller.Retry(ctx, run.ID, "tester"); err == nil {
+				t.Fatal("canceled task became retryable")
+			}
+		})
+	}
+}
+
+func TestScanHandlerInFlightTargetStopsAfterCredentialFailure(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	seedScanWorker(t, repositories, time.Now().UTC())
+	sibling, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sibling.ID = "sibling"
+	if err := repositories.Inventory().PutScanShard(ctx, sibling); err != nil {
+		t.Fatal(err)
+	}
+	failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+	service := inventory.NewService(repositories.Inventory())
+	fatalHandler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: &pagedInventoryAdapter{err: failure}}, service)
+	adapter := &pagedInventoryAdapter{pages: []contracts.InventoryBatch{{NextCursor: "another-page"}}}
+	adapter.onList = func() {
+		err := fatalHandler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "sibling"}})
+		if !errors.Is(err, failure) {
+			t.Fatalf("fatal handler error = %v", err)
+		}
+	}
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, service)
+	err = handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}})
+	var stopped *execution.JobStatusError
+	if !errors.As(err, &stopped) || stopped.Status != execution.JobCanceled {
+		t.Fatalf("in-flight handler error = %v", err)
+	}
+	if len(adapter.requests) != 1 {
+		t.Fatalf("provider calls = %d", len(adapter.requests))
+	}
+	shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil || shard.Status != asset.ShardBlocked || shard.FinishedAt == nil || shard.Coverage.FailureReason == "" {
+		t.Fatalf("in-flight shard is not retryable: %+v, err = %v", shard, err)
+	}
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil || run.Status != asset.ScanFailed {
+		t.Fatalf("run = %+v, err = %v", run, err)
+	}
+}
+
+func TestNetworkScanLateCredentialErrorSettlesCancellation(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	now := time.Now().UTC()
+	seedScanWorker(t, repositories, now)
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	run.ScopeMode = asset.ScanSelectedNetworks
+	target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+	run.Targets = []asset.ScanTarget{target}
+	if err := repositories.Inventory().PutScanRun(ctx, run); err != nil {
+		t.Fatal(err)
+	}
+	kind := workerKind()
+	kind.ID, kind.NativeType = "kind-map", "TEST::map"
+	if err := repositories.Inventory().PutResourceKind(ctx, kind); err != nil {
+		t.Fatal(err)
+	}
+	ids := []string{"buffered-source", "shard-worker", "pending-source"}
+	for i, id := range ids {
+		kindID := workerKind().ID
+		if i == 0 {
+			kindID = kind.ID
+		}
+		shard := asset.ScanShard{ID: asset.ScanShardID(id), ScanRunID: run.ID, Provider: asset.ProviderAliCloud, ScopeID: "scope-worker", TargetKey: target.Key, ResourceKindID: kindID, Source: "product-api", Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
+		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+			t.Fatal(err)
+		}
+	}
+	failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+	adapter := &networkProductAdapter{kinds: map[asset.ResourceKindID]asset.ResourceKind{kind.ID: kind, workerKind().ID: workerKind()}, credentialError: failure}
+	adapter.onList = func(request contracts.InventoryRequest) {
+		if request.ResourceKind.ID != workerKind().ID {
+			return
+		}
+		controller, err := inventory.NewControlService(repositories)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := repositories.Jobs().Enqueue(ctx, execution.Job{
+			ID: "last-worker", Type: execution.JobScan, Status: execution.JobRunning,
+			AggregateType: "scan_task", AggregateID: string(run.ID),
+			IdempotencyKey: "last-worker", RunAt: now, CreatedAt: now, UpdatedAt: now,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		canceled, err := controller.Cancel(ctx, run.ID, "tester")
+		if err != nil || canceled.Status != asset.ScanCanceling {
+			t.Fatalf("cancel during provider call = %+v, error %v", canceled, err)
+		}
+	}
+
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, inventory.NewService(repositories.Inventory()))
+	if err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_ids": ids}}); !errors.Is(err, failure) {
+		t.Fatalf("fatal error = %v", err)
+	}
+	for id, status := range map[asset.ScanShardID]asset.ShardStatus{"buffered-source": asset.ShardCanceled, "shard-worker": asset.ShardFailed, "pending-source": asset.ShardCanceled} {
+		shard, err := repositories.Inventory().GetScanShard(ctx, id)
+		if err != nil || shard.Status != status || shard.FinishedAt == nil {
+			t.Fatalf("aborted shard = %+v, error %v", shard, err)
+		}
+	}
+	run, err = repositories.Inventory().GetScanRun(ctx, run.ID)
+	if err != nil || run.Status != asset.ScanCanceled || run.CompletionStatus != "" || run.CanceledAt == nil || run.FinishedAt == nil {
+		t.Fatalf("cancellation did not settle: %+v, error %v", run, err)
+	}
+}
+
+func TestNetworkScanFatalCredentialBlocksBufferedShardsForRetry(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	now := time.Now().UTC()
+	seedScanWorker(t, repositories, now)
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	run.ScopeMode = asset.ScanSelectedNetworks
+	target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+	run.Targets = []asset.ScanTarget{target}
+	if err := repositories.Inventory().PutScanRun(ctx, run); err != nil {
+		t.Fatal(err)
+	}
+	kind := workerKind()
+	kind.ID, kind.NativeType = "kind-map", "TEST::map"
+	if err := repositories.Inventory().PutResourceKind(ctx, kind); err != nil {
+		t.Fatal(err)
+	}
+	ids := []string{"buffered-source", "shard-worker", "pending-source"}
+	for i, id := range ids {
+		kindID := workerKind().ID
+		if i == 0 {
+			kindID = kind.ID
+		}
+		shard := asset.ScanShard{ID: asset.ScanShardID(id), ScanRunID: run.ID, Provider: asset.ProviderAliCloud, ScopeID: "scope-worker", TargetKey: target.Key, ResourceKindID: kindID, Source: "product-api", Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
+		if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+			t.Fatal(err)
+		}
+	}
+	failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+	adapter := &networkProductAdapter{kinds: map[asset.ResourceKindID]asset.ResourceKind{kind.ID: kind, workerKind().ID: workerKind()}, credentialError: failure}
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, inventory.NewService(repositories.Inventory()))
+	if err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_ids": ids}}); !errors.Is(err, failure) {
+		t.Fatalf("fatal error = %v", err)
+	}
+	for id, status := range map[asset.ScanShardID]asset.ShardStatus{"buffered-source": asset.ShardBlocked, "shard-worker": asset.ShardFailed, "pending-source": asset.ShardBlocked} {
+		shard, err := repositories.Inventory().GetScanShard(ctx, id)
+		if err != nil || shard.Status != status || shard.FinishedAt == nil || shard.Coverage.FailureReason == "" {
+			t.Fatalf("aborted shard = %+v, error %v", shard, err)
+		}
+	}
+	controller, err := inventory.NewControlService(repositories)
+	if err != nil {
+		t.Fatal(err)
+	}
+	adapter.credentialError = nil
+	if _, err := controller.Retry(ctx, run.ID, "tester"); err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range ids {
+		shard, err := repositories.Inventory().GetScanShard(ctx, asset.ScanShardID(id))
+		if err != nil || shard.Status != asset.ShardPending || shard.RetryGeneration != 1 {
+			t.Fatalf("retry shard = %+v, error %v", shard, err)
+		}
+	}
+	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(run.ID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, job := range jobs {
+		if job.Type == execution.JobScan && job.RetryGeneration == 1 {
+			if err := handler.Handle(ctx, job); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	for _, id := range ids {
+		shard, err := repositories.Inventory().GetScanShard(ctx, asset.ScanShardID(id))
+		if err != nil || shard.Status != asset.ShardSucceeded {
+			t.Fatalf("recovered shard = %+v, error %v", shard, err)
+		}
+	}
+	run, err = repositories.Inventory().GetScanRun(ctx, run.ID)
+	if err != nil || run.Status != asset.ScanReconciling || run.CompletionStatus != asset.ScanSucceeded {
+		t.Fatalf("recovered run = %+v, error %v", run, err)
+	}
+}
+
+func TestNetworkScanSiblingCredentialAbortBlocksBufferedShardsForRetry(t *testing.T) {
+	for _, duringProjection := range []bool{false, true} {
+		name := "provider_checkpoint"
+		if duringProjection {
+			name = "projection_checkpoint"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openInventoryWorkerRepositories(t)
+			now := time.Now().UTC()
+			seedScanWorker(t, repositories, now)
+			run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+			if err != nil {
+				t.Fatal(err)
+			}
+			run.ScopeMode = asset.ScanSelectedNetworks
+			target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+			run.Targets = []asset.ScanTarget{target}
+			if err := repositories.Inventory().PutScanRun(ctx, run); err != nil {
+				t.Fatal(err)
+			}
+			kind := workerKind()
+			kind.ID, kind.NativeType = "kind-map", "TEST::map"
+			if err := repositories.Inventory().PutResourceKind(ctx, kind); err != nil {
+				t.Fatal(err)
+			}
+			ids := []string{"buffered-source", "shard-worker", "pending-source", "fatal-source"}
+			for i, id := range ids {
+				kindID := workerKind().ID
+				if i == 0 {
+					kindID = kind.ID
+				}
+				shard := asset.ScanShard{ID: asset.ScanShardID(id), ScanRunID: run.ID, Provider: asset.ProviderAliCloud, ScopeID: "scope-worker", TargetKey: target.Key, ResourceKindID: kindID, Source: "product-api", Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
+				if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					t.Fatal(err)
+				}
+			}
+			failure := contracts.NewCredentialValidationError("oauth_token_refresh_failed", "cannot refresh token", nil)
+			service := inventory.NewService(repositories.Inventory())
+			fatalHandler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: &pagedInventoryAdapter{err: failure}}, service)
+			adapter := &networkProductAdapter{kinds: map[asset.ResourceKindID]asset.ResourceKind{kind.ID: kind, workerKind().ID: workerKind()}}
+			abort := func() {
+				// The first source is buffered and still running when another worker
+				// aborts the task during provider work or after projection begins.
+				buffered, err := repositories.Inventory().GetScanShard(ctx, "buffered-source")
+				if err != nil || buffered.Status != asset.ShardRunning {
+					t.Fatalf("buffered source = %+v, error %v", buffered, err)
+				}
+				if err := fatalHandler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "fatal-source"}}); !errors.Is(err, failure) {
+					t.Fatalf("fatal sibling error = %v", err)
+				}
+			}
+			if duringProjection {
+				ctx = execution.WithJobLogSink(ctx, execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) {
+					if strings.HasPrefix(entry.Message, "projected ") {
+						abort()
+					}
+				}))
+			} else {
+				adapter.onList = func(request contracts.InventoryRequest) {
+					if request.ResourceKind.ID == workerKind().ID {
+						abort()
+					}
+				}
+			}
+
+			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, service)
+			err = handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_ids": ids[:3]}})
+			var stopped *execution.JobStatusError
+			if !errors.As(err, &stopped) || stopped.Status != execution.JobCanceled {
+				t.Fatalf("stopping sibling error = %v", err)
+			}
+			for id, status := range map[asset.ScanShardID]asset.ShardStatus{"buffered-source": asset.ShardBlocked, "shard-worker": asset.ShardBlocked, "fatal-source": asset.ShardFailed, "pending-source": asset.ShardBlocked} {
+				shard, err := repositories.Inventory().GetScanShard(ctx, id)
+				if err != nil || shard.Status != status || shard.FinishedAt == nil || shard.Coverage.FailureReason == "" {
+					t.Fatalf("aborted shard = %+v, error %v", shard, err)
+				}
+			}
+			controller, err := inventory.NewControlService(repositories)
+			if err != nil {
+				t.Fatal(err)
+			}
+			adapter.onList = nil
+			ctx = context.Background()
+			if _, err := controller.Retry(ctx, run.ID, "tester"); err != nil {
+				t.Fatal(err)
+			}
+			for _, id := range ids {
+				shard, err := repositories.Inventory().GetScanShard(ctx, asset.ScanShardID(id))
+				if err != nil || shard.Status != asset.ShardPending || shard.RetryGeneration != 1 {
+					t.Fatalf("retry shard = %+v, error %v", shard, err)
+				}
+			}
+			jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(run.ID))
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, job := range jobs {
+				if job.Type == execution.JobScan && job.RetryGeneration == 1 {
+					if err := handler.Handle(ctx, job); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			for _, id := range ids {
+				shard, err := repositories.Inventory().GetScanShard(ctx, asset.ScanShardID(id))
+				if err != nil || shard.Status != asset.ShardSucceeded {
+					t.Fatalf("recovered shard = %+v, error %v", shard, err)
+				}
+			}
+			run, err = repositories.Inventory().GetScanRun(ctx, run.ID)
+			if err != nil || run.Status != asset.ScanReconciling || run.CompletionStatus != asset.ScanSucceeded {
+				t.Fatalf("recovered run = %+v, error %v", run, err)
+			}
+		})
 	}
 }

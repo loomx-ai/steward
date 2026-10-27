@@ -173,7 +173,9 @@ func (s *Service) FinishScan(ctx context.Context, run *asset.ScanRun, shards []a
 		updated.FinishedAt = nil
 	}
 	err := s.repository.WithinInventoryTx(ctx, func(repository persistence.InventoryRepository) error {
-		return repository.PutScanRun(ctx, updated)
+		// A control transition after the worker's last read must win over settlement.
+		updated.ControlVersion++
+		return repository.PutScanRunIfControlVersion(ctx, updated, run.ControlVersion)
 	})
 	if err != nil {
 		return err

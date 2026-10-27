@@ -55,9 +55,15 @@ func (h *ScanHandler) Handle(ctx context.Context, job execution.Job) error {
 		if err == nil {
 			continue
 		}
+		if fatalScanCredentialError(err) && run != nil {
+			execution.LogJob(ctx, "error", fmt.Sprintf("scan stopped because its credential is unusable: %v", err))
+			return errors.Join(err, h.failCredentialTask(ctx, run, err, network))
+		}
 		var controlled *execution.JobStatusError
 		if errors.As(err, &controlled) {
-			if controlled.Status == execution.JobCanceled {
+			// A sibling cannot see this worker's buffered network reads.
+			err = errors.Join(err, h.blockStoppedNetwork(ctx, run, network))
+			if controlled.Status == execution.JobCanceled && (run == nil || run.Status != asset.ScanFailed) {
 				if cancelErr := h.cancelShards(ctx, shardIDs[index+1:]); cancelErr != nil {
 					err = errors.Join(err, cancelErr)
 				}
@@ -92,10 +98,10 @@ func (h *ScanHandler) Handle(ctx context.Context, job execution.Job) error {
 		return fmt.Errorf("scan target resolved no task")
 	}
 	if err := h.checkTaskControl(ctx, run, nil); err != nil {
-		return err
+		return errors.Join(err, h.blockStoppedNetwork(ctx, run, network))
 	}
 	if err := h.projectNetworkTarget(ctx, run, network, len(shardErrors) == 0); err != nil {
-		return errors.Join(err, h.finishRunIfTerminal(ctx, run))
+		return errors.Join(err, h.blockStoppedNetwork(ctx, run, network), h.finishRunIfTerminal(ctx, run))
 	}
 	if err := h.finishRunIfTerminal(ctx, run); err != nil {
 		return err
@@ -192,7 +198,13 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	if run.StartedAt == nil {
 		run.StartedAt = &now
 		run.Status = asset.ScanRunning
-		if err := h.repositories.Inventory().PutScanRun(ctx, run); err != nil {
+		// A sibling may abort the run after our initial control check.
+		if err := h.repositories.Inventory().PutScanRunIfControlVersion(ctx, run, run.ControlVersion); err != nil {
+			if errors.Is(err, persistence.ErrConflict) {
+				if controlErr := h.checkTaskControl(ctx, &run, &shard); controlErr != nil {
+					return &run, controlErr
+				}
+			}
 			return &run, err
 		}
 	}
@@ -266,6 +278,9 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			confirmedAbsent, err = confirmedAbsentAssets(batch, reconcileKnown, knownAssets, observed)
 		}
 		if err != nil {
+			if fatalScanCredentialError(err) {
+				return &run, errors.Join(err, h.service.FinishShard(ctx, &shard, asset.ShardFailed, err.Error()))
+			}
 			if reason, ok := unsupportedSkipReason(err); ok {
 				shard.Coverage.SkipReason = reason
 				if finishErr := h.service.FinishShard(ctx, &shard, asset.ShardSkipped, ""); finishErr != nil {
@@ -289,6 +304,9 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		baseBatch := batch
 		batch, err = enrichInventoryBatch(ctx, adapter, request, batch)
 		if err != nil {
+			if fatalScanCredentialError(err) {
+				return &run, errors.Join(err, h.service.FinishShard(ctx, &shard, asset.ShardFailed, err.Error()))
+			}
 			fallbackErr := h.projectFallbackInventoryBatch(
 				ctx, &shard, connection, nativeType, networkTarget, collected, baseBatch,
 			)
@@ -561,15 +579,25 @@ func (h *ScanHandler) checkTaskControl(ctx context.Context, task *asset.ScanRun,
 			}
 		}
 		return &execution.JobStatusError{Status: execution.JobPaused, Cause: fmt.Errorf("scan task %s is paused", task.ID)}
-	case asset.ScanCanceling, asset.ScanCanceled:
+	case asset.ScanCanceling, asset.ScanCanceled, asset.ScanFailed:
+		// Ordinary source failures may settle a task before Handle returns its
+		// original error. Only a fatal credential failure stops sibling workers.
+		if current.Status == asset.ScanFailed && current.CompletionStatus != asset.ScanFailed {
+			return nil
+		}
 		if shard != nil && shard.Status != asset.ShardSucceeded && shard.Status != asset.ShardSkipped && shard.Status != asset.ShardFailed && shard.Status != asset.ShardBlocked {
 			shard.Status = asset.ShardCanceled
+			if current.Status == asset.ScanFailed {
+				// Credential-stopped work must remain eligible for Retry.
+				shard.Status = asset.ShardBlocked
+				shard.Coverage.FailureReason = "scan stopped because its credential is unusable"
+			}
 			shard.FinishedAt = &now
 			if err := h.repositories.Inventory().PutScanShard(ctx, *shard); err != nil {
 				return err
 			}
 		}
-		return &execution.JobStatusError{Status: execution.JobCanceled, Cause: fmt.Errorf("scan task %s is canceled", task.ID)}
+		return &execution.JobStatusError{Status: execution.JobCanceled, Cause: fmt.Errorf("scan task %s stopped (%s)", task.ID, current.Status)}
 	default:
 		return nil
 	}
@@ -636,6 +664,14 @@ func (h *ScanHandler) finishRunIfTerminal(ctx context.Context, run *asset.ScanRu
 			return nil
 		}
 	}
+	current, err := h.repositories.Inventory().GetScanRun(ctx, run.ID)
+	if err != nil {
+		return err
+	}
+	*run = current
+	if run.Status == asset.ScanCanceling {
+		return h.settleControlledTask(ctx, run)
+	}
 	if run.Status != asset.ScanReconciling && run.Status != asset.ScanSucceeded && run.Status != asset.ScanPartial && run.Status != asset.ScanFailed && run.Status != asset.ScanCanceled {
 		if err := h.service.FinishScan(ctx, run, runShards); err != nil {
 			return err
@@ -670,4 +706,131 @@ func unsupportedSkipReason(err error) (asset.SkipReason, bool) {
 	default:
 		return asset.SkipProductUnsupported, true
 	}
+}
+
+// Only credential materialization failures stop the task. Provider call failures
+// retain their source-local retry and unsupported-region behavior.
+func fatalScanCredentialError(err error) bool {
+	var validation *contracts.CredentialValidationError
+	if !errors.As(err, &validation) {
+		return false
+	}
+	switch validation.Code {
+	case "oauth_token_refresh_failed", "oauth_reauthentication_required",
+		"credential_refresh_unavailable", "credential_refresh_conflict", "credential_expired", "credential_expiration_required",
+		"oauth_sts_exchange_failed", "credential_fields_invalid", "oauth_site_mismatch",
+		"credential_type_unsupported", "oidc_unavailable", "oidc_exchange_failed":
+		return true
+	default:
+		return false
+	}
+}
+
+// blockStoppedNetwork makes locally buffered reads retryable after a sibling
+// aborts the task, including an abort observed just before projection.
+func (h *ScanHandler) blockStoppedNetwork(ctx context.Context, run *asset.ScanRun, network []networkProjection) error {
+	if run == nil || run.Status != asset.ScanFailed || run.CompletionStatus != asset.ScanFailed {
+		return nil
+	}
+	now := h.clock()
+	for _, projection := range network {
+		shard, err := h.repositories.Inventory().GetScanShard(ctx, projection.shard.ID)
+		if err != nil {
+			return err
+		}
+		if shard.Status != asset.ShardRunning {
+			continue
+		}
+		shard.Status = asset.ShardBlocked
+		shard.FinishedAt = &now
+		shard.Coverage.FailureReason = "scan stopped because its credential is unusable"
+		if err := h.repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (h *ScanHandler) failCredentialTask(ctx context.Context, run *asset.ScanRun, cause error, network []networkProjection) error {
+	err := h.repositories.WithTx(ctx, func(repositories persistence.Repositories) error {
+		current, err := repositories.Inventory().GetScanRun(ctx, run.ID)
+		if err != nil {
+			return err
+		}
+		if current.Status == asset.ScanCanceling || current.Status == asset.ScanCanceled {
+			*run = current
+			return nil
+		}
+		now := h.clock()
+		expected := current.ControlVersion
+		current.Status = asset.ScanFailed
+		current.CompletionStatus = asset.ScanFailed
+		current.FinishedAt = &now
+		current.ControlVersion++
+		if err := repositories.Inventory().PutScanRunIfControlVersion(ctx, current, expected); err != nil {
+			return err
+		}
+		shards, err := repositories.Inventory().ListScanShardsByRun(ctx, current.ID)
+		if err != nil {
+			return err
+		}
+		for _, shard := range shards {
+			// Buffered network reads have no worker left to checkpoint them after
+			// this abort. Block them with pending siblings so Retry recollects them.
+			buffered := shard.Status == asset.ShardRunning && slices.ContainsFunc(network, func(projection networkProjection) bool {
+				return projection.shard.ID == shard.ID
+			})
+			if buffered || shard.Status == asset.ShardPending || shard.Status == asset.ShardPaused || shard.Status == asset.ShardBlocked {
+				shard.Status = asset.ShardBlocked
+				shard.FinishedAt = &now
+				shard.Coverage.FailureReason = cause.Error()
+				if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					return err
+				}
+			}
+		}
+		jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(current.ID))
+		if err != nil {
+			return err
+		}
+		for _, job := range jobs {
+			if job.Status != execution.JobPending && job.Status != execution.JobPaused {
+				continue
+			}
+			job.Status = execution.JobCanceled
+			job.UpdatedAt = now
+			job.FinishedAt = &now
+			job.LeaseOwner = ""
+			job.LeaseUntil = nil
+			if err := repositories.Jobs().UpdateJob(ctx, job); err != nil {
+				return err
+			}
+		}
+		*run = current
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if run.Status == asset.ScanCanceling || run.Status == asset.ScanCanceled {
+		// These reads are still running in storage, but this worker will never
+		// project them after cancellation. Settle them before the task.
+		for _, projection := range network {
+			shard, err := h.repositories.Inventory().GetScanShard(ctx, projection.shard.ID)
+			if err != nil {
+				return err
+			}
+			if shard.Status != asset.ShardRunning {
+				continue
+			}
+			now := h.clock()
+			shard.Status = asset.ShardCanceled
+			shard.FinishedAt = &now
+			if err := h.repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+				return err
+			}
+		}
+		return h.settleControlledTask(ctx, run)
+	}
+	return nil
 }

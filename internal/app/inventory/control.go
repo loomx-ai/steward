@@ -194,6 +194,11 @@ func (s *ControlService) Retry(ctx context.Context, id asset.ScanTaskID, actor s
 		if task.Status != asset.ScanFailed && task.Status != asset.ScanPartial && task.Status != asset.ScanSucceeded {
 			return scanRequestError("scan.retry_not_allowed", "only failed, partial, or incomplete succeeded scan tasks can be retried", map[string]any{"status": task.Status})
 		}
+		if draining, err := credentialStopDraining(ctx, repositories, *task); err != nil {
+			return err
+		} else if draining {
+			return scanRequestError("scan.retry_not_allowed", "scan workers are still stopping; retry after they finish", nil)
+		}
 		if err := connectionapp.GuardActiveWork(ctx, repositories, task.ConnectionID, now); err != nil {
 			return err
 		}
@@ -334,6 +339,9 @@ func (s *ControlService) CanRetry(
 	task asset.ScanTask,
 	shards []asset.ScanShard,
 ) (bool, error) {
+	if draining, err := credentialStopDraining(ctx, s.repositories, task); err != nil || draining {
+		return false, err
+	}
 	switch task.Status {
 	case asset.ScanFailed, asset.ScanPartial:
 		return true, nil
@@ -342,6 +350,24 @@ func (s *ControlService) CanRetry(
 	default:
 		return false, nil
 	}
+}
+
+// Credential abort publishes failure before sibling handlers return. Wait for
+// their jobs to settle before resetting shared shards into a new generation.
+func credentialStopDraining(ctx context.Context, repositories persistence.Repositories, task asset.ScanTask) (bool, error) {
+	if task.Status != asset.ScanFailed || task.CompletionStatus != asset.ScanFailed {
+		return false, nil
+	}
+	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(task.ID))
+	if err != nil {
+		return false, err
+	}
+	for _, job := range jobs {
+		if job.Status == execution.JobRunning {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (s *ControlService) mutate(ctx context.Context, id asset.ScanTaskID, actor, action string, mutation func(persistence.Repositories, *asset.ScanTask, time.Time) error) (asset.ScanTask, error) {

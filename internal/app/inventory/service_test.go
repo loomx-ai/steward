@@ -506,6 +506,7 @@ func TestFinishScanDerivesPartialStatusFromTerminalShards(t *testing.T) {
 	finishedAt := time.Date(2026, 7, 13, 0, 45, 0, 0, time.UTC)
 	service := inventory.NewService(repository, inventory.WithClock(func() time.Time { return finishedAt }))
 	run := asset.ScanRun{ID: "run-finish", ConnectionID: "connection-1", Status: asset.ScanRunning}
+	repository.runs[run.ID] = run
 	shards := []asset.ScanShard{{ID: "shard-success", Status: asset.ShardSucceeded}, {ID: "shard-failed", Status: asset.ShardFailed}}
 
 	if err := service.FinishScan(context.Background(), &run, shards); err != nil {
@@ -516,11 +517,31 @@ func TestFinishScanDerivesPartialStatusFromTerminalShards(t *testing.T) {
 	}
 }
 
+func TestFinishScanRejectsStaleControlVersion(t *testing.T) {
+	repository := newInventoryRepository()
+	service := inventory.NewService(repository)
+	run := asset.ScanRun{ID: "run-stale", Status: asset.ScanRunning}
+	current := run
+	current.Status = asset.ScanFailed
+	current.CompletionStatus = asset.ScanFailed
+	current.ControlVersion++
+	repository.runs[run.ID] = current
+	err := service.FinishScan(context.Background(), &run, []asset.ScanShard{{ID: "shard", Status: asset.ShardFailed}})
+	if !errors.Is(err, persistence.ErrConflict) {
+		t.Fatalf("stale settlement error = %v", err)
+	}
+	stored := repository.runs[run.ID]
+	if stored.Status != asset.ScanFailed || stored.CompletionStatus != asset.ScanFailed || stored.ControlVersion != current.ControlVersion {
+		t.Fatalf("credential abort overwritten: %+v", stored)
+	}
+}
+
 func TestFinishScanTreatsSkippedShardsAsSuccessfulCompletion(t *testing.T) {
 	repository := newInventoryRepository()
 	now := time.Date(2026, 7, 13, 10, 1, 0, 0, time.UTC)
 	service := inventory.NewService(repository, inventory.WithClock(func() time.Time { return now }))
 	run := asset.ScanRun{ID: "run-skipped", ConnectionID: "connection-1", Status: asset.ScanRunning}
+	repository.runs[run.ID] = run
 	shards := []asset.ScanShard{{ID: "shard-success", Status: asset.ShardSucceeded}, {ID: "shard-skipped", Status: asset.ShardSkipped}}
 
 	if err := service.FinishScan(context.Background(), &run, shards); err != nil {
