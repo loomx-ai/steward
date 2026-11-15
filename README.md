@@ -48,6 +48,10 @@ The [documentation](https://loomx.ai/steward/docs/latest/en/) covers cloud conne
 
 Try a focused workflow: [inventory AWS resources across regions](https://loomx.ai/steward/docs/latest/en/tutorials/aws-resource-inventory/) or [review cloud dependencies before cleanup](https://loomx.ai/steward/docs/latest/en/tutorials/review-cleanup-dependencies/).
 
+## One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Steward/)
+
 ## Developing Steward
 
 This repository contains the Steward service, web console, and cloud provider integrations. Contributions are welcome:
